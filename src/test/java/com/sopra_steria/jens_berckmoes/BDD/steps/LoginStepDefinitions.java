@@ -1,5 +1,9 @@
 package com.sopra_steria.jens_berckmoes.BDD.steps;
 
+import com.sopra_steria.jens_berckmoes.model.LoginResult;
+import com.sopra_steria.jens_berckmoes.model.LoginStatus;
+import com.sopra_steria.jens_berckmoes.model.Token;
+import com.sopra_steria.jens_berckmoes.service.LoginService;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
