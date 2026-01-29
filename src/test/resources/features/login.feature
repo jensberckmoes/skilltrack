@@ -5,9 +5,9 @@ Feature: Login
     Given I am on the login page
 
   Scenario: User cannot log in with invalid username
-    When I enter username "nonexistent_user" and token "valid_token"
+    When I attempt to log in with username "nonexistent_user" and token "valid_token"
     Then I am blocked and prompted to contact support
 
   Scenario: User cannot log in with invalid token
-    When I enter username "jane.doe@example.com" and token "wrong_token"
+    When I attempt to log in with username "jane.doe@example.com" and token "wrong_token"
     Then I am blocked and prompted to contact support

@@ -1,18 +1,13 @@
 package com.sopra_steria.jens_berckmoes.service;
 
-import com.sopra_steria.jens_berckmoes.model.LoginResult;
-import com.sopra_steria.jens_berckmoes.model.LoginStatus;
-import com.sopra_steria.jens_berckmoes.model.Token;
-import com.sopra_steria.jens_berckmoes.model.User;
+import com.sopra_steria.jens_berckmoes.exception.TokenNotFoundException;
+import com.sopra_steria.jens_berckmoes.exception.UserNotFoundException;
+import com.sopra_steria.jens_berckmoes.model.*;
 import com.sopra_steria.jens_berckmoes.repository.TokenRepository;
 import com.sopra_steria.jens_berckmoes.repository.UserRepository;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.LocalDateTime;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
@@ -23,43 +18,18 @@ class LoginServiceTest {
     private final TokenRepository tokenRepository = mock(TokenRepository.class);
     private final LoginService loginService = new LoginService(userRepository, tokenRepository);
 
-    @ParameterizedTest
-    @MethodSource("provideInputForInputIsNullOrBlank")
-    void shouldBlockWhenInputIsNullOrBlank(final String userName, final String token) {
-        //Arrange
-        when(userRepository.exists(userName)).thenReturn(true);
-        when(tokenRepository.exists(token)).thenReturn(true);
-
-        //Act
-        final LoginResult result = loginService.login(userName, token);
-
-        //Assert
-        assertThat(result)
-                .as("Checking loginResult for username %s and token %s", userName, token)
-                .isEqualTo(LoginResult.of(LoginStatus.BLOCKED, "please contact support"));
-    }
-
-    public static Stream<Arguments> provideInputForInputIsNullOrBlank() {
-        return Stream.of(
-                Arguments.of(null, null),
-                Arguments.of("", null),
-                Arguments.of("  ", null),
-                Arguments.of(null, ""),
-                Arguments.of(null, " "));
-    }
-
     @Test
     void shouldBlockWhenUsernameIsInvalid() {
         //Arrange
-        final String invalidUsername = "nonexistent_user";
-        final String validToken = "valid_token";
-        final Token dbToken = Token.of(validToken, LocalDateTime.now().plusDays(5));
-        when(tokenRepository.exists(dbToken.token())).thenReturn(true);
-        when(tokenRepository.get(dbToken.token())).thenReturn(dbToken);
-        when(userRepository.exists(invalidUsername)).thenReturn(false);
+        final String validToken = "some_valid_token";
+        final Username username = Username.of("nonexistent_user");
+        final TokenValue tokenValue = TokenValue.of(validToken);
+        final Token token = Token.of(validToken, LocalDateTime.of(2026, 1, 29, 17, 10, 0));
+        when(userRepository.get(username)).thenThrow(new UserNotFoundException());
+        when(tokenRepository.get(tokenValue)).thenReturn(token);
 
         //Act
-        final LoginResult result = loginService.login(invalidUsername, validToken);
+        final LoginResult result = loginService.login(username, tokenValue);
 
         //Assert
         assertThat(result)
@@ -71,13 +41,32 @@ class LoginServiceTest {
         //Arrange
         final String validUsername = "jane.doe@example.com";
         final String invalidToken = "invalid_token";
-        final User dbUser = User.of(validUsername, "some_valid_token");
-        when(userRepository.exists(dbUser.token())).thenReturn(true);
-        when(userRepository.get(dbUser.username())).thenReturn(dbUser);
-        when(tokenRepository.exists(invalidToken)).thenReturn(false);
+        final Username username = Username.of(validUsername);
+        final TokenValue token = TokenValue.of(invalidToken);
+        when(userRepository.get(username)).thenReturn(User.defaultUser(username));
+        when(tokenRepository.get(token)).thenThrow(new TokenNotFoundException());
 
         //Act
-        final LoginResult result = loginService.login(validUsername, invalidToken);
+        final LoginResult result = loginService.login(username, token);
+
+        //Assert
+        assertThat(result)
+                .isEqualTo(LoginResult.of(LoginStatus.BLOCKED, "please contact support"));
+    }
+
+    @Test
+    void shouldBlockWhenTokenDoesNotBelongToUser() {
+        //Arrange
+        final String validTokenName = "some_valid_token";
+        final Username username = Username.of("nonexistent_user");
+        final TokenValue tokenValue = TokenValue.of(validTokenName);
+        final Token otherToken = Token.of(validTokenName, LocalDateTime.of(2026, 1, 29, 17, 10, 0).plusDays(1));
+        final Token token = Token.of(validTokenName, LocalDateTime.of(2026, 1, 29, 17, 10, 0));
+        when(userRepository.get(username)).thenReturn(User.of(username, token));
+        when(tokenRepository.get(tokenValue)).thenReturn(otherToken);
+
+        //Act
+        final LoginResult result = loginService.login(username, tokenValue);
 
         //Assert
         assertThat(result)

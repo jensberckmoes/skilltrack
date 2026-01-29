@@ -1,13 +1,16 @@
 package com.sopra_steria.jens_berckmoes.repository;
 
+import com.sopra_steria.jens_berckmoes.exception.UserNotFoundException;
 import com.sopra_steria.jens_berckmoes.model.User;
+import com.sopra_steria.jens_berckmoes.model.Username;
 
 public class UserRepository {
-    public boolean exists(final String username) {
-        return "jane.doe@example.com".equals(username);
-    }
 
-    public User get(String token) {
-        return User.of("jane.doe@example.com", "some_valid_token");
+    public User get(final Username username) throws UserNotFoundException {
+        try {
+            return User.defaultUser(username);
+        } catch (final IllegalArgumentException e) {
+            throw new UserNotFoundException();
+        }
     }
 }
