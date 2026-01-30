@@ -6,7 +6,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class UsernameTest {
-
+    @SuppressWarnings("ConstantConditions")
     @Test
     void shouldThrowIfNull() {
         assertThatThrownBy(() -> Username.of(null))

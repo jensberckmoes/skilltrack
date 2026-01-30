@@ -12,8 +12,6 @@ public record LoginService(UserRepository userRepository, TokenRepository tokenR
             if(!token.belongsTo(user)){
                 throw new IllegalArgumentException("Token is of a different User");
             }
-            //tokenValidator.validate(token, user);
-            //return LoginResult.success();
         }catch (final RuntimeException e) {
             return LoginResult.of(LoginStatus.BLOCKED, "please contact support");
         }

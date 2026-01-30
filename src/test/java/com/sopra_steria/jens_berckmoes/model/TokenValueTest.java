@@ -6,6 +6,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class TokenValueTest {
+    @SuppressWarnings("ConstantConditions")
     @Test
     void shouldThrowIfNull() {
         assertThatThrownBy(() -> TokenValue.of(null))

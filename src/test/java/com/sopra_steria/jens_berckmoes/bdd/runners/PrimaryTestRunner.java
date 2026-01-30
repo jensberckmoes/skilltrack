@@ -1,4 +1,4 @@
-package com.sopra_steria.jens_berckmoes.BDD.runners;
+package com.sopra_steria.jens_berckmoes.bdd.runners;
 
 import io.cucumber.junit.platform.engine.Constants;
 import org.junit.platform.suite.api.*;

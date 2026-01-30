@@ -1,4 +1,4 @@
-package com.sopra_steria.jens_berckmoes.BDD.steps;
+package com.sopra_steria.jens_berckmoes.bdd.steps;
 
 import com.sopra_steria.jens_berckmoes.exception.TokenNotFoundException;
 import com.sopra_steria.jens_berckmoes.exception.UserNotFoundException;
@@ -19,7 +19,6 @@ public class LoginStepDefinitions {
     private LoginService loginService;
     private LoginResult loginResult;
 
-    // Predefined test objects for clarity
     private final Username validUsername = Username.of("jane.doe@example.com");
     private final Username invalidUsername = Username.of("nonexistent_user");
 
@@ -30,20 +29,16 @@ public class LoginStepDefinitions {
 
     @Given("I am on the login page")
     public void iAmOnTheLoginPage() {
-        // single mock per dependency
         final UserRepository userRepository = mock(UserRepository.class);
         final TokenRepository tokenRepository = mock(TokenRepository.class);
 
         loginService = new LoginService(userRepository, tokenRepository);
 
-        // Setup repository mocks for the scenario
-        // Users
         when(userRepository.get(eq(validUsername)))
                 .thenReturn(User.of(validUsername, validToken));
         when(userRepository.get(eq(invalidUsername)))
                 .thenThrow(new UserNotFoundException());
 
-        // Tokens
         when(tokenRepository.get(eq(validTokenValue)))
                 .thenReturn(validToken);
         when(tokenRepository.get(eq(invalidTokenValue)))
@@ -51,12 +46,10 @@ public class LoginStepDefinitions {
     }
 
     @When("I attempt to log in with username {string} and token {string}")
-    public void iAttemptToLogIn(String rawUsername, String rawToken) {
-        // Convert inputs to value objects
-        Username username = Username.of(rawUsername);
-        TokenValue tokenValue = TokenValue.of(rawToken);
+    public void iAttemptToLogIn(final String rawUsername, final String rawToken) {
+        final Username username = Username.of(rawUsername);
+        final TokenValue tokenValue = TokenValue.of(rawToken);
 
-        // Call the service
         loginResult = loginService.login(username, tokenValue);
     }
 
