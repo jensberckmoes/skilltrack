@@ -21,7 +21,6 @@ public class LoginStepDefinitions {
     private LoginService loginService;
     private LoginResult loginResult;
 
-
     @Given("I am on the login page")
     public void iAmOnTheLoginPage() {
         final TokenRepository tokenRepository = new InMemoryTokenRepository(LocalDateTime.of(2027, 1, 30, 16, 19, 0));
