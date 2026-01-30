@@ -66,4 +66,18 @@ class TokenTest {
                 Arguments.of(STATIC_NOW, false),
                 Arguments.of(STATIC_NOW.minusHours(1), false));
     }
+
+    @ParameterizedTest
+    @MethodSource("belongsToProvider")
+    void shouldDetermineBelongsToCorrectly(final Token givenToken, final User givenUser, final boolean expectedBelongsTo) {
+        assertThat(givenToken.belongsTo(givenUser)).isEqualTo(expectedBelongsTo);
+    }
+
+    public static Stream<Arguments> belongsToProvider() {
+        final Token candidateToken  = Token.of("t", STATIC_NOW);
+        final Username givenUserUsername = Username.of("u");
+        return Stream.of(
+                Arguments.of(candidateToken , User.of(givenUserUsername, candidateToken ), true),
+                Arguments.of(candidateToken , User.of(givenUserUsername, Token.of("s", STATIC_NOW)), false));
+    }
 }
