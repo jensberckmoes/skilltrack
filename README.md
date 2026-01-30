@@ -112,7 +112,7 @@ Goal: Demonstrate **senior-level impact and ownership** through SkillTrack.
 ```bash
 git clone https://github.com/yourusername/skilltrack.git
 ```
-2. Configure application properties (application.yml)
+2. Configure application properties (application.yml):
 
 3. Run Spring Boot application:
 ```bash

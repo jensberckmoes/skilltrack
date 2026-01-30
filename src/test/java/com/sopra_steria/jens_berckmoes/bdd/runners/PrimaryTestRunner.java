@@ -1,4 +1,4 @@
-package com.sopra_steria.jens_berckmoes.BDD.runners;
+package com.sopra_steria.jens_berckmoes.bdd.runners;
 
 import io.cucumber.junit.platform.engine.Constants;
 import org.junit.platform.suite.api.*;
@@ -6,6 +6,6 @@ import org.junit.platform.suite.api.*;
 @Suite
 @IncludeEngines("cucumber")
 @SelectPackages("features")
-@ConfigurationParameter(key = Constants.GLUE_PROPERTY_NAME, value = "com.sopra_steria.jens_berckmoes.BDD.steps")
+@ConfigurationParameter(key = Constants.GLUE_PROPERTY_NAME, value = "com.sopra_steria.jens_berckmoes.bdd.steps")
 public class PrimaryTestRunner {
 }
