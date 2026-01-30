@@ -14,6 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class LoginServiceTest {
+    private static final LocalDateTime STATIC_NOW = LocalDateTime.of(2026, 1, 30, 12, 15, 0);
     private final UserRepository userRepository = mock(UserRepository.class);
     private final TokenRepository tokenRepository = mock(TokenRepository.class);
     private final LoginService loginService = new LoginService(userRepository, tokenRepository);
@@ -24,7 +25,7 @@ class LoginServiceTest {
         final String validToken = "some_valid_token";
         final Username username = Username.of("nonexistent_user");
         final TokenValue tokenValue = TokenValue.of(validToken);
-        final Token token = Token.of(validToken, LocalDateTime.of(2026, 1, 29, 17, 10, 0));
+        final Token token = Token.of(validToken, STATIC_NOW);
         when(userRepository.get(username)).thenThrow(new UserNotFoundException());
         when(tokenRepository.get(tokenValue)).thenReturn(token);
 
@@ -60,10 +61,10 @@ class LoginServiceTest {
         final String validTokenName = "some_valid_token";
         final Username username = Username.of("nonexistent_user");
         final TokenValue tokenValue = TokenValue.of(validTokenName);
-        final Token otherToken = Token.of(validTokenName, LocalDateTime.of(2026, 1, 29, 17, 10, 0).plusDays(1));
-        final Token token = Token.of(validTokenName, LocalDateTime.of(2026, 1, 29, 17, 10, 0));
-        when(userRepository.get(username)).thenReturn(User.of(username, token));
-        when(tokenRepository.get(tokenValue)).thenReturn(otherToken);
+        final Token providedToken = Token.of(validTokenName, STATIC_NOW.plusDays(1));
+        final Token userToken = Token.of(validTokenName, STATIC_NOW);
+        when(userRepository.get(username)).thenReturn(User.of(username, userToken));
+        when(tokenRepository.get(tokenValue)).thenReturn(providedToken);
 
         //Act
         final LoginResult result = loginService.login(username, tokenValue);

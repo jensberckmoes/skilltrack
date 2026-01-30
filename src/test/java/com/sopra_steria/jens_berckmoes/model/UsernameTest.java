@@ -1,28 +1,36 @@
 package com.sopra_steria.jens_berckmoes.model;
 
+import com.sopra_steria.jens_berckmoes.exception.UsernameRawValueNullOrBlankException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class UsernameTest {
-    @SuppressWarnings("ConstantConditions")
-    @Test
-    void shouldThrowIfNull() {
-        assertThatThrownBy(() -> Username.of(null))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Invalid username");
-    }
-
-    @Test
-    void shouldThrowIfBlank() {
-        assertThatThrownBy(() -> Username.of("  "))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
 
     @Test
     void shouldCreateValidUsername() {
-        Username username = Username.of("jane.doe@example.com");
+        final Username username = Username.of("jane.doe@example.com");
         assertThat(username.value()).isEqualTo("jane.doe@example.com");
     }
+
+    @ParameterizedTest
+    @MethodSource("invalidRawUsernamesValues")
+    void shouldThrowIfInputIsInvalid(final String rawUsername) {
+        assertThatThrownBy(() -> Username.of(rawUsername))
+                .isInstanceOf(UsernameRawValueNullOrBlankException.class);
+    }
+
+    public static Stream<Arguments> invalidRawUsernamesValues() {
+        return Stream.of(
+                Arguments.of((String) null),//cast for confused varargs
+                Arguments.of(""),
+                Arguments.of("  "));
+    }
+
 }
