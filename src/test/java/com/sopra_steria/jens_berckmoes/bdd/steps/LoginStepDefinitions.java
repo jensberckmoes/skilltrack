@@ -46,7 +46,7 @@ public class LoginStepDefinitions {
     }
 
     @When("I attempt to log in with username {string} and token {string}")
-    public void iAttemptToLogIn(final String rawUsername, final String rawToken) {
+    public void iAttemptToLogIn(String rawUsername, String rawToken) {
         final Username username = Username.of(rawUsername);
         final TokenValue tokenValue = TokenValue.of(rawToken);
 

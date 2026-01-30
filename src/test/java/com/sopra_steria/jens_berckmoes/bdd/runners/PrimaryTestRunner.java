@@ -6,6 +6,6 @@ import org.junit.platform.suite.api.*;
 @Suite
 @IncludeEngines("cucumber")
 @SelectPackages("features")
-@ConfigurationParameter(key = Constants.GLUE_PROPERTY_NAME, value = "com.sopra_steria.jens_berckmoes.BDD.steps")
+@ConfigurationParameter(key = Constants.GLUE_PROPERTY_NAME, value = "com.sopra_steria.jens_berckmoes.bdd.steps")
 public class PrimaryTestRunner {
 }
