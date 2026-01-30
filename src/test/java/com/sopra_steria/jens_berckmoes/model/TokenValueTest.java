@@ -1,5 +1,6 @@
 package com.sopra_steria.jens_berckmoes.model;
 
+import com.sopra_steria.jens_berckmoes.TestConstants;
 import com.sopra_steria.jens_berckmoes.exception.TokenRawValueNullOrBlankException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,7 +15,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 class TokenValueTest {
     @Test
     void shouldCreateValidTokenValue() {
-        final String validTokenName = "some_valid_token";
+        final String validTokenName = TestConstants.Tokens.VALID_TOKEN;
         final TokenValue tokenValue = TokenValue.of(validTokenName);
         assertThat(tokenValue.value()).isEqualTo(validTokenName);
     }

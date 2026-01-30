@@ -8,15 +8,25 @@ import com.sopra_steria.jens_berckmoes.repository.TokenRepository;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-public class InMemoryTokenRepository implements TokenRepository {
-    private static final LocalDateTime STATIC_NOW = LocalDateTime.of(2026, 1, 30, 12, 15, 0);
-    private final Map<TokenValue, Token> tokens = construct();
+import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.EXPIRED_TOKEN;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.VALID_TOKEN;
 
-    private Map<TokenValue, Token> construct() {
-        final String tokenName = "some_valid_token";
-        return Map.of(
-                TokenValue.of(tokenName),
-                Token.of(tokenName, STATIC_NOW));
+public class InMemoryTokenRepository implements TokenRepository {
+    private final Map<TokenValue, Token> tokens;
+
+    public InMemoryTokenRepository(final LocalDateTime dateTime) {
+        this.tokens = constructTokens(dateTime);
+    }
+
+    private Map<TokenValue, Token> constructTokens(final LocalDateTime dateTime) {
+        return Map.ofEntries(
+                Map.entry(TokenValue.of(VALID_TOKEN), Token.of(TokenValue.of(VALID_TOKEN).value(), dateTime.plusDays(1))),
+                Map.entry(TokenValue.of(EXPIRED_TOKEN), Token.of(TokenValue.of(EXPIRED_TOKEN).value(), dateTime.minusYears(10))));
+    }
+
+    @Override
+    public Map<TokenValue, Token> getTokens() {
+        return tokens;
     }
 
     @Override
