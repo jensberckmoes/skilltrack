@@ -10,12 +10,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
+import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.STATIC_NOW;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class TokenTest {
-    private static final LocalDateTime STATIC_NOW = LocalDateTime.of(2026, 1, 30, 12, 15, 0);
-
     @ParameterizedTest
     @MethodSource("invalidTokens")
     void shouldThrowIfInputIsInvalid(final String token, final LocalDateTime validUntil) {
@@ -65,5 +64,19 @@ class TokenTest {
                 Arguments.of(STATIC_NOW.plusHours(1), true),
                 Arguments.of(STATIC_NOW, false),
                 Arguments.of(STATIC_NOW.minusHours(1), false));
+    }
+
+    @ParameterizedTest
+    @MethodSource("belongsToProvider")
+    void shouldDetermineBelongsToCorrectly(final Token givenToken, final User givenUser, final boolean expectedBelongsTo) {
+        assertThat(givenToken.belongsTo(givenUser)).isEqualTo(expectedBelongsTo);
+    }
+
+    public static Stream<Arguments> belongsToProvider() {
+        final Token candidateToken = Token.of("t", STATIC_NOW);
+        final Username givenUserUsername = Username.of("u");
+        return Stream.of(
+                Arguments.of(candidateToken, User.of(givenUserUsername, candidateToken), true),
+                Arguments.of(candidateToken, User.of(givenUserUsername, Token.of("s", STATIC_NOW)), false));
     }
 }

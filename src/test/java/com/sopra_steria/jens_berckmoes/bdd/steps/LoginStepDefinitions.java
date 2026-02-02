@@ -4,28 +4,22 @@ import com.sopra_steria.jens_berckmoes.model.LoginResult;
 import com.sopra_steria.jens_berckmoes.model.LoginStatus;
 import com.sopra_steria.jens_berckmoes.model.TokenValue;
 import com.sopra_steria.jens_berckmoes.model.Username;
-import com.sopra_steria.jens_berckmoes.bdd.fakes.InMemoryTokenRepository;
-import com.sopra_steria.jens_berckmoes.bdd.fakes.InMemoryUserRepository;
-import com.sopra_steria.jens_berckmoes.repository.TokenRepository;
-import com.sopra_steria.jens_berckmoes.repository.UserRepository;
 import com.sopra_steria.jens_berckmoes.service.LoginService;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LoginStepDefinitions {
+    @Autowired
     private LoginService loginService;
-    private LoginResult loginResult;
 
+    private LoginResult loginResult;
 
     @Given("I am on the login page")
     public void iAmOnTheLoginPage() {
-        final UserRepository userRepository = new InMemoryUserRepository();
-        final TokenRepository tokenRepository = new InMemoryTokenRepository();
-
-        loginService = new LoginService(userRepository, tokenRepository);
     }
 
     @When("I attempt to log in with username {string} and token {string}")
@@ -42,4 +36,9 @@ public class LoginStepDefinitions {
                 .isEqualTo(LoginResult.of(LoginStatus.BLOCKED, "please contact support"));
     }
 
+    @Then("I can successfully log in")
+    public void iCanSuccessfullyLogIn() {
+        assertThat(loginResult)
+                .isEqualTo(LoginResult.success());
+    }
 }

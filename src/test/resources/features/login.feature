@@ -11,3 +11,11 @@ Feature: Login
   Scenario: User cannot log in with invalid token
     When I attempt to log in with username "jane.doe@example.com" and token "wrong_token"
     Then I am blocked and prompted to contact support
+
+  Scenario: User cannot log in with expired token
+    When I attempt to log in with username "old.user@example.com" and token "expired_token"
+    Then I am blocked and prompted to contact support
+
+  Scenario: User can log in with valid token and valid username
+    When I attempt to log in with username "jane.doe@example.com" and token "valid_token"
+    Then I can successfully log in
