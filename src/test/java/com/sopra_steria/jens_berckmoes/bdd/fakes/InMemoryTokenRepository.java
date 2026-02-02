@@ -4,9 +4,13 @@ import com.sopra_steria.jens_berckmoes.exception.TokenNotFoundException;
 import com.sopra_steria.jens_berckmoes.model.Token;
 import com.sopra_steria.jens_berckmoes.model.TokenValue;
 import com.sopra_steria.jens_berckmoes.repository.TokenRepository;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 
 import java.util.Map;
 
+@Repository
+@Profile("test")
 public record InMemoryTokenRepository(Map<TokenValue, Token> tokens) implements TokenRepository {
 
     @Override

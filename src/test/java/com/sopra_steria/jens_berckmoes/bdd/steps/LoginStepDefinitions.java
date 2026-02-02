@@ -1,28 +1,22 @@
 package com.sopra_steria.jens_berckmoes.bdd.steps;
 
-import com.sopra_steria.jens_berckmoes.config.TestConfig;
 import com.sopra_steria.jens_berckmoes.model.LoginResult;
 import com.sopra_steria.jens_berckmoes.model.LoginStatus;
 import com.sopra_steria.jens_berckmoes.model.TokenValue;
 import com.sopra_steria.jens_berckmoes.model.Username;
 import com.sopra_steria.jens_berckmoes.service.LoginService;
-import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LoginStepDefinitions {
+    @Autowired
     private LoginService loginService;
-    private LoginResult loginResult;
 
-    @Before
-    public void setup(){
-        final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(TestConfig.class);
-        this.loginService = context.getBean(LoginService.class);
-    }
+    private LoginResult loginResult;
 
     @Given("I am on the login page")
     public void iAmOnTheLoginPage() {
@@ -47,6 +41,4 @@ public class LoginStepDefinitions {
         assertThat(loginResult)
                 .isEqualTo(LoginResult.success());
     }
-
-
 }

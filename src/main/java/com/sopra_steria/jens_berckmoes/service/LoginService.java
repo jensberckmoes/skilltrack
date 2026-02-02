@@ -7,9 +7,11 @@ import com.sopra_steria.jens_berckmoes.exception.UserNotFoundException;
 import com.sopra_steria.jens_berckmoes.model.*;
 import com.sopra_steria.jens_berckmoes.repository.TokenRepository;
 import com.sopra_steria.jens_berckmoes.repository.UserRepository;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+@Service
 public record LoginService(UserRepository userRepository, TokenRepository tokenRepository) {
     public LoginResult login(final Username username, final TokenValue tokenValue) {
         return loginAt(username, tokenValue, LocalDateTime.now());

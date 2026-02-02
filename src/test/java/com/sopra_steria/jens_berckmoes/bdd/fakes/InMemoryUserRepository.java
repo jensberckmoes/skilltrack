@@ -4,11 +4,14 @@ import com.sopra_steria.jens_berckmoes.exception.UserNotFoundException;
 import com.sopra_steria.jens_berckmoes.model.User;
 import com.sopra_steria.jens_berckmoes.model.Username;
 import com.sopra_steria.jens_berckmoes.repository.UserRepository;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 
 import java.util.Map;
 import java.util.Optional;
 
-
+@Repository
+@Profile("test")
 public record InMemoryUserRepository(Map<Username, User> users) implements UserRepository {
 
     @Override
