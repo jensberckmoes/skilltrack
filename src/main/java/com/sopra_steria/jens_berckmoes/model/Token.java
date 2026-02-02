@@ -26,8 +26,4 @@ public record Token(String token, LocalDateTime validUntil) {
     public boolean isExpiredAt(final LocalDateTime referenceTime) {
         return validUntil.isBefore(referenceTime);
     }
-
-    public boolean belongsTo(final User user) {
-        return user.token().equals(this);
-    }
 }

@@ -31,7 +31,7 @@ public record LoginService(UserRepository userRepository, TokenRepository tokenR
     }
 
     private static void ensureTokenBelongsToUser(final Token token, final User user) {
-        if (!token.belongsTo(user)) {
+        if (!user.ownsToken(token)) {
             throw new TokenDoesNotBelongToUserException();
         }
     }
