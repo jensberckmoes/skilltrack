@@ -12,18 +12,36 @@ import org.junit.jupiter.api.Test;
 class UserMapperTest {
 
     @Test
-    void shouldMapUserToUserEntityCorrectly() {
-        final TokenEntity tokenEntity = TokenEntity.builder()
+    void shouldMapUserEntityToUserCorrectly() {
+        final TokenEntity tokenEntityToMap = TokenEntity.builder()
                 .value("hashed-token")
                 .expirationDate(TestConstants.Tokens.STATIC_NOW)
                 .build();
-        final UserEntity userEntity = UserEntity.builder()
+        final UserEntity userEntityToMap = UserEntity.builder()
                 .username("testEntity")
-                .token(tokenEntity)
+                .token(tokenEntityToMap)
                 .build();
-        final UserMapper userMapper = new UserMapper();
-        final User user = userMapper.mapToDomain(userEntity);
-        final User userAssert = User.of(Username.of("testEntity"), Token.of("token", TestConstants.Tokens.STATIC_NOW));
-        Assertions.assertThat(user).isEqualTo(userAssert);
+        final User assertedUser = User.of(Username.of("testEntity"), Token.of("hashed-token", TestConstants.Tokens.STATIC_NOW));
+
+        final User mappedResult = UserMapper.mapToDomain(userEntityToMap);
+
+        Assertions.assertThat(mappedResult).isEqualTo(assertedUser);
+    }
+
+    @Test
+    void shouldMapUserToUserEntityCorrectly() {
+        final User userToMap = User.of(Username.of("testEntity"), Token.of("hashed-token", TestConstants.Tokens.STATIC_NOW));
+        final TokenEntity assertedTokenEntity = TokenEntity.builder()
+                .value("hashed-token")
+                .expirationDate(TestConstants.Tokens.STATIC_NOW)
+                .build();
+        final UserEntity assertedUserEntity = UserEntity.builder()
+                .username("testEntity")
+                .token(assertedTokenEntity)
+                .build();
+
+        final UserEntity mappedResult = UserMapper.mapToInfra(userToMap);
+
+        Assertions.assertThat(mappedResult).isEqualTo(assertedUserEntity);
     }
 }
