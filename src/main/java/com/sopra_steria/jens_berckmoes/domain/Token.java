@@ -3,27 +3,25 @@ package com.sopra_steria.jens_berckmoes.domain;
 import com.sopra_steria.jens_berckmoes.domain.exception.TokenRawValueNullOrBlankException;
 import com.sopra_steria.jens_berckmoes.domain.exception.TokenValidUntilNullException;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
-import static java.time.LocalDateTime.now;
-
-public record Token(String token, LocalDateTime expirationDate) {
+public record Token(String token, LocalDate expirationDate) {
 
     public static Token weeklyToken(final String token) {
-        return of(token, now().plusDays(7));
+        return of(token, LocalDate.now().plusDays(7));
     }
 
-    public static Token of(final String token, final LocalDateTime validUntil) {
+    public static Token of(final String token, final LocalDate expirationDate) {
         if (token == null || token.isBlank()) {
             throw new TokenRawValueNullOrBlankException();
         }
-        if (validUntil == null) {
+        if (expirationDate == null) {
             throw new TokenValidUntilNullException();
         }
-        return new Token(token, validUntil);
+        return new Token(token, expirationDate);
     }
 
-    public boolean isExpiredAt(final LocalDateTime referenceTime) {
-        return expirationDate.isBefore(referenceTime);
+    public boolean isExpiredAt(final LocalDate referenceDate) {
+        return expirationDate.isBefore(referenceDate);
     }
 }
