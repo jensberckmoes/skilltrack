@@ -1,17 +1,21 @@
 package com.sopra_steria.jens_berckmoes.service;
 
-import com.sopra_steria.jens_berckmoes.exception.TokenNotFoundException;
-import com.sopra_steria.jens_berckmoes.exception.UserNotFoundException;
-import com.sopra_steria.jens_berckmoes.model.*;
-import com.sopra_steria.jens_berckmoes.repository.TokenRepository;
-import com.sopra_steria.jens_berckmoes.repository.UserRepository;
+import com.sopra_steria.jens_berckmoes.domain.LoginResult;
+import com.sopra_steria.jens_berckmoes.domain.Token;
+import com.sopra_steria.jens_berckmoes.domain.User;
+import com.sopra_steria.jens_berckmoes.domain.valueobject.TokenValue;
+import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
+import com.sopra_steria.jens_berckmoes.domain.exception.TokenNotFoundException;
+import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
+import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
+import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.*;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.INVALID_USERNAME;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USERNAME;
-import static com.sopra_steria.jens_berckmoes.model.LoginResult.blocked;
-import static com.sopra_steria.jens_berckmoes.model.LoginResult.success;
+import static com.sopra_steria.jens_berckmoes.domain.LoginResult.blocked;
+import static com.sopra_steria.jens_berckmoes.domain.LoginResult.success;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

@@ -1,9 +1,9 @@
 package com.sopra_steria.jens_berckmoes.bdd.fakes;
 
-import com.sopra_steria.jens_berckmoes.exception.UserNotFoundException;
-import com.sopra_steria.jens_berckmoes.model.User;
-import com.sopra_steria.jens_berckmoes.model.Username;
-import com.sopra_steria.jens_berckmoes.repository.UserRepository;
+import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
+import com.sopra_steria.jens_berckmoes.domain.User;
+import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
+import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 

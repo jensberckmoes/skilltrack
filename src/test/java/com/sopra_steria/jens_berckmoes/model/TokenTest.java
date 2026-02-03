@@ -1,7 +1,8 @@
 package com.sopra_steria.jens_berckmoes.model;
 
-import com.sopra_steria.jens_berckmoes.exception.TokenRawValueNullOrBlankException;
-import com.sopra_steria.jens_berckmoes.exception.TokenValidUntilNullException;
+import com.sopra_steria.jens_berckmoes.domain.Token;
+import com.sopra_steria.jens_berckmoes.domain.exception.TokenRawValueNullOrBlankException;
+import com.sopra_steria.jens_berckmoes.domain.exception.TokenValidUntilNullException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

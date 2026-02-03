@@ -1,9 +1,9 @@
 package com.sopra_steria.jens_berckmoes;
 
-import com.sopra_steria.jens_berckmoes.model.Token;
-import com.sopra_steria.jens_berckmoes.model.TokenValue;
-import com.sopra_steria.jens_berckmoes.model.User;
-import com.sopra_steria.jens_berckmoes.model.Username;
+import com.sopra_steria.jens_berckmoes.domain.Token;
+import com.sopra_steria.jens_berckmoes.domain.valueobject.TokenValue;
+import com.sopra_steria.jens_berckmoes.domain.User;
+import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
 
 import java.time.LocalDateTime;
 import java.util.Map;
