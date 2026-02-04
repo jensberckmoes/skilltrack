@@ -11,16 +11,17 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+@Table(name = "token")
+@Entity
 @Builder
 @Data
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "token")
 public class TokenEntity {
     @Id
     @Column(name = "token_value")
     private String value;
+
     @Column(name = "expiration_date", nullable = false)
     private LocalDate expirationDate;
 }
