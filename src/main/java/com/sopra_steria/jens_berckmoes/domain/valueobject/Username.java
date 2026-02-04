@@ -1,6 +1,6 @@
-package com.sopra_steria.jens_berckmoes.model;
+package com.sopra_steria.jens_berckmoes.domain.valueobject;
 
-import com.sopra_steria.jens_berckmoes.exception.UsernameRawValueNullOrBlankException;
+import com.sopra_steria.jens_berckmoes.domain.exception.UsernameRawValueNullOrBlankException;
 
 public record Username(String value) {
     public static Username of(final String raw) throws IllegalArgumentException{

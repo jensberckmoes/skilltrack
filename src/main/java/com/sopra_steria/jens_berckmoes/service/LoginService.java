@@ -1,12 +1,16 @@
 package com.sopra_steria.jens_berckmoes.service;
 
-import com.sopra_steria.jens_berckmoes.exception.TokenDoesNotBelongToUserException;
-import com.sopra_steria.jens_berckmoes.exception.TokenHasExpiredException;
-import com.sopra_steria.jens_berckmoes.exception.TokenNotFoundException;
-import com.sopra_steria.jens_berckmoes.exception.UserNotFoundException;
-import com.sopra_steria.jens_berckmoes.model.*;
-import com.sopra_steria.jens_berckmoes.repository.TokenRepository;
-import com.sopra_steria.jens_berckmoes.repository.UserRepository;
+import com.sopra_steria.jens_berckmoes.domain.LoginResult;
+import com.sopra_steria.jens_berckmoes.domain.Token;
+import com.sopra_steria.jens_berckmoes.domain.User;
+import com.sopra_steria.jens_berckmoes.domain.valueobject.TokenValue;
+import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
+import com.sopra_steria.jens_berckmoes.domain.exception.TokenDoesNotBelongToUserException;
+import com.sopra_steria.jens_berckmoes.domain.exception.TokenHasExpiredException;
+import com.sopra_steria.jens_berckmoes.domain.exception.TokenNotFoundException;
+import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
+import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
+import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -31,7 +35,7 @@ public record LoginService(UserRepository userRepository, TokenRepository tokenR
     }
 
     private static void ensureTokenBelongsToUser(final Token token, final User user) {
-        if (!token.belongsTo(user)) {
+        if (!user.ownsToken(token)) {
             throw new TokenDoesNotBelongToUserException();
         }
     }

@@ -1,13 +1,13 @@
-package com.sopra_steria.jens_berckmoes.model;
+package com.sopra_steria.jens_berckmoes.domain;
 
-import com.sopra_steria.jens_berckmoes.exception.TokenRawValueNullOrBlankException;
-import com.sopra_steria.jens_berckmoes.exception.TokenValidUntilNullException;
+import com.sopra_steria.jens_berckmoes.domain.exception.TokenRawValueNullOrBlankException;
+import com.sopra_steria.jens_berckmoes.domain.exception.TokenValidUntilNullException;
 
 import java.time.LocalDateTime;
 
 import static java.time.LocalDateTime.now;
 
-public record Token(String token, LocalDateTime validUntil) {
+public record Token(String token, LocalDateTime expirationDate) {
 
     public static Token weeklyToken(final String token) {
         return of(token, now().plusDays(7));
@@ -24,10 +24,6 @@ public record Token(String token, LocalDateTime validUntil) {
     }
 
     public boolean isExpiredAt(final LocalDateTime referenceTime) {
-        return validUntil.isBefore(referenceTime);
-    }
-
-    public boolean belongsTo(final User user) {
-        return user.token().equals(this);
+        return expirationDate.isBefore(referenceTime);
     }
 }

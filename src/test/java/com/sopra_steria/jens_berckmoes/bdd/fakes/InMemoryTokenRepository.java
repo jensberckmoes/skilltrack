@@ -1,9 +1,9 @@
 package com.sopra_steria.jens_berckmoes.bdd.fakes;
 
-import com.sopra_steria.jens_berckmoes.exception.TokenNotFoundException;
-import com.sopra_steria.jens_berckmoes.model.Token;
-import com.sopra_steria.jens_berckmoes.model.TokenValue;
-import com.sopra_steria.jens_berckmoes.repository.TokenRepository;
+import com.sopra_steria.jens_berckmoes.domain.exception.TokenNotFoundException;
+import com.sopra_steria.jens_berckmoes.domain.Token;
+import com.sopra_steria.jens_berckmoes.domain.valueobject.TokenValue;
+import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 

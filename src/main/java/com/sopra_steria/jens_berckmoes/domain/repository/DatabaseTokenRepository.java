@@ -1,8 +1,8 @@
-package com.sopra_steria.jens_berckmoes.repository;
+package com.sopra_steria.jens_berckmoes.domain.repository;
 
-import com.sopra_steria.jens_berckmoes.exception.TokenNotFoundException;
-import com.sopra_steria.jens_berckmoes.model.Token;
-import com.sopra_steria.jens_berckmoes.model.TokenValue;
+import com.sopra_steria.jens_berckmoes.domain.exception.TokenNotFoundException;
+import com.sopra_steria.jens_berckmoes.domain.Token;
+import com.sopra_steria.jens_berckmoes.domain.valueobject.TokenValue;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 

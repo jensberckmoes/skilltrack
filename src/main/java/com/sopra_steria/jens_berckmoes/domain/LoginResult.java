@@ -1,4 +1,4 @@
-package com.sopra_steria.jens_berckmoes.model;
+package com.sopra_steria.jens_berckmoes.domain;
 
 public record LoginResult(LoginStatus loginStatus, String errorMessage) {
     public static LoginResult of(LoginStatus loginStatus, String message) {
