@@ -17,6 +17,9 @@ public class UserEntity {
     @Column(name = "user_name")
     private String username;
 
+    @Column(name = "user_email")
+    private String email;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "token_token_value", referencedColumnName = "token_value")
     private TokenEntity token;
