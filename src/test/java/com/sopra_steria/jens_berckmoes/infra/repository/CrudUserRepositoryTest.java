@@ -57,6 +57,7 @@ class CrudUserRepositoryTest {
         entityManager.flush();
         entityManager.clear();
 
+
         final UserEntity retrieved = userRepository.findById(userNameId).orElseThrow();
         assertThat(retrieved.getEmail()).isEqualTo("another_valid_email@email.com");
     }
