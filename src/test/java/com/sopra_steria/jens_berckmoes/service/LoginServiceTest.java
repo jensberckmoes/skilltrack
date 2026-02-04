@@ -29,7 +29,7 @@ class LoginServiceTest {
     void shouldBlockWhenUsernameIsInvalid() {
         //Arrange
         final Username invalidUsername = Username.of(INVALID_USERNAME);
-        final TokenValue validTokenValue = TokenValue.of(VALID_TOKEN);
+        final TokenValue validTokenValue = TokenValue.of(VALID_RAW_TOKEN);
 
         when(userRepository.get(invalidUsername)).thenThrow(new UserNotFoundException());
         when(tokenRepository.get(validTokenValue)).thenReturn(Token.of(validTokenValue.value(), STATIC_NOW));
@@ -61,7 +61,7 @@ class LoginServiceTest {
     void shouldBlockWhenTokenDoesNotBelongToUser() {
         //Arrange
         final Username validUsername = Username.of(VALID_USERNAME);
-        final TokenValue validTokenValue = TokenValue.of(VALID_TOKEN);
+        final TokenValue validTokenValue = TokenValue.of(VALID_RAW_TOKEN);
 
         when(userRepository.get(validUsername)).thenReturn(User.of(validUsername, Token.of("ANOTHER_VALID_TOKEN", STATIC_NOW)));
         when(tokenRepository.get(validTokenValue)).thenReturn(Token.of(validTokenValue.value(), STATIC_NOW.plusDays(1)));
@@ -77,7 +77,7 @@ class LoginServiceTest {
     void shouldBlockWhenTokenHasExpired() {
         //Arrange
         final Username validUsername = Username.of(VALID_USERNAME);
-        final TokenValue validTokenValue = TokenValue.of(VALID_TOKEN);
+        final TokenValue validTokenValue = TokenValue.of(VALID_RAW_TOKEN);
 
         when(userRepository.get(validUsername)).thenReturn(User.of(validUsername, Token.of(validTokenValue.value(), STATIC_NOW.minusDays(1))));
         when(tokenRepository.get(validTokenValue)).thenReturn(Token.of(validTokenValue.value(), STATIC_NOW.minusDays(1)));
@@ -93,7 +93,7 @@ class LoginServiceTest {
     void shouldReturnSuccessWhenUsernameAndTokenAreValid() {
         //Arrange
         final Username validUsername = Username.of(VALID_USERNAME);
-        final TokenValue validTokenValue = TokenValue.of(VALID_TOKEN);
+        final TokenValue validTokenValue = TokenValue.of(VALID_RAW_TOKEN);
         final Token validToken = Token.of(validTokenValue.value(), STATIC_NOW.plusYears(9999));
 
         when(userRepository.get(validUsername)).thenReturn(User.of(validUsername, validToken));

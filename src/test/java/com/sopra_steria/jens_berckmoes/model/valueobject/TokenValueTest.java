@@ -16,7 +16,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 class TokenValueTest {
     @Test
     void shouldCreateValidTokenValue() {
-        final String validTokenName = TestConstants.Tokens.VALID_TOKEN;
+        final String validTokenName = TestConstants.Tokens.VALID_RAW_TOKEN;
         final TokenValue tokenValue = TokenValue.of(validTokenName);
         assertThat(tokenValue.value()).isEqualTo(validTokenName);
     }
