@@ -1,19 +1,21 @@
 package com.sopra_steria.jens_berckmoes.service;
 
+import com.sopra_steria.jens_berckmoes.TestConstants;
 import com.sopra_steria.jens_berckmoes.domain.LoginResult;
-import com.sopra_steria.jens_berckmoes.domain.Token;
 import com.sopra_steria.jens_berckmoes.domain.User;
-import com.sopra_steria.jens_berckmoes.domain.valueobject.TokenValue;
-import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
 import com.sopra_steria.jens_berckmoes.domain.exception.TokenNotFoundException;
 import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
 import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
 import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
+import com.sopra_steria.jens_berckmoes.domain.valueobject.TokenValue;
+import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+import java.time.ZoneId;
+
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.*;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Users.INVALID_USERNAME;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USERNAME;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
 import static com.sopra_steria.jens_berckmoes.domain.LoginResult.blocked;
 import static com.sopra_steria.jens_berckmoes.domain.LoginResult.success;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -23,7 +25,11 @@ import static org.mockito.Mockito.when;
 class LoginServiceTest {
     private final UserRepository userRepository = mock(UserRepository.class);
     private final TokenRepository tokenRepository = mock(TokenRepository.class);
-    private final LoginService loginService = new LoginService(userRepository, tokenRepository);
+    private final Clock clock = Clock.fixed(
+            TestConstants.TimeFixture.REFERENCE_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant(),
+            ZoneId.systemDefault()
+    );
+    private final LoginService loginService = new LoginService(userRepository, tokenRepository, clock);
 
     @Test
     void shouldBlockWhenUsernameIsInvalid() {
@@ -32,7 +38,7 @@ class LoginServiceTest {
         final TokenValue validTokenValue = TokenValue.of(VALID_RAW_TOKEN);
 
         when(userRepository.get(invalidUsername)).thenThrow(new UserNotFoundException());
-        when(tokenRepository.get(validTokenValue)).thenReturn(Token.of(validTokenValue.value(), STATIC_NOW));
+        when(tokenRepository.get(validTokenValue)).thenReturn(VALID_TOKEN);
 
         //Act
         final LoginResult result = loginService.login(invalidUsername, validTokenValue);
@@ -45,9 +51,9 @@ class LoginServiceTest {
     void shouldBlockWhenTokenIsInvalid() {
         //Arrange
         final Username validUsername = Username.of(VALID_USERNAME);
-        final TokenValue invalidTokenValue = TokenValue.of(WRONG_TOKEN);
+        final TokenValue invalidTokenValue = TokenValue.of(WRONG_RAW_TOKEN);
 
-        when(userRepository.get(validUsername)).thenReturn(User.of(validUsername, Token.of(invalidTokenValue.value(), STATIC_NOW)));
+        when(userRepository.get(validUsername)).thenReturn(VALID_USER);
         when(tokenRepository.get(invalidTokenValue)).thenThrow(new TokenNotFoundException());
 
         //Act
@@ -63,8 +69,8 @@ class LoginServiceTest {
         final Username validUsername = Username.of(VALID_USERNAME);
         final TokenValue validTokenValue = TokenValue.of(VALID_RAW_TOKEN);
 
-        when(userRepository.get(validUsername)).thenReturn(User.of(validUsername, Token.of("ANOTHER_VALID_TOKEN", STATIC_NOW)));
-        when(tokenRepository.get(validTokenValue)).thenReturn(Token.of(validTokenValue.value(), STATIC_NOW.plusDays(1)));
+        when(userRepository.get(validUsername)).thenReturn(User.of(validUsername, SECOND_VALID_TOKEN));
+        when(tokenRepository.get(validTokenValue)).thenReturn(VALID_TOKEN);
 
         //Act
         final LoginResult result = loginService.login(validUsername, validTokenValue);
@@ -79,8 +85,8 @@ class LoginServiceTest {
         final Username validUsername = Username.of(VALID_USERNAME);
         final TokenValue validTokenValue = TokenValue.of(VALID_RAW_TOKEN);
 
-        when(userRepository.get(validUsername)).thenReturn(User.of(validUsername, Token.of(validTokenValue.value(), STATIC_NOW.minusDays(1))));
-        when(tokenRepository.get(validTokenValue)).thenReturn(Token.of(validTokenValue.value(), STATIC_NOW.minusDays(1)));
+        when(userRepository.get(validUsername)).thenReturn(User.of(validUsername, EXPIRED_TOKEN));
+        when(tokenRepository.get(validTokenValue)).thenReturn(EXPIRED_TOKEN);
 
         //Act
         final LoginResult result = loginService.login(validUsername, validTokenValue);
@@ -94,10 +100,9 @@ class LoginServiceTest {
         //Arrange
         final Username validUsername = Username.of(VALID_USERNAME);
         final TokenValue validTokenValue = TokenValue.of(VALID_RAW_TOKEN);
-        final Token validToken = Token.of(validTokenValue.value(), STATIC_NOW.plusYears(9999));
 
-        when(userRepository.get(validUsername)).thenReturn(User.of(validUsername, validToken));
-        when(tokenRepository.get(validTokenValue)).thenReturn(validToken);
+        when(userRepository.get(validUsername)).thenReturn(VALID_USER);
+        when(tokenRepository.get(validTokenValue)).thenReturn(VALID_TOKEN);
 
         //Act
         final LoginResult result = loginService.login(validUsername, validTokenValue);

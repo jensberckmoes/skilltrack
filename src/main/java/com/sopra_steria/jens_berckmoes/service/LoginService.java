@@ -13,12 +13,18 @@ import com.sopra_steria.jens_berckmoes.domain.valueobject.TokenValue;
 import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 
 @Service
-public record LoginService(UserRepository userRepository, TokenRepository tokenRepository) {
+public record LoginService(
+        UserRepository userRepository,
+        TokenRepository tokenRepository,
+        Clock clock) {
+
     public LoginResult login(final Username username, final TokenValue tokenValue) {
-        return loginAt(username, tokenValue, LocalDate.now());
+        final LocalDate now = LocalDate.now(clock);
+        return loginAt(username, tokenValue, now);
     }
 
     private LoginResult loginAt(final Username username, final TokenValue tokenValue, final LocalDate now) {

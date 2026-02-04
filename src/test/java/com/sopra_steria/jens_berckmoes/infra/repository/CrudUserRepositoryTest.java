@@ -3,6 +3,7 @@ package com.sopra_steria.jens_berckmoes.infra.repository;
 import com.sopra_steria.jens_berckmoes.domain.Token;
 import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
 import com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper;
+import com.sopra_steria.jens_berckmoes.util.StreamUtils;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,8 +13,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USER;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USERNAME;
+import java.util.List;
+
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
@@ -85,6 +87,18 @@ class CrudUserRepositoryTest {
             userRepository.save(user);
             entityManager.flush();
         }).isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    void shouldRetrieveAllUsers() {
+        userRepository.save(UserMapper.mapToInfra(VALID_USER));
+        userRepository.save(UserMapper.mapToInfra(SECOND_VALID_USER));
+        flushAndResetContext();
+
+
+        final List<UserEntity> allTokens = StreamUtils.toList(userRepository.findAll());
+
+        assertThat(allTokens.size()).isEqualTo(2);
     }
 
     private void flushAndResetContext() {

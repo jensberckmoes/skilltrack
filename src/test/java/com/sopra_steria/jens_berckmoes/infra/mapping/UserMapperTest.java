@@ -9,19 +9,22 @@ import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+
 class UserMapperTest {
+    private final LocalDate referenceDate = TestConstants.TimeFixture.REFERENCE_DATE;
 
     @Test
     void shouldMapUserEntityToUserCorrectly() {
         final TokenEntity tokenEntityToMap = TokenEntity.builder()
                 .value("hashed-token")
-                .expirationDate(TestConstants.Tokens.STATIC_NOW)
+                .expirationDate(referenceDate)
                 .build();
         final UserEntity userEntityToMap = UserEntity.builder()
                 .username("testEntity")
                 .token(tokenEntityToMap)
                 .build();
-        final User assertedUser = User.of(Username.of("testEntity"), Token.of("hashed-token", TestConstants.Tokens.STATIC_NOW));
+        final User assertedUser = User.of(Username.of("testEntity"), Token.of("hashed-token", referenceDate));
 
         final User mappedResult = UserMapper.mapToDomain(userEntityToMap);
 
@@ -30,10 +33,10 @@ class UserMapperTest {
 
     @Test
     void shouldMapUserToUserEntityCorrectly() {
-        final User userToMap = User.of(Username.of("testEntity"), Token.of("hashed-token", TestConstants.Tokens.STATIC_NOW));
+        final User userToMap = User.of(Username.of("testEntity"), Token.of("hashed-token", referenceDate));
         final TokenEntity assertedTokenEntity = TokenEntity.builder()
                 .value("hashed-token")
-                .expirationDate(TestConstants.Tokens.STATIC_NOW)
+                .expirationDate(referenceDate)
                 .build();
         final UserEntity assertedUserEntity = UserEntity.builder()
                 .username("testEntity")

@@ -9,12 +9,17 @@ import com.sopra_steria.jens_berckmoes.service.LoginService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Clock;
+import java.time.ZoneId;
+
+import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.REFERENCE_DATE;
+
 @Configuration
 public class TestConfig {
 
     @Bean
     public LoginService loginService() {
-        return new LoginService(userRepository(), tokenRepository());
+        return new LoginService(userRepository(), tokenRepository(), clock());
     }
 
     @Bean
@@ -25,6 +30,14 @@ public class TestConfig {
     @Bean
     public TokenRepository tokenRepository() {
         return new InMemoryTokenRepository(TestConstants.Tokens.TEST_TOKENS);
+    }
+
+    @Bean
+    public Clock clock() {
+        return Clock.fixed(
+                REFERENCE_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                ZoneId.systemDefault()
+        );
     }
 
 }
