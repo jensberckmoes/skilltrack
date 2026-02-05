@@ -9,6 +9,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.Set;
+
 import static com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper.mapToDomain;
 import static com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper.mapToInfra;
 
@@ -34,5 +37,10 @@ public class DatabaseTokenRepository implements TokenRepository {
     @Override
     public void deleteAll() {
         crudTokenRepository.deleteAll();
+    }
+
+    @Override
+    public Set<Token> saveAll(final Collection<TokenEntity> entities) {
+        return mapToDomain(crudTokenRepository.saveAll(entities));
     }
 }

@@ -7,6 +7,7 @@ import com.sopra_steria.jens_berckmoes.infra.repository.CrudTokenRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
+import java.util.Set;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.*;
 import static com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper.mapToInfra;
@@ -86,6 +87,19 @@ class DatabaseTokenRepositoryTest {
 
         verify(crudTokenRepository, times(1)).deleteAll();
     }
+
+    @Test
+    void shouldSaveAllTokens() {
+        final Set<TokenEntity> entities = mapToInfra(TEST_TOKENS.values());
+        when(crudTokenRepository.saveAll(entities)).thenReturn(entities);
+
+        final Set<Token> savedTokens = repository.saveAll(entities);
+
+        verify(crudTokenRepository, times(1)).saveAll(entities);
+        assertThat(savedTokens.size()).isEqualTo(3);
+        assertThat(savedTokens.containsAll(TEST_TOKENS.values())).isEqualTo(true);
+    }
+
 
     private static void assertTokenFieldsAreEqual(final Token tokenOnDatabase, final Token validToken) {
         assertThat(tokenOnDatabase).isNotNull();
