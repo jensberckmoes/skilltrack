@@ -37,8 +37,8 @@ class LoginServiceTest {
         final Username invalidUsername = Username.of(INVALID_USERNAME);
         final TokenValue validTokenValue = TokenValue.of(VALID_RAW_TOKEN);
 
-        when(userRepository.get(invalidUsername)).thenThrow(new UserNotFoundException());
-        when(tokenRepository.get(validTokenValue)).thenReturn(VALID_TOKEN);
+        when(userRepository.findByUsername(invalidUsername.value())).thenThrow(new UserNotFoundException());
+        when(tokenRepository.findByTokenValue(validTokenValue.value())).thenReturn(VALID_TOKEN);
 
         //Act
         final LoginResult result = loginService.login(invalidUsername, validTokenValue);
@@ -53,8 +53,8 @@ class LoginServiceTest {
         final Username validUsername = Username.of(VALID_USERNAME);
         final TokenValue invalidTokenValue = TokenValue.of(WRONG_RAW_TOKEN);
 
-        when(userRepository.get(validUsername)).thenReturn(VALID_USER);
-        when(tokenRepository.get(invalidTokenValue)).thenThrow(new TokenNotFoundException());
+        when(userRepository.findByUsername(validUsername.value())).thenReturn(VALID_USER);
+        when(tokenRepository.findByTokenValue(invalidTokenValue.value())).thenThrow(new TokenNotFoundException());
 
         //Act
         final LoginResult result = loginService.login(validUsername, invalidTokenValue);
@@ -69,8 +69,8 @@ class LoginServiceTest {
         final Username validUsername = Username.of(VALID_USERNAME);
         final TokenValue validTokenValue = TokenValue.of(VALID_RAW_TOKEN);
 
-        when(userRepository.get(validUsername)).thenReturn(User.of(validUsername, SECOND_VALID_TOKEN));
-        when(tokenRepository.get(validTokenValue)).thenReturn(VALID_TOKEN);
+        when(userRepository.findByUsername(validUsername.value())).thenReturn(User.of(validUsername, SECOND_VALID_TOKEN));
+        when(tokenRepository.findByTokenValue(validTokenValue.value())).thenReturn(VALID_TOKEN);
 
         //Act
         final LoginResult result = loginService.login(validUsername, validTokenValue);
@@ -85,8 +85,8 @@ class LoginServiceTest {
         final Username validUsername = Username.of(VALID_USERNAME);
         final TokenValue validTokenValue = TokenValue.of(VALID_RAW_TOKEN);
 
-        when(userRepository.get(validUsername)).thenReturn(User.of(validUsername, EXPIRED_TOKEN));
-        when(tokenRepository.get(validTokenValue)).thenReturn(EXPIRED_TOKEN);
+        when(userRepository.findByUsername(validUsername.value())).thenReturn(User.of(validUsername, EXPIRED_TOKEN));
+        when(tokenRepository.findByTokenValue(validTokenValue.value())).thenReturn(EXPIRED_TOKEN);
 
         //Act
         final LoginResult result = loginService.login(validUsername, validTokenValue);
@@ -101,8 +101,8 @@ class LoginServiceTest {
         final Username validUsername = Username.of(VALID_USERNAME);
         final TokenValue validTokenValue = TokenValue.of(VALID_RAW_TOKEN);
 
-        when(userRepository.get(validUsername)).thenReturn(VALID_USER);
-        when(tokenRepository.get(validTokenValue)).thenReturn(VALID_TOKEN);
+        when(userRepository.findByUsername(validUsername.value())).thenReturn(VALID_USER);
+        when(tokenRepository.findByTokenValue(validTokenValue.value())).thenReturn(VALID_TOKEN);
 
         //Act
         final LoginResult result = loginService.login(validUsername, validTokenValue);

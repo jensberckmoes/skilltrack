@@ -29,8 +29,8 @@ public record LoginService(
 
     private LoginResult loginAt(final Username username, final TokenValue tokenValue, final LocalDate now) {
         try {
-            final User user = userRepository.get(username);
-            final Token token = tokenRepository.get(tokenValue);
+            final User user = userRepository.findByUsername(username.value());
+            final Token token = tokenRepository.findByTokenValue(tokenValue.value());
             ensureTokenBelongsToUser(token, user);
             ensureTokenNotExpired(token, now);
             return LoginResult.success();

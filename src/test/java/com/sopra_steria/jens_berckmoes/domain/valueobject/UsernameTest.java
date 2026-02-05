@@ -1,6 +1,5 @@
-package com.sopra_steria.jens_berckmoes.model.valueobject;
+package com.sopra_steria.jens_berckmoes.domain.valueobject;
 
-import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
 import com.sopra_steria.jens_berckmoes.domain.exception.UsernameRawValueNullOrBlankException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

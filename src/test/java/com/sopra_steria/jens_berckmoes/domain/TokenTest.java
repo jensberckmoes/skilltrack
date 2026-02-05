@@ -1,6 +1,5 @@
-package com.sopra_steria.jens_berckmoes.model;
+package com.sopra_steria.jens_berckmoes.domain;
 
-import com.sopra_steria.jens_berckmoes.domain.Token;
 import com.sopra_steria.jens_berckmoes.domain.exception.TokenRawValueNullOrBlankException;
 import com.sopra_steria.jens_berckmoes.domain.exception.TokenValidUntilNullException;
 import org.junit.jupiter.api.Test;

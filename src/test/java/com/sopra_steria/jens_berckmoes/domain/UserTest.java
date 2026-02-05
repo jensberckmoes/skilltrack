@@ -1,7 +1,5 @@
-package com.sopra_steria.jens_berckmoes.model;
+package com.sopra_steria.jens_berckmoes.domain;
 
-import com.sopra_steria.jens_berckmoes.domain.Token;
-import com.sopra_steria.jens_berckmoes.domain.User;
 import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
