@@ -33,4 +33,9 @@ public class DatabaseUserRepository implements UserRepository {
         return mapToDomain(crudUserRepository.save(entityToSave));
     }
 
+    @Override
+    public void deleteAll() {
+        crudUserRepository.deleteAll();
+    }
+
 }
