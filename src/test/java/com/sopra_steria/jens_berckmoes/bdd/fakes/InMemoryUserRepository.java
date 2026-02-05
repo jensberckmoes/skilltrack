@@ -18,4 +18,9 @@ public record InMemoryUserRepository(Map<String, User> users) implements UserRep
     public User save(final User of) {
         return null;
     }
+
+    @Override
+    public void deleteAll() {
+        users.clear();
+    }
 }

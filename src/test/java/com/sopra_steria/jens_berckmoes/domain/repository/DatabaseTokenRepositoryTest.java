@@ -3,13 +3,13 @@ package com.sopra_steria.jens_berckmoes.domain.repository;
 import com.sopra_steria.jens_berckmoes.domain.Token;
 import com.sopra_steria.jens_berckmoes.domain.exception.TokenNotFoundException;
 import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
-import com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper;
 import com.sopra_steria.jens_berckmoes.infra.repository.CrudTokenRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.*;
+import static com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper.mapToInfra;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -21,7 +21,7 @@ class DatabaseTokenRepositoryTest {
 
     @Test
     void shouldFindTokenByTokenValue() {
-        when(crudTokenRepository.findById(VALID_RAW_TOKEN)).thenReturn(Optional.ofNullable(TokenMapper.mapToInfra(VALID_TOKEN)));
+        when(crudTokenRepository.findById(VALID_RAW_TOKEN)).thenReturn(Optional.ofNullable(mapToInfra(VALID_TOKEN)));
 
         final Token tokenOnDatabase = repository.findByTokenValue(VALID_RAW_TOKEN);
 
@@ -30,7 +30,8 @@ class DatabaseTokenRepositoryTest {
 
     @Test
     void shouldActuallyHitTheDatabase() {
-        when(crudTokenRepository.findById(SECOND_VALID_RAW_TOKEN)).thenReturn(Optional.ofNullable(TokenMapper.mapToInfra(SECOND_VALID_TOKEN)));
+        when(crudTokenRepository.findById(SECOND_VALID_RAW_TOKEN)).thenReturn(Optional.ofNullable(mapToInfra(
+                SECOND_VALID_TOKEN)));
 
         final Token tokenOnDatabase = repository.findByTokenValue(SECOND_VALID_RAW_TOKEN);
 
@@ -48,7 +49,7 @@ class DatabaseTokenRepositoryTest {
 
     @Test
     void shouldSaveToken() {
-        when(crudTokenRepository.save(TokenMapper.mapToInfra(VALID_TOKEN))).thenReturn(TokenMapper.mapToInfra(VALID_TOKEN));
+        when(crudTokenRepository.save(mapToInfra(VALID_TOKEN))).thenReturn(mapToInfra(VALID_TOKEN));
 
         final Token savedToken = repository.save(VALID_TOKEN);
 
@@ -57,13 +58,33 @@ class DatabaseTokenRepositoryTest {
 
     @Test
     void shouldActuallySaveToTheDatabase() {
-        final TokenEntity tokenEntity = TokenMapper.mapToInfra(SECOND_VALID_TOKEN);
+        final TokenEntity tokenEntity = mapToInfra(SECOND_VALID_TOKEN);
         when(crudTokenRepository.save(tokenEntity)).thenReturn(tokenEntity);
 
         final Token savedToken = repository.save(SECOND_VALID_TOKEN);
 
         assertTokenFieldsAreEqual(savedToken, SECOND_VALID_TOKEN);
         verify(crudTokenRepository, times(1)).save(tokenEntity);
+    }
+
+    @Test
+    void shouldDeleteAllUsers() {
+        when(crudTokenRepository.findById(VALID_RAW_TOKEN)).thenReturn(Optional.of(mapToInfra(VALID_TOKEN)));
+        when(crudTokenRepository.findById(SECOND_VALID_RAW_TOKEN)).thenReturn(Optional.of(mapToInfra(SECOND_VALID_TOKEN)));
+
+        assertThat(repository.findByTokenValue(VALID_RAW_TOKEN)).isNotNull();
+        assertThat(repository.findByTokenValue(SECOND_VALID_RAW_TOKEN)).isNotNull();
+
+        repository.deleteAll();
+
+        when(crudTokenRepository.findById(VALID_RAW_TOKEN)).thenReturn(Optional.empty());
+        when(crudTokenRepository.findById(SECOND_VALID_RAW_TOKEN)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> repository.findByTokenValue(VALID_RAW_TOKEN)).isInstanceOf(TokenNotFoundException.class);
+        assertThatThrownBy(() -> repository.findByTokenValue(SECOND_VALID_RAW_TOKEN)).isInstanceOf(
+                TokenNotFoundException.class);
+
+        verify(crudTokenRepository, times(1)).deleteAll();
     }
 
     private static void assertTokenFieldsAreEqual(final Token tokenOnDatabase, final Token validToken) {

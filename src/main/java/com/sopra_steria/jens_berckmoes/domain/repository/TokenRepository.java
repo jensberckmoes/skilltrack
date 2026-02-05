@@ -7,4 +7,6 @@ public interface TokenRepository {
     Token findByTokenValue(final String token) throws TokenNotFoundException;
 
     Token save(final Token token) ;
+
+    void deleteAll();
 }

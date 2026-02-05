@@ -69,6 +69,27 @@ class DatabaseUserRepositoryTest {
         verify(crudUserRepository, times(1)).save(userEntity);
     }
 
+    @Test
+    void shouldDeleteAllUsers() {
+        when(crudUserRepository.findById(VALID_USERNAME)).thenReturn(Optional.of(UserMapper.mapToInfra(VALID_USER)));
+        when(crudUserRepository.findById(SECOND_VALID_USERNAME)).thenReturn(Optional.of(UserMapper.mapToInfra(SECOND_VALID_USER)));
+
+        assertThat(repository.findByUsername(VALID_USERNAME)).isNotNull();
+        assertThat(repository.findByUsername(SECOND_VALID_USERNAME)).isNotNull();
+
+        repository.deleteAll();
+
+        when(crudUserRepository.findById(VALID_USERNAME)).thenReturn(Optional.empty());
+        when(crudUserRepository.findById(SECOND_VALID_USERNAME)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> repository.findByUsername(VALID_USERNAME))
+                .isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> repository.findByUsername(SECOND_VALID_USERNAME))
+                .isInstanceOf(UserNotFoundException.class);
+
+        verify(crudUserRepository, times(1)).deleteAll();
+    }
+
     private static void assertUserFieldsAreEqual(final User databaseUsername, final User secondValidUser) {
         assertThat(databaseUsername).isNotNull();
         assertThat(databaseUsername.username()).isEqualTo(secondValidUser.username());

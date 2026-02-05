@@ -18,4 +18,9 @@ public record InMemoryTokenRepository(Map<String, Token> tokens) implements Toke
     public Token save(final Token token) {
         return null;
     }
+
+    @Override
+    public void deleteAll() {
+        tokens.clear();
+    }
 }
