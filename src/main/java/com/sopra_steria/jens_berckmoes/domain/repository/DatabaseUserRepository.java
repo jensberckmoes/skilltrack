@@ -21,4 +21,10 @@ public class DatabaseUserRepository implements UserRepository {
                 .orElseThrow(UserNotFoundException::new);
 
     }
+
+    @Override
+    public User save(final User of) {
+        return null;
+    }
+
 }

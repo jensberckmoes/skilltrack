@@ -46,9 +46,9 @@ public final class TestConstants {
         public static final String EXPIRED_USERNAME = "old.user@example.com";
         public static final String INVALID_USERNAME = "nonexistent";
 
-        public static final User VALID_USER = User.of(Username.of(VALID_USERNAME), VALID_TOKEN);
-        public static final User SECOND_VALID_USER = User.of(Username.of(SECOND_VALID_USERNAME), SECOND_VALID_TOKEN);
-        public static final User EXPIRED_USER = User.of(Username.of(EXPIRED_USERNAME), EXPIRED_TOKEN);
+        public static final User VALID_USER = User.of(VALID_USERNAME, VALID_TOKEN);
+        public static final User SECOND_VALID_USER = User.of(SECOND_VALID_USERNAME, SECOND_VALID_TOKEN);
+        public static final User EXPIRED_USER = User.of(EXPIRED_USERNAME, EXPIRED_TOKEN);
 
         public static final Map<String, User> TEST_USERS = Map.ofEntries(
                 Map.entry(VALID_USERNAME, VALID_USER),

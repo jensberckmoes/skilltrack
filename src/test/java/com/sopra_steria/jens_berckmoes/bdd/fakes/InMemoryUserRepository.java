@@ -18,4 +18,9 @@ public record InMemoryUserRepository(Map<String, User> users) implements UserRep
         return Optional.ofNullable(users.get(username))
                 .orElseThrow(UserNotFoundException::new);
     }
+
+    @Override
+    public User save(final User of) {
+        return null;
+    }
 }

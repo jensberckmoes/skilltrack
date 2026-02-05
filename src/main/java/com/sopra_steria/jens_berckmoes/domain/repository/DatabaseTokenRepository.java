@@ -20,4 +20,9 @@ public class DatabaseTokenRepository implements TokenRepository {
                 .map(TokenMapper::mapToDomain)
                 .orElseThrow(TokenNotFoundException::new);
     }
+
+    @Override
+    public Token save(final Token token) {
+        return null;
+    }
 }

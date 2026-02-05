@@ -18,4 +18,9 @@ public record InMemoryTokenRepository(Map<String, Token> tokens) implements Toke
         return Optional.ofNullable(tokens.get(tokenValue))
                 .orElseThrow(TokenNotFoundException::new);
     }
+
+    @Override
+    public Token save(final Token token) {
+        return null;
+    }
 }
