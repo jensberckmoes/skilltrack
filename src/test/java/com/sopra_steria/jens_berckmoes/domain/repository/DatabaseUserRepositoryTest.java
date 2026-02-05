@@ -2,6 +2,7 @@ package com.sopra_steria.jens_berckmoes.domain.repository;
 
 import com.sopra_steria.jens_berckmoes.domain.User;
 import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
+import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
 import com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper;
 import com.sopra_steria.jens_berckmoes.infra.repository.CrudUserRepository;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,8 @@ class DatabaseUserRepositoryTest {
 
     @Test
     void shouldFindByUsername() {
-        when(crudUserRepository.findById(VALID_USERNAME)).thenReturn(Optional.ofNullable(UserMapper.mapToInfra(VALID_USER)));
+        when(crudUserRepository.findById(VALID_USERNAME)).thenReturn(Optional.ofNullable(UserMapper.mapToInfra(
+                VALID_USER)));
 
         final User databaseUsername = repository.findByUsername(VALID_USERNAME);
 
@@ -29,7 +31,8 @@ class DatabaseUserRepositoryTest {
 
     @Test
     void shouldActuallyHitTheDatabase() {
-        when(crudUserRepository.findById(SECOND_VALID_USERNAME)).thenReturn(Optional.ofNullable(UserMapper.mapToInfra(SECOND_VALID_USER)));
+        when(crudUserRepository.findById(SECOND_VALID_USERNAME)).thenReturn(Optional.ofNullable(UserMapper.mapToInfra(
+                SECOND_VALID_USER)));
 
         final User databaseUsername = repository.findByUsername(SECOND_VALID_USERNAME);
 
@@ -43,6 +46,27 @@ class DatabaseUserRepositoryTest {
 
         assertThatThrownBy(() -> repository.findByUsername("-")).isInstanceOf(UserNotFoundException.class);
         verify(crudUserRepository, times(1)).findById("-");
+    }
+
+    @Test
+    void shouldSaveUser() {
+        final UserEntity userEntity = UserMapper.mapToInfra(VALID_USER);
+        when(crudUserRepository.save(userEntity)).thenReturn(userEntity);
+
+        final User savedUser = repository.save(VALID_USER);
+
+        assertUserFieldsAreEqual(savedUser, VALID_USER);
+    }
+
+    @Test
+    void shouldActuallySaveToTheDatabase() {
+        final UserEntity userEntity = UserMapper.mapToInfra(SECOND_VALID_USER);
+        when(crudUserRepository.save(userEntity)).thenReturn(userEntity);
+
+        final User savedUser = repository.save(SECOND_VALID_USER);
+
+        assertUserFieldsAreEqual(savedUser, SECOND_VALID_USER);
+        verify(crudUserRepository, times(1)).save(userEntity);
     }
 
     private static void assertUserFieldsAreEqual(final User databaseUsername, final User secondValidUser) {
