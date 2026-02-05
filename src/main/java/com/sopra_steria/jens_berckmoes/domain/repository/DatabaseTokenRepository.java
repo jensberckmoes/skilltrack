@@ -30,4 +30,9 @@ public class DatabaseTokenRepository implements TokenRepository {
         final TokenEntity entityToSave = mapToInfra(token);
         return mapToDomain(crudTokenRepository.save(entityToSave));
     }
+
+    @Override
+    public void deleteAll() {
+        crudTokenRepository.deleteAll();
+    }
 }
