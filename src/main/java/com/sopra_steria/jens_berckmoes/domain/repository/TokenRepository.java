@@ -5,4 +5,6 @@ import com.sopra_steria.jens_berckmoes.domain.exception.TokenNotFoundException;
 
 public interface TokenRepository {
     Token findByTokenValue(final String token) throws TokenNotFoundException;
+
+    Token save(final Token token) ;
 }

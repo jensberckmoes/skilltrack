@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-@Table(name = "token")
+@Table(name = "app_token")
 @Entity
 @Builder
 @Data

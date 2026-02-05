@@ -1,0 +1,13 @@
+#file: noinspection SpellCheckingInspection
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/skilltrack_db
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: ikbeneenwachtwoord
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect

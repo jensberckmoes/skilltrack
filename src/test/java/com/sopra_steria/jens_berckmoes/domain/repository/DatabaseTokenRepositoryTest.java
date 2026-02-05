@@ -2,6 +2,7 @@ package com.sopra_steria.jens_berckmoes.domain.repository;
 
 import com.sopra_steria.jens_berckmoes.domain.Token;
 import com.sopra_steria.jens_berckmoes.domain.exception.TokenNotFoundException;
+import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
 import com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper;
 import com.sopra_steria.jens_berckmoes.infra.repository.CrudTokenRepository;
 import org.junit.jupiter.api.Test;
@@ -45,6 +46,25 @@ class DatabaseTokenRepositoryTest {
         verify(crudTokenRepository, times(1)).findById("-");
     }
 
+    @Test
+    void shouldSaveToken() {
+        when(crudTokenRepository.save(TokenMapper.mapToInfra(VALID_TOKEN))).thenReturn(TokenMapper.mapToInfra(VALID_TOKEN));
+
+        final Token savedToken = repository.save(VALID_TOKEN);
+
+        assertTokenFieldsAreEqual(savedToken, VALID_TOKEN);
+    }
+
+    @Test
+    void shouldActuallySaveToTheDatabase() {
+        final TokenEntity tokenEntity = TokenMapper.mapToInfra(SECOND_VALID_TOKEN);
+        when(crudTokenRepository.save(tokenEntity)).thenReturn(tokenEntity);
+
+        final Token savedToken = repository.save(SECOND_VALID_TOKEN);
+
+        assertTokenFieldsAreEqual(savedToken, SECOND_VALID_TOKEN);
+        verify(crudTokenRepository, times(1)).save(tokenEntity);
+    }
 
     private static void assertTokenFieldsAreEqual(final Token tokenOnDatabase, final Token validToken) {
         assertThat(tokenOnDatabase).isNotNull();

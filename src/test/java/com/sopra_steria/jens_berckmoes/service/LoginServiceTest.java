@@ -25,10 +25,8 @@ import static org.mockito.Mockito.when;
 class LoginServiceTest {
     private final UserRepository userRepository = mock(UserRepository.class);
     private final TokenRepository tokenRepository = mock(TokenRepository.class);
-    private final Clock clock = Clock.fixed(
-            TestConstants.TimeFixture.REFERENCE_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant(),
-            ZoneId.systemDefault()
-    );
+    private final Clock clock = Clock.fixed(TestConstants.TimeFixture.REFERENCE_DATE.atStartOfDay(ZoneId.systemDefault())
+            .toInstant(), ZoneId.systemDefault());
     private final LoginService loginService = new LoginService(userRepository, tokenRepository, clock);
 
     @Test
@@ -69,7 +67,7 @@ class LoginServiceTest {
         final Username validUsername = Username.of(VALID_USERNAME);
         final TokenValue validTokenValue = TokenValue.of(VALID_RAW_TOKEN);
 
-        when(userRepository.findByUsername(validUsername.value())).thenReturn(User.of(validUsername, SECOND_VALID_TOKEN));
+        when(userRepository.findByUsername(VALID_USERNAME)).thenReturn(User.of(VALID_USERNAME, SECOND_VALID_TOKEN));
         when(tokenRepository.findByTokenValue(validTokenValue.value())).thenReturn(VALID_TOKEN);
 
         //Act
@@ -85,7 +83,7 @@ class LoginServiceTest {
         final Username validUsername = Username.of(VALID_USERNAME);
         final TokenValue validTokenValue = TokenValue.of(VALID_RAW_TOKEN);
 
-        when(userRepository.findByUsername(validUsername.value())).thenReturn(User.of(validUsername, EXPIRED_TOKEN));
+        when(userRepository.findByUsername(validUsername.value())).thenReturn(User.of(VALID_USERNAME, EXPIRED_TOKEN));
         when(tokenRepository.findByTokenValue(validTokenValue.value())).thenReturn(EXPIRED_TOKEN);
 
         //Act
