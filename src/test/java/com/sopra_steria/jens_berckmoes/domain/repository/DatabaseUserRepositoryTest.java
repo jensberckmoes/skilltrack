@@ -3,13 +3,14 @@ package com.sopra_steria.jens_berckmoes.domain.repository;
 import com.sopra_steria.jens_berckmoes.domain.User;
 import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
 import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
-import com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper;
 import com.sopra_steria.jens_berckmoes.infra.repository.CrudUserRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
+import java.util.Set;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
+import static com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper.mapToInfra;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -21,8 +22,7 @@ class DatabaseUserRepositoryTest {
 
     @Test
     void shouldFindByUsername() {
-        when(crudUserRepository.findById(VALID_USERNAME)).thenReturn(Optional.ofNullable(UserMapper.mapToInfra(
-                VALID_USER)));
+        when(crudUserRepository.findById(VALID_USERNAME)).thenReturn(Optional.ofNullable(mapToInfra(VALID_USER)));
 
         final User databaseUsername = repository.findByUsername(VALID_USERNAME);
 
@@ -31,7 +31,7 @@ class DatabaseUserRepositoryTest {
 
     @Test
     void shouldActuallyHitTheDatabase() {
-        when(crudUserRepository.findById(SECOND_VALID_USERNAME)).thenReturn(Optional.ofNullable(UserMapper.mapToInfra(
+        when(crudUserRepository.findById(SECOND_VALID_USERNAME)).thenReturn(Optional.ofNullable(mapToInfra(
                 SECOND_VALID_USER)));
 
         final User databaseUsername = repository.findByUsername(SECOND_VALID_USERNAME);
@@ -50,7 +50,7 @@ class DatabaseUserRepositoryTest {
 
     @Test
     void shouldSaveUser() {
-        final UserEntity userEntity = UserMapper.mapToInfra(VALID_USER);
+        final UserEntity userEntity = mapToInfra(VALID_USER);
         when(crudUserRepository.save(userEntity)).thenReturn(userEntity);
 
         final User savedUser = repository.save(VALID_USER);
@@ -60,7 +60,7 @@ class DatabaseUserRepositoryTest {
 
     @Test
     void shouldActuallySaveToTheDatabase() {
-        final UserEntity userEntity = UserMapper.mapToInfra(SECOND_VALID_USER);
+        final UserEntity userEntity = mapToInfra(SECOND_VALID_USER);
         when(crudUserRepository.save(userEntity)).thenReturn(userEntity);
 
         final User savedUser = repository.save(SECOND_VALID_USER);
@@ -71,8 +71,8 @@ class DatabaseUserRepositoryTest {
 
     @Test
     void shouldDeleteAllUsers() {
-        when(crudUserRepository.findById(VALID_USERNAME)).thenReturn(Optional.of(UserMapper.mapToInfra(VALID_USER)));
-        when(crudUserRepository.findById(SECOND_VALID_USERNAME)).thenReturn(Optional.of(UserMapper.mapToInfra(SECOND_VALID_USER)));
+        when(crudUserRepository.findById(VALID_USERNAME)).thenReturn(Optional.of(mapToInfra(VALID_USER)));
+        when(crudUserRepository.findById(SECOND_VALID_USERNAME)).thenReturn(Optional.of(mapToInfra(SECOND_VALID_USER)));
 
         assertThat(repository.findByUsername(VALID_USERNAME)).isNotNull();
         assertThat(repository.findByUsername(SECOND_VALID_USERNAME)).isNotNull();
@@ -82,12 +82,22 @@ class DatabaseUserRepositoryTest {
         when(crudUserRepository.findById(VALID_USERNAME)).thenReturn(Optional.empty());
         when(crudUserRepository.findById(SECOND_VALID_USERNAME)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> repository.findByUsername(VALID_USERNAME))
-                .isInstanceOf(UserNotFoundException.class);
-        assertThatThrownBy(() -> repository.findByUsername(SECOND_VALID_USERNAME))
-                .isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> repository.findByUsername(VALID_USERNAME)).isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> repository.findByUsername(SECOND_VALID_USERNAME)).isInstanceOf(UserNotFoundException.class);
 
         verify(crudUserRepository, times(1)).deleteAll();
+    }
+
+    @Test
+    void shouldSaveAllUsers() {
+        final Set<UserEntity> entities = mapToInfra(TEST_USERS.values());
+        when(crudUserRepository.saveAll(entities)).thenReturn(entities);
+
+        final Set<User> savedUsers = repository.saveAll(entities);
+
+        verify(crudUserRepository, times(1)).saveAll(entities);
+        assertThat(savedUsers.size()).isEqualTo(3);
+        assertThat(savedUsers.containsAll(TEST_USERS.values())).isEqualTo(true);
     }
 
     private static void assertUserFieldsAreEqual(final User databaseUsername, final User secondValidUser) {

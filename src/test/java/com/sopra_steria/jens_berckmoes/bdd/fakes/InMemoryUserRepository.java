@@ -3,9 +3,14 @@ package com.sopra_steria.jens_berckmoes.bdd.fakes;
 import com.sopra_steria.jens_berckmoes.domain.User;
 import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
 import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
+import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
+import com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public record InMemoryUserRepository(Map<String, User> users) implements UserRepository {
 
@@ -16,11 +21,20 @@ public record InMemoryUserRepository(Map<String, User> users) implements UserRep
 
     @Override
     public User save(final User of) {
-        return null;
+        users.put(of.username(), of);
+        return of;
     }
 
     @Override
     public void deleteAll() {
         users.clear();
+    }
+
+    @Override
+    public Set<User> saveAll(final Collection<UserEntity> entities) {
+        return entities.stream()
+                .map(UserMapper::mapToDomain)
+                .peek(user -> users.put(user.username(), user))
+                .collect(Collectors.toSet());
     }
 }

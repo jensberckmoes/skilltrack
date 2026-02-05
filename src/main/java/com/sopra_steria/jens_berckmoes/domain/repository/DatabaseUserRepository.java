@@ -9,6 +9,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.Set;
+
 import static com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper.mapToDomain;
 import static com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper.mapToInfra;
 
@@ -38,4 +41,8 @@ public class DatabaseUserRepository implements UserRepository {
         crudUserRepository.deleteAll();
     }
 
+    @Override
+    public Set<User> saveAll(final Collection<UserEntity> entities) {
+        return mapToDomain(crudUserRepository.saveAll(entities));
+    }
 }
