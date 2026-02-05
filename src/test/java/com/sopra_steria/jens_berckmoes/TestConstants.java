@@ -2,7 +2,6 @@ package com.sopra_steria.jens_berckmoes;
 
 import com.sopra_steria.jens_berckmoes.domain.Token;
 import com.sopra_steria.jens_berckmoes.domain.User;
-import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
