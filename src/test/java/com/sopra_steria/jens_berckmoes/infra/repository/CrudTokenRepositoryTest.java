@@ -29,6 +29,7 @@ class CrudTokenRepositoryTest {
     @Autowired private EntityManager entityManager;
 
     @Test
+    @DisplayName("CrudTokenRepository should save and retrieve token correctly")
     void shouldSaveAndRetrieveToken() {
         final TokenEntity token = TokenMapper.mapToInfra(VALID_TOKEN);
         tokenRepository.save(token);
@@ -39,6 +40,7 @@ class CrudTokenRepositoryTest {
     }
 
     @Test
+    @DisplayName("CrudTokenRepository should enforce not null expiration date")
     void shouldEnforceNotNullExpirationDate() {
         assertThatThrownBy(() -> {
             tokenRepository.save(new TokenEntity("token-1", null));
@@ -47,6 +49,7 @@ class CrudTokenRepositoryTest {
     }
 
     @Test
+    @DisplayName("CrudTokenRepository should enforce not null token value")
     void shouldDeleteToken() {
         final TokenEntity token = new TokenEntity("token-1", REFERENCE_DATE);
 
@@ -60,6 +63,7 @@ class CrudTokenRepositoryTest {
     }
 
     @Test
+    @DisplayName("CrudTokenRepository should delete all tokens when deleteAll is called")
     void shouldDeleteAllTokens() {
         tokenRepository.saveAll(List.of(new TokenEntity("token-1", REFERENCE_DATE),
                 new TokenEntity("token-2", REFERENCE_DATE),
@@ -76,6 +80,7 @@ class CrudTokenRepositoryTest {
     }
 
     @Test
+    @DisplayName("CrudTokenRepository should find all tokens when findAll is called")
     void shouldFindAllTokens() {
         tokenRepository.saveAll(List.of(new TokenEntity("token-1", REFERENCE_DATE),
                 new TokenEntity("token-2", REFERENCE_DATE),
@@ -86,6 +91,7 @@ class CrudTokenRepositoryTest {
     }
 
     @Test
+    @DisplayName("CrudTokenRepository should update token's expiration date when saving an existing token")
     void shouldUpdateToken() {
         final TokenEntity token = TokenMapper.mapToInfra(VALID_TOKEN);
         tokenRepository.save(token);
@@ -102,6 +108,7 @@ class CrudTokenRepositoryTest {
     }
 
     @Test
+    @DisplayName("CrudTokenRepository should throw when trying to save a token with null value")
     void shouldThrowWhenTokenValueIsNull() {
         assertThatThrownBy(() -> {
             tokenRepository.save(new TokenEntity(null, REFERENCE_DATE.plusDays(7)));
@@ -110,6 +117,7 @@ class CrudTokenRepositoryTest {
     }
 
     @Test
+    @DisplayName("CrudTokenRepository should allow saving a token with an expiration date in the past")
     void shouldAllowTokenWithPastExpirationDate() {
         final TokenEntity expiredToken = new TokenEntity("expired-token", REFERENCE_DATE.minusDays(1));
         tokenRepository.save(expiredToken);

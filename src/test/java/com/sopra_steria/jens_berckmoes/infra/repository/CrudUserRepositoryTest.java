@@ -33,6 +33,7 @@ class CrudUserRepositoryTest {
     @Autowired private EntityManager entityManager;
 
     @Test
+    @DisplayName("CrudUserRepository should save and retrieve user with token correctly via cascade all")
     void shouldPersistUserWithTokenViaCascadeAll() {
         final UserEntity user = UserMapper.mapToInfra(VALID_USER);
         final Token userToken = VALID_USER.token();
@@ -47,6 +48,7 @@ class CrudUserRepositoryTest {
     }
 
     @Test
+    @DisplayName("Should cascade delete token when user is deleted")
     void shouldCascadeDeleteTokenWhenUserDeleted() {
         final UserEntity user = UserMapper.mapToInfra(VALID_USER);
         userRepository.save(user);
@@ -86,6 +88,7 @@ class CrudUserRepositoryTest {
     }
 
     @Test
+    @DisplayName("Should delete all users and cascade delete all tokens when deleteAll is called")
     void shouldDeleteAllTokens() {
         userRepository.saveAll(List.of(new UserEntity("user-1", new TokenEntity("token-1", REFERENCE_DATE)),
                 new UserEntity("user-2", new TokenEntity("token-2", REFERENCE_DATE)),
@@ -102,6 +105,7 @@ class CrudUserRepositoryTest {
     }
 
     @Test
+    @DisplayName("Should find all users when findAll is called")
     void shouldFindAllTokens() {
         userRepository.saveAll(List.of(new UserEntity("user-1", new TokenEntity("token-1", REFERENCE_DATE)),
                 new UserEntity("user-2", new TokenEntity("token-2", REFERENCE_DATE)),

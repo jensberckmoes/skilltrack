@@ -14,6 +14,7 @@ import com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper;
 import com.sopra_steria.jens_berckmoes.service.LoginService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,6 +49,7 @@ class LoginServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Should successfully login with real database")
     void shouldLoginWithRealDatabase() {
         final LoginResult result = loginService.login(Username.of(TestConstants.Users.VALID_USERNAME),
                 TokenValue.of(TestConstants.Tokens.VALID_RAW_TOKEN));
@@ -56,6 +58,7 @@ class LoginServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Should block login when username is invalid with real database")
     void shouldBlockWhenUsernameIsInvalid() {
         final User user = userWithDefaultToken("-");
 

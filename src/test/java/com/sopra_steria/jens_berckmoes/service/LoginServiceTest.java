@@ -9,6 +9,7 @@ import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
 import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
 import com.sopra_steria.jens_berckmoes.domain.valueobject.TokenValue;
 import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
@@ -30,6 +31,7 @@ class LoginServiceTest {
     private final LoginService loginService = new LoginService(userRepository, tokenRepository, clock);
 
     @Test
+    @DisplayName("LoginService should block login when username is invalid")
     void shouldBlockWhenUsernameIsInvalid() {
         //Arrange
         final Username invalidUsername = Username.of(INVALID_USERNAME);
@@ -46,6 +48,7 @@ class LoginServiceTest {
     }
 
     @Test
+    @DisplayName("LoginService should block login when token is invalid")
     void shouldBlockWhenTokenIsInvalid() {
         //Arrange
         final Username validUsername = Username.of(VALID_USERNAME);
@@ -62,6 +65,7 @@ class LoginServiceTest {
     }
 
     @Test
+    @DisplayName("LoginService should block login when token does not belong to user")
     void shouldBlockWhenTokenDoesNotBelongToUser() {
         //Arrange
         final Username validUsername = Username.of(VALID_USERNAME);
@@ -78,6 +82,7 @@ class LoginServiceTest {
     }
 
     @Test
+    @DisplayName("LoginService should block login when token has expired")
     void shouldBlockWhenTokenHasExpired() {
         //Arrange
         final Username validUsername = Username.of(VALID_USERNAME);
@@ -94,6 +99,7 @@ class LoginServiceTest {
     }
 
     @Test
+    @DisplayName("LoginService should return success when username and token are valid")
     void shouldReturnSuccessWhenUsernameAndTokenAreValid() {
         //Arrange
         final Username validUsername = Username.of(VALID_USERNAME);

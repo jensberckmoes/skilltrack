@@ -6,6 +6,7 @@ import com.sopra_steria.jens_berckmoes.domain.User;
 import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
 import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ class UserMapperTest {
     private final LocalDate referenceDate = TestConstants.TimeFixture.REFERENCE_DATE;
 
     @Test
+    @DisplayName("UserMapper should correctly map between User and UserEntity")
     void shouldMapUserEntityToUserCorrectly() {
         final TokenEntity tokenEntityToMap = TokenEntity.builder()
                 .value("hashed-token")
@@ -28,6 +30,7 @@ class UserMapperTest {
     }
 
     @Test
+    @DisplayName("UserMapper should correctly map between User and UserEntity")
     void shouldMapUserToUserEntityCorrectly() {
         final User userToMap = User.of("testEntity", Token.of("hashed-token", referenceDate));
         final TokenEntity assertedTokenEntity = TokenEntity.builder()
