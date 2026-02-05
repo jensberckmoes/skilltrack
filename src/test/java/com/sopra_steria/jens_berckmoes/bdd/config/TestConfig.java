@@ -8,6 +8,7 @@ import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
 import com.sopra_steria.jens_berckmoes.service.LoginService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import java.time.Clock;
 import java.time.ZoneId;
@@ -15,6 +16,7 @@ import java.time.ZoneId;
 import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.REFERENCE_DATE;
 
 @Configuration
+@Profile("test")
 public class TestConfig {
 
     @Bean

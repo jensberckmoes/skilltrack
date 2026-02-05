@@ -13,19 +13,16 @@ import com.sopra_steria.jens_berckmoes.service.LoginService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @SpringBootTest
-@Profile("prod")
+@ActiveProfiles("prod")
 class LoginServiceIntegrationTest {
-    @Autowired
-    private LoginService loginService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private TokenRepository tokenRepository;
+    @Autowired private LoginService loginService;
+    @Autowired private UserRepository userRepository;
+    @Autowired private TokenRepository tokenRepository;
 
     @Test
     void shouldLoginWithRealDatabase() {
@@ -37,6 +34,6 @@ class LoginServiceIntegrationTest {
 
         final LoginResult result = loginService.login(Username.of(username), TokenValue.of(tokenValue));
 
-        assertThat(result.loginStatus() == LoginStatus.SUCCESS);
+        assertThat(result.loginStatus()).isEqualTo(LoginStatus.SUCCESS);
     }
 }

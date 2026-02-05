@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/login_service
+    url: jdbc:postgresql://localhost:5432/skilltrack_db
     driver-class-name: org.postgresql.Driver
     username: postgres
-    password: YOUR_PASSWORD_HERE
+    password: ikbeneenwachtwoord
   jpa:
     hibernate:
       ddl-auto: validate
