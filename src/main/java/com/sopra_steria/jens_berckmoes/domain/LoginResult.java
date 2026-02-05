@@ -1,15 +1,12 @@
 package com.sopra_steria.jens_berckmoes.domain;
 
-public record LoginResult(LoginStatus loginStatus, String errorMessage) {
-    public static LoginResult of(LoginStatus loginStatus, String message) {
-        return new LoginResult(loginStatus, message);
-    }
+public record LoginResult(LoginStatus loginStatus) {
 
     public static LoginResult success() {
-        return of(LoginStatus.SUCCESS, "");
+        return new LoginResult(LoginStatus.SUCCESS);
     }
 
     public static LoginResult blocked() {
-        return of(LoginStatus.BLOCKED, "please contact support");
+        return new LoginResult(LoginStatus.BLOCKED);
     }
 }

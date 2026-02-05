@@ -6,11 +6,6 @@ import com.sopra_steria.jens_berckmoes.domain.exception.TokenValidUntilNullExcep
 import java.time.LocalDate;
 
 public record Token(String token, LocalDate expirationDate) {
-
-    public static Token weeklyToken(final String token) {
-        return of(token, LocalDate.now().plusDays(7));
-    }
-
     public static Token of(final String token, final LocalDate expirationDate) {
         if (token == null || token.isBlank()) {
             throw new TokenRawValueNullOrBlankException();

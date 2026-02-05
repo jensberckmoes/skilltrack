@@ -14,10 +14,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserEntity {
     @Id
-    @Column(name = "user_name")
+    @Column(name = "user_name", nullable = false, unique = true)
     private String username;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "token_token_value", referencedColumnName = "token_value")
+    @JoinColumn(name = "token_token_value", referencedColumnName = "token_value", nullable = false)
     private TokenEntity token;
 }

@@ -1,9 +1,8 @@
 package com.sopra_steria.jens_berckmoes.domain.repository;
 
-import com.sopra_steria.jens_berckmoes.domain.exception.TokenNotFoundException;
 import com.sopra_steria.jens_berckmoes.domain.Token;
-import com.sopra_steria.jens_berckmoes.domain.valueobject.TokenValue;
+import com.sopra_steria.jens_berckmoes.domain.exception.TokenNotFoundException;
 
 public interface TokenRepository {
-    Token get(final TokenValue token) throws TokenNotFoundException;
+    Token findByTokenValue(final String token) throws TokenNotFoundException;
 }

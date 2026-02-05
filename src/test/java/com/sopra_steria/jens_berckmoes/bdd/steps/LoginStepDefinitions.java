@@ -1,7 +1,6 @@
 package com.sopra_steria.jens_berckmoes.bdd.steps;
 
 import com.sopra_steria.jens_berckmoes.domain.LoginResult;
-import com.sopra_steria.jens_berckmoes.domain.LoginStatus;
 import com.sopra_steria.jens_berckmoes.domain.valueobject.TokenValue;
 import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
 import com.sopra_steria.jens_berckmoes.service.LoginService;
@@ -18,6 +17,7 @@ public class LoginStepDefinitions {
 
     private LoginResult loginResult;
 
+    @SuppressWarnings("EmptyMethod")
     @Given("I am on the login page")
     public void iAmOnTheLoginPage() {
     }
@@ -30,10 +30,10 @@ public class LoginStepDefinitions {
         loginResult = loginService.login(username, tokenValue);
     }
 
-    @Then("I am blocked and prompted to contact support")
+    @Then("I am blocked")
     public void iAmBlocked() {
         assertThat(loginResult)
-                .isEqualTo(LoginResult.of(LoginStatus.BLOCKED, "please contact support"));
+                .isEqualTo(LoginResult.blocked());
     }
 
     @Then("I can successfully log in")

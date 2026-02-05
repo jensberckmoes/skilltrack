@@ -6,15 +6,18 @@ import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+
 class TokenMapperTest {
+    private final LocalDate referenceDate = TestConstants.TimeFixture.REFERENCE_DATE;
 
     @Test
     void shouldMapUserEntityToUserCorrectly() {
         final TokenEntity tokenEntityToMap = TokenEntity.builder()
                 .value("hashed-token")
-                .expirationDate(TestConstants.Tokens.STATIC_NOW)
+                .expirationDate(referenceDate)
                 .build();
-        final Token assertedToken = Token.of("hashed-token", TestConstants.Tokens.STATIC_NOW);
+        final Token assertedToken = Token.of("hashed-token", referenceDate);
 
         final Token mappedResult = TokenMapper.mapToDomain(tokenEntityToMap);
 
@@ -25,9 +28,9 @@ class TokenMapperTest {
     void shouldMapUserToUserEntityCorrectly() {
         final TokenEntity assertedTokenEntity = TokenEntity.builder()
                 .value("hashed-token")
-                .expirationDate(TestConstants.Tokens.STATIC_NOW)
+                .expirationDate(referenceDate)
                 .build();
-        final Token tokenToMap = Token.of("hashed-token", TestConstants.Tokens.STATIC_NOW);
+        final Token tokenToMap = Token.of("hashed-token", referenceDate);
 
         final TokenEntity mappedResult = TokenMapper.mapToInfra(tokenToMap);
 

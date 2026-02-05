@@ -19,7 +19,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class TokenEntity {
     @Id
-    @Column(name = "token_value")
+    @Column(name = "token_value", nullable = false, unique = true)
     private String value;
 
     @Column(name = "expiration_date", nullable = false)
