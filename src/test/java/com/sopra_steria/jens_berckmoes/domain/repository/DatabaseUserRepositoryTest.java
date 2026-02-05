@@ -1,6 +1,7 @@
 package com.sopra_steria.jens_berckmoes.domain.repository;
 
 import com.sopra_steria.jens_berckmoes.domain.User;
+import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
 import com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper;
 import com.sopra_steria.jens_berckmoes.infra.repository.CrudUserRepository;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import java.util.Optional;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 class DatabaseUserRepositoryTest {
@@ -33,6 +35,14 @@ class DatabaseUserRepositoryTest {
 
         assertUserFieldsAreEqual(databaseUsername, SECOND_VALID_USER);
         verify(crudUserRepository, times(1)).findById(SECOND_VALID_USERNAME);
+    }
+
+    @Test
+    void shouldThrowUserNotFoundWhenNotFound() {
+        when(crudUserRepository.findById("-")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> repository.findByUsername("-")).isInstanceOf(UserNotFoundException.class);
+        verify(crudUserRepository, times(1)).findById("-");
     }
 
     private static void assertUserFieldsAreEqual(final User databaseUsername, final User secondValidUser) {

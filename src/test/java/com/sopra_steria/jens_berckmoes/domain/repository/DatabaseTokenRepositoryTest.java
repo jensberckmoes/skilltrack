@@ -42,6 +42,7 @@ class DatabaseTokenRepositoryTest {
         when(crudTokenRepository.findById("-")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> repository.findByTokenValue("-")).isInstanceOf(TokenNotFoundException.class);
+        verify(crudTokenRepository, times(1)).findById("-");
     }
 
 
