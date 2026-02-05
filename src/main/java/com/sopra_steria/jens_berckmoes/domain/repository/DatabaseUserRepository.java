@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Profile("prod")
 public class DatabaseUserRepository implements UserRepository {
     @Override
-    public User findByUsername(String username) throws UserNotFoundException {
+    public User findByUsername(final String username) throws UserNotFoundException {
         return null;
     }
 }

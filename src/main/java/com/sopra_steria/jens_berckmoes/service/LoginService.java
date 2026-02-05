@@ -17,10 +17,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 
 @Service
-public record LoginService(
-        UserRepository userRepository,
-        TokenRepository tokenRepository,
-        Clock clock) {
+public record LoginService(UserRepository userRepository, TokenRepository tokenRepository, Clock clock) {
 
     public LoginResult login(final Username username, final TokenValue tokenValue) {
         final LocalDate now = LocalDate.now(clock);
@@ -34,20 +31,22 @@ public record LoginService(
             ensureTokenBelongsToUser(token, user);
             ensureTokenNotExpired(token, now);
             return LoginResult.success();
-        } catch (final UserNotFoundException | TokenNotFoundException | TokenDoesNotBelongToUserException |
-                       TokenHasExpiredException e) {
+        } catch(final UserNotFoundException |
+                      TokenNotFoundException |
+                      TokenDoesNotBelongToUserException |
+                      TokenHasExpiredException e) {
             return LoginResult.blocked();
         }
     }
 
     private static void ensureTokenBelongsToUser(final Token token, final User user) {
-        if (!user.ownsToken(token)) {
+        if(!user.ownsToken(token)) {
             throw new TokenDoesNotBelongToUserException();
         }
     }
 
     private static void ensureTokenNotExpired(final Token token, final LocalDate now) {
-        if (token.isExpiredAt(now)) {
+        if(token.isExpiredAt(now)) {
             throw new TokenHasExpiredException();
         }
     }

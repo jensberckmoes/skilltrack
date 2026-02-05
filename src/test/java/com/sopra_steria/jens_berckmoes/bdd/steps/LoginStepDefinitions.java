@@ -17,6 +17,7 @@ public class LoginStepDefinitions {
 
     private LoginResult loginResult;
 
+    @SuppressWarnings("EmptyMethod")
     @Given("I am on the login page")
     public void iAmOnTheLoginPage() {
     }
