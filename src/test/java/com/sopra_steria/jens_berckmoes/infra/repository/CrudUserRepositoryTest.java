@@ -1,6 +1,7 @@
 package com.sopra_steria.jens_berckmoes.infra.repository;
 
 import com.sopra_steria.jens_berckmoes.domain.Token;
+import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
 import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
 import com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper;
 import com.sopra_steria.jens_berckmoes.util.StreamUtils;
@@ -15,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
+import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.REFERENCE_DATE;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -24,14 +26,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 @DisplayName("CrudUserRepository Integration Tests")
 class CrudUserRepositoryTest {
 
-    @Autowired
-    private CrudUserRepository userRepository;
+    @Autowired private CrudUserRepository userRepository;
 
-    @Autowired
-    private CrudTokenRepository crudTokenRepository;
+    @Autowired private CrudTokenRepository crudTokenRepository;
 
-    @Autowired
-    private EntityManager entityManager;
+    @Autowired private EntityManager entityManager;
 
     @Test
     void shouldPersistUserWithTokenViaCascadeAll() {
@@ -78,10 +77,7 @@ class CrudUserRepositoryTest {
     @Test
     @DisplayName("Should throw when token is null")
     void shouldThrowWhenTokenIsNull() {
-        final UserEntity user = UserEntity.builder()
-                .username(VALID_USERNAME)
-                .token(null)
-                .build();
+        final UserEntity user = UserEntity.builder().username(VALID_USERNAME).token(null).build();
 
         assertThatThrownBy(() -> {
             userRepository.save(user);
@@ -90,15 +86,29 @@ class CrudUserRepositoryTest {
     }
 
     @Test
-    void shouldRetrieveAllUsers() {
-        userRepository.save(UserMapper.mapToInfra(VALID_USER));
-        userRepository.save(UserMapper.mapToInfra(SECOND_VALID_USER));
+    void shouldDeleteAllTokens() {
+        userRepository.saveAll(List.of(new UserEntity("user-1", new TokenEntity("token-1", REFERENCE_DATE)),
+                new UserEntity("user-2", new TokenEntity("token-2", REFERENCE_DATE)),
+                new UserEntity("user-3", new TokenEntity("token-3", REFERENCE_DATE))));
         flushAndResetContext();
 
+        userRepository.deleteAll();
+        flushAndResetContext();
 
-        final List<UserEntity> allTokens = StreamUtils.toList(userRepository.findAll());
+        assertThat(StreamUtils.toList(userRepository.findAll()).size()).isEqualTo(0);
+        assertThat(userRepository.existsById("token-1")).isEqualTo(false);
+        assertThat(userRepository.existsById("token-2")).isEqualTo(false);
+        assertThat(userRepository.existsById("token-3")).isEqualTo(false);
+    }
 
-        assertThat(allTokens.size()).isEqualTo(2);
+    @Test
+    void shouldFindAllTokens() {
+        userRepository.saveAll(List.of(new UserEntity("user-1", new TokenEntity("token-1", REFERENCE_DATE)),
+                new UserEntity("user-2", new TokenEntity("token-2", REFERENCE_DATE)),
+                new UserEntity("user-3", new TokenEntity("token-3", REFERENCE_DATE))));
+        flushAndResetContext();
+
+        assertThat(StreamUtils.toList(userRepository.findAll()).size()).isEqualTo(3);
     }
 
     private void flushAndResetContext() {

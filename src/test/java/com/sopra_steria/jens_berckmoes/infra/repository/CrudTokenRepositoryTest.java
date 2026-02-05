@@ -24,11 +24,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 @DisplayName("CrudTokenRepository Integration Tests")
 class CrudTokenRepositoryTest {
 
-    @Autowired
-    private CrudTokenRepository tokenRepository;
+    @Autowired private CrudTokenRepository tokenRepository;
 
-    @Autowired
-    private EntityManager entityManager;
+    @Autowired private EntityManager entityManager;
 
     @Test
     void shouldSaveAndRetrieveToken() {
@@ -51,10 +49,40 @@ class CrudTokenRepositoryTest {
     @Test
     void shouldDeleteToken() {
         final TokenEntity token = new TokenEntity("token-1", REFERENCE_DATE);
+
         tokenRepository.save(token);
+        flushAndResetContext();
 
         tokenRepository.delete(token);
+        flushAndResetContext();
+
         assertThat(tokenRepository.findById("token-1")).isEmpty();
+    }
+
+    @Test
+    void shouldDeleteAllTokens() {
+        tokenRepository.saveAll(List.of(new TokenEntity("token-1", REFERENCE_DATE),
+                new TokenEntity("token-2", REFERENCE_DATE),
+                new TokenEntity("token-3", REFERENCE_DATE)));
+        flushAndResetContext();
+
+        tokenRepository.deleteAll();
+        flushAndResetContext();
+
+        assertThat(StreamUtils.toList(tokenRepository.findAll()).size()).isEqualTo(0);
+        assertThat(tokenRepository.existsById("token-1")).isEqualTo(false);
+        assertThat(tokenRepository.existsById("token-2")).isEqualTo(false);
+        assertThat(tokenRepository.existsById("token-3")).isEqualTo(false);
+    }
+
+    @Test
+    void shouldFindAllTokens() {
+        tokenRepository.saveAll(List.of(new TokenEntity("token-1", REFERENCE_DATE),
+                new TokenEntity("token-2", REFERENCE_DATE),
+                new TokenEntity("token-3", REFERENCE_DATE)));
+        flushAndResetContext();
+
+        assertThat(StreamUtils.toList(tokenRepository.findAll()).size()).isEqualTo(3);
     }
 
     @Test
@@ -89,18 +117,6 @@ class CrudTokenRepositoryTest {
 
         final TokenEntity retrieved = tokenRepository.findById("expired-token").orElseThrow();
         assertThat(retrieved.getExpirationDate()).isEqualTo(REFERENCE_DATE.minusDays(1));
-    }
-
-    @Test
-    void shouldRetrieveAllTokens() {
-        tokenRepository.save(TokenMapper.mapToInfra(VALID_TOKEN));
-        tokenRepository.save(new TokenEntity("token-2", REFERENCE_DATE.plusDays(14)));
-        flushAndResetContext();
-
-
-        final List<TokenEntity> allTokens = StreamUtils.toList(tokenRepository.findAll());
-
-        assertThat(allTokens.size()).isEqualTo(2);
     }
 
     private void flushAndResetContext() {
