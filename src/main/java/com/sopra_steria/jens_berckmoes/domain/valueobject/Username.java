@@ -3,10 +3,14 @@ package com.sopra_steria.jens_berckmoes.domain.valueobject;
 import com.sopra_steria.jens_berckmoes.domain.exception.UsernameRawValueNullOrBlankException;
 
 public record Username(String value) {
-    public static Username of(final String raw) throws IllegalArgumentException{
-        if(raw == null || raw.isBlank()){
+
+    public Username {
+        if (value == null || value.isBlank()) {
             throw new UsernameRawValueNullOrBlankException();
         }
-        return new Username(raw);
+    }
+
+    public static Username of(final String value) throws UsernameRawValueNullOrBlankException {
+        return new Username(value);
     }
 }
