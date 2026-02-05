@@ -7,28 +7,40 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USER;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USERNAME;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class DatabaseUserRepositoryTest {
 
+    final CrudUserRepository crudUserRepository = mock(CrudUserRepository.class);
+    final DatabaseUserRepository repository = new DatabaseUserRepository(crudUserRepository);
+
     @Test
     void shouldFindByUsername() {
-        final CrudUserRepository crudUserRepository = mock(CrudUserRepository.class);
-        final DatabaseUserRepository repository = new DatabaseUserRepository(crudUserRepository);
-
         when(crudUserRepository.findById(VALID_USERNAME)).thenReturn(Optional.ofNullable(UserMapper.mapToInfra(VALID_USER)));
 
         final User databaseUsername = repository.findByUsername(VALID_USERNAME);
 
+        assertUserFieldsAreEqual(databaseUsername, VALID_USER);
+    }
+
+    @Test
+    void shouldActuallyHitTheDatabase() {
+        when(crudUserRepository.findById(SECOND_VALID_USERNAME)).thenReturn(Optional.ofNullable(UserMapper.mapToInfra(SECOND_VALID_USER)));
+
+        final User databaseUsername = repository.findByUsername(SECOND_VALID_USERNAME);
+
+        assertUserFieldsAreEqual(databaseUsername, SECOND_VALID_USER);
+        verify(crudUserRepository, times(1)).findById(SECOND_VALID_USERNAME);
+    }
+
+    private static void assertUserFieldsAreEqual(final User databaseUsername, final User secondValidUser) {
         assertThat(databaseUsername).isNotNull();
-        assertThat(databaseUsername.username()).isEqualTo(VALID_USER.username());
+        assertThat(databaseUsername.username()).isEqualTo(secondValidUser.username());
         assertThat(databaseUsername.token()).isNotNull();
-        assertThat(databaseUsername.token().token()).isEqualTo(VALID_USER.token().token());
-        assertThat(databaseUsername.token().expirationDate()).isEqualTo(VALID_USER.token().expirationDate());
+        assertThat(databaseUsername.token().token()).isEqualTo(secondValidUser.token().token());
+        assertThat(databaseUsername.token().expirationDate()).isEqualTo(secondValidUser.token().expirationDate());
     }
 
 }

@@ -24,7 +24,7 @@ class DatabaseTokenRepositoryTest {
 
         final Token tokenOnDatabase = repository.findByTokenValue(VALID_RAW_TOKEN);
 
-        assertTokenFieldsAreSame(tokenOnDatabase, VALID_TOKEN);
+        assertTokenFieldsAreEqual(tokenOnDatabase, VALID_TOKEN);
     }
 
     @Test
@@ -33,7 +33,7 @@ class DatabaseTokenRepositoryTest {
 
         final Token tokenOnDatabase = repository.findByTokenValue(SECOND_VALID_RAW_TOKEN);
 
-        assertTokenFieldsAreSame(tokenOnDatabase, SECOND_VALID_TOKEN);
+        assertTokenFieldsAreEqual(tokenOnDatabase, SECOND_VALID_TOKEN);
         verify(crudTokenRepository, times(1)).findById(SECOND_VALID_RAW_TOKEN);
     }
 
@@ -45,7 +45,7 @@ class DatabaseTokenRepositoryTest {
     }
 
 
-    private static void assertTokenFieldsAreSame(final Token tokenOnDatabase, final Token validToken) {
+    private static void assertTokenFieldsAreEqual(final Token tokenOnDatabase, final Token validToken) {
         assertThat(tokenOnDatabase).isNotNull();
         assertThat(tokenOnDatabase.expirationDate()).isEqualTo(validToken.expirationDate());
         assertThat(tokenOnDatabase.token()).isEqualTo(validToken.token());
