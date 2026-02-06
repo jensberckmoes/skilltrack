@@ -16,13 +16,14 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
+@DisplayName("DatabaseTokenRepository")
 class DatabaseTokenRepositoryTest {
 
     final CrudTokenRepository crudTokenRepository = mock(CrudTokenRepository.class);
     final TokenRepository repository = new DatabaseTokenRepository(crudTokenRepository);
 
     @Test
-    @DisplayName("DatabaseTokenRepository should find token by token value")
+    @DisplayName("should find token by token value")
     void shouldFindTokenByTokenValue() {
         when(crudTokenRepository.findById(VALID_RAW_TOKEN)).thenReturn(Optional.ofNullable(mapToInfra(VALID_TOKEN)));
 
@@ -32,7 +33,7 @@ class DatabaseTokenRepositoryTest {
     }
 
     @Test
-    @DisplayName("DatabaseTokenRepository should actually hit the database when finding by token value")
+    @DisplayName("should actually find a token using the database when finding by token value")
     void shouldActuallyHitTheDatabase() {
         when(crudTokenRepository.findById(SECOND_VALID_RAW_TOKEN)).thenReturn(Optional.ofNullable(mapToInfra(
                 SECOND_VALID_TOKEN)));
@@ -44,7 +45,7 @@ class DatabaseTokenRepositoryTest {
     }
 
     @Test
-    @DisplayName("DatabaseTokenRepository should throw TokenNotFoundException when token is not found by token value")
+    @DisplayName("should throw TokenNotFoundException when token is not found by token value")
     void shouldThrowTokenNotFoundWhenNotFound() {
         when(crudTokenRepository.findById("-")).thenReturn(Optional.empty());
 
@@ -53,7 +54,7 @@ class DatabaseTokenRepositoryTest {
     }
 
     @Test
-    @DisplayName("DatabaseTokenRepository should save token and return the saved token with correct fields")
+    @DisplayName("should save token and return the saved token with correct fields")
     void shouldSaveToken() {
         when(crudTokenRepository.save(mapToInfra(VALID_TOKEN))).thenReturn(mapToInfra(VALID_TOKEN));
 
@@ -63,7 +64,7 @@ class DatabaseTokenRepositoryTest {
     }
 
     @Test
-    @DisplayName("DatabaseTokenRepository should actually save to the database when saving a token")
+    @DisplayName("should actually save to the database when saving a token")
     void shouldActuallySaveToTheDatabase() {
         final TokenEntity tokenEntity = mapToInfra(SECOND_VALID_TOKEN);
         when(crudTokenRepository.save(tokenEntity)).thenReturn(tokenEntity);
@@ -75,8 +76,8 @@ class DatabaseTokenRepositoryTest {
     }
 
     @Test
-    @DisplayName("DatabaseTokenRepository should delete all tokens and throw TokenNotFoundException when trying to find deleted tokens")
-    void shouldDeleteAllUsers() {
+    @DisplayName("should delete all tokens and throw TokenNotFoundException when trying to find deleted tokens")
+    void shouldDeleteAllTokens() {
         when(crudTokenRepository.findById(VALID_RAW_TOKEN)).thenReturn(Optional.of(mapToInfra(VALID_TOKEN)));
         when(crudTokenRepository.findById(SECOND_VALID_RAW_TOKEN)).thenReturn(Optional.of(mapToInfra(SECOND_VALID_TOKEN)));
 
@@ -96,16 +97,16 @@ class DatabaseTokenRepositoryTest {
     }
 
     @Test
-    @DisplayName("DatabaseTokenRepository should save all tokens and return the saved tokens with correct fields")
+    @DisplayName("should save all tokens and return the saved tokens with correct fields")
     void shouldSaveAllTokens() {
-        final Set<TokenEntity> entities = mapToInfra(TEST_TOKENS.values());
+        final Set<TokenEntity> entities = mapToInfra(TEST_TOKENS);
         when(crudTokenRepository.saveAll(entities)).thenReturn(entities);
 
         final Set<Token> savedTokens = repository.saveAll(entities);
 
-        verify(crudTokenRepository, times(1)).saveAll(entities);
         assertThat(savedTokens.size()).isEqualTo(3);
-        assertThat(savedTokens.containsAll(TEST_TOKENS.values())).isEqualTo(true);
+        assertThat(savedTokens.containsAll(TEST_TOKENS)).isTrue();
+        verify(crudTokenRepository, times(1)).saveAll(entities);
     }
 
     private static void assertTokenFieldsAreEqual(final Token tokenOnDatabase, final Token validToken) {

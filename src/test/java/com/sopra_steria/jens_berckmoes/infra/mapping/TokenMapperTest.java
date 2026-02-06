@@ -1,42 +1,29 @@
 package com.sopra_steria.jens_berckmoes.infra.mapping;
 
-import com.sopra_steria.jens_berckmoes.TestConstants;
 import com.sopra_steria.jens_berckmoes.domain.Token;
 import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
+import static com.sopra_steria.jens_berckmoes.TestConstants.TokenEntities.TOKEN_ENTITY;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.VALID_TOKEN;
 
+@DisplayName("TokenMapper")
 class TokenMapperTest {
-    private final LocalDate referenceDate = TestConstants.TimeFixture.REFERENCE_DATE;
-
     @Test
-    @DisplayName("TokenMapper should correctly map between Token and TokenEntity")
+    @DisplayName("should correctly map from TokenEntity to Token")
     void shouldMapUserEntityToUserCorrectly() {
-        final TokenEntity tokenEntityToMap = TokenEntity.builder()
-                .value("hashed-token")
-                .expirationDate(referenceDate)
-                .build();
-        final Token assertedToken = Token.of("hashed-token", referenceDate);
+        final Token mappedResult = TokenMapper.mapToDomain(TOKEN_ENTITY);
 
-        final Token mappedResult = TokenMapper.mapToDomain(tokenEntityToMap);
-
-        Assertions.assertThat(mappedResult).isEqualTo(assertedToken);
+        Assertions.assertThat(mappedResult).isEqualTo(VALID_TOKEN);
     }
 
     @Test
-    @DisplayName("TokenMapper should correctly map between Token and TokenEntity")
+    @DisplayName("should correctly map from Token to TokenEntity")
     void shouldMapUserToUserEntityCorrectly() {
-        final TokenEntity assertedTokenEntity = TokenEntity.builder()
-                .value("hashed-token")
-                .expirationDate(referenceDate)
-                .build();
-        final Token tokenToMap = Token.of("hashed-token", referenceDate);
+        final TokenEntity mappedResult = TokenMapper.mapToInfra(VALID_TOKEN);
 
-        final TokenEntity mappedResult = TokenMapper.mapToInfra(tokenToMap);
-
-        Assertions.assertThat(mappedResult).isEqualTo(assertedTokenEntity);
+        Assertions.assertThat(mappedResult).isEqualTo(TOKEN_ENTITY);
     }
 }

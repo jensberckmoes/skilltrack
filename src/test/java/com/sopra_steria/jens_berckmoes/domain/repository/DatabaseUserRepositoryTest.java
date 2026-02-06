@@ -16,13 +16,14 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
+@DisplayName("DatabaseUserRepository")
 class DatabaseUserRepositoryTest {
 
     final CrudUserRepository crudUserRepository = mock(CrudUserRepository.class);
     final DatabaseUserRepository repository = new DatabaseUserRepository(crudUserRepository);
 
     @Test
-    @DisplayName("DatabaseUserRepository should find user by username")
+    @DisplayName("should find user by username")
     void shouldFindByUsername() {
         when(crudUserRepository.findById(VALID_USERNAME)).thenReturn(Optional.ofNullable(mapToInfra(VALID_USER)));
 
@@ -32,7 +33,7 @@ class DatabaseUserRepositoryTest {
     }
 
     @Test
-    @DisplayName("DatabaseUserRepository should actually hit the database when finding by username")
+    @DisplayName("should actually hit the database when finding by username")
     void shouldActuallyHitTheDatabase() {
         when(crudUserRepository.findById(SECOND_VALID_USERNAME)).thenReturn(Optional.ofNullable(mapToInfra(
                 SECOND_VALID_USER)));
@@ -44,7 +45,7 @@ class DatabaseUserRepositoryTest {
     }
 
     @Test
-    @DisplayName("DatabaseUserRepository should throw UserNotFoundException when user is not found by username")
+    @DisplayName("should throw UserNotFoundException when user is not found by username")
     void shouldThrowUserNotFoundWhenNotFound() {
         when(crudUserRepository.findById("-")).thenReturn(Optional.empty());
 
@@ -53,7 +54,7 @@ class DatabaseUserRepositoryTest {
     }
 
     @Test
-    @DisplayName("DatabaseUserRepository should save user and return the saved user with correct fields")
+    @DisplayName("should save user and return the saved user with correct fields")
     void shouldSaveUser() {
         final UserEntity userEntity = mapToInfra(VALID_USER);
         when(crudUserRepository.save(userEntity)).thenReturn(userEntity);
@@ -64,7 +65,7 @@ class DatabaseUserRepositoryTest {
     }
 
     @Test
-    @DisplayName("DatabaseUserRepository should actually save to the database when saving a user")
+    @DisplayName("should actually save to the database when saving a user")
     void shouldActuallySaveToTheDatabase() {
         final UserEntity userEntity = mapToInfra(SECOND_VALID_USER);
         when(crudUserRepository.save(userEntity)).thenReturn(userEntity);
@@ -76,7 +77,7 @@ class DatabaseUserRepositoryTest {
     }
 
     @Test
-    @DisplayName("DatabaseUserRepository should delete all users and actually hit the database when deleting all users")
+    @DisplayName("should delete all users and actually hit the database when deleting all users")
     void shouldDeleteAllUsers() {
         when(crudUserRepository.findById(VALID_USERNAME)).thenReturn(Optional.of(mapToInfra(VALID_USER)));
         when(crudUserRepository.findById(SECOND_VALID_USERNAME)).thenReturn(Optional.of(mapToInfra(SECOND_VALID_USER)));
@@ -96,16 +97,16 @@ class DatabaseUserRepositoryTest {
     }
 
     @Test
-    @DisplayName("DatabaseUserRepository should save all users and return the saved users with correct fields")
+    @DisplayName("should save all users and return the saved users with correct fields")
     void shouldSaveAllUsers() {
-        final Set<UserEntity> entities = mapToInfra(TEST_USERS.values());
+        final Set<UserEntity> entities = mapToInfra(TEST_USERS);
         when(crudUserRepository.saveAll(entities)).thenReturn(entities);
 
         final Set<User> savedUsers = repository.saveAll(entities);
 
-        verify(crudUserRepository, times(1)).saveAll(entities);
         assertThat(savedUsers.size()).isEqualTo(3);
-        assertThat(savedUsers.containsAll(TEST_USERS.values())).isEqualTo(true);
+        assertThat(savedUsers.containsAll(TEST_USERS)).isTrue();
+        verify(crudUserRepository, times(1)).saveAll(entities);
     }
 
     private static void assertUserFieldsAreEqual(final User databaseUsername, final User secondValidUser) {
