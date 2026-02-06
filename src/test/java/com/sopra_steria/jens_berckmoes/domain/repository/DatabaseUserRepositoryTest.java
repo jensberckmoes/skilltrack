@@ -25,23 +25,24 @@ class DatabaseUserRepositoryTest {
     @Test
     @DisplayName("should find user by username")
     void shouldFindByUsername() {
-        when(crudUserRepository.findById(VALID_USERNAME)).thenReturn(Optional.ofNullable(mapToInfra(VALID_USER)));
+        when(crudUserRepository.findById(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING)).thenReturn(Optional.ofNullable(mapToInfra(
+                VALID_USER_FOR_TEN_YEAR)));
 
-        final User databaseUsername = repository.findByUsername(VALID_USERNAME);
+        final User databaseUsername = repository.findByUsername(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING);
 
-        assertUserFieldsAreEqual(databaseUsername, VALID_USER);
+        assertUserFieldsAreEqual(databaseUsername, VALID_USER_FOR_TEN_YEAR);
     }
 
     @Test
     @DisplayName("should actually hit the database when finding by username")
     void shouldActuallyHitTheDatabase() {
-        when(crudUserRepository.findById(SECOND_VALID_USERNAME)).thenReturn(Optional.ofNullable(mapToInfra(
-                SECOND_VALID_USER)));
+        when(crudUserRepository.findById(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING)).thenReturn(Optional.ofNullable(mapToInfra(
+                VALID_USER_FOR_ONE_MORE_DAY)));
 
-        final User databaseUsername = repository.findByUsername(SECOND_VALID_USERNAME);
+        final User databaseUsername = repository.findByUsername(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING);
 
-        assertUserFieldsAreEqual(databaseUsername, SECOND_VALID_USER);
-        verify(crudUserRepository, times(1)).findById(SECOND_VALID_USERNAME);
+        assertUserFieldsAreEqual(databaseUsername, VALID_USER_FOR_ONE_MORE_DAY);
+        verify(crudUserRepository, times(1)).findById(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING);
     }
 
     @Test
@@ -56,42 +57,44 @@ class DatabaseUserRepositoryTest {
     @Test
     @DisplayName("should save user and return the saved user with correct fields")
     void shouldSaveUser() {
-        final UserEntity userEntity = mapToInfra(VALID_USER);
+        final UserEntity userEntity = mapToInfra(VALID_USER_FOR_TEN_YEAR);
         when(crudUserRepository.save(userEntity)).thenReturn(userEntity);
 
-        final User savedUser = repository.save(VALID_USER);
+        final User savedUser = repository.save(VALID_USER_FOR_TEN_YEAR);
 
-        assertUserFieldsAreEqual(savedUser, VALID_USER);
+        assertUserFieldsAreEqual(savedUser, VALID_USER_FOR_TEN_YEAR);
     }
 
     @Test
     @DisplayName("should actually save to the database when saving a user")
     void shouldActuallySaveToTheDatabase() {
-        final UserEntity userEntity = mapToInfra(SECOND_VALID_USER);
+        final UserEntity userEntity = mapToInfra(VALID_USER_FOR_ONE_MORE_DAY);
         when(crudUserRepository.save(userEntity)).thenReturn(userEntity);
 
-        final User savedUser = repository.save(SECOND_VALID_USER);
+        final User savedUser = repository.save(VALID_USER_FOR_ONE_MORE_DAY);
 
-        assertUserFieldsAreEqual(savedUser, SECOND_VALID_USER);
+        assertUserFieldsAreEqual(savedUser, VALID_USER_FOR_ONE_MORE_DAY);
         verify(crudUserRepository, times(1)).save(userEntity);
     }
 
     @Test
     @DisplayName("should delete all users and actually hit the database when deleting all users")
     void shouldDeleteAllUsers() {
-        when(crudUserRepository.findById(VALID_USERNAME)).thenReturn(Optional.of(mapToInfra(VALID_USER)));
-        when(crudUserRepository.findById(SECOND_VALID_USERNAME)).thenReturn(Optional.of(mapToInfra(SECOND_VALID_USER)));
+        when(crudUserRepository.findById(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING)).thenReturn(Optional.of(mapToInfra(
+                VALID_USER_FOR_TEN_YEAR)));
+        when(crudUserRepository.findById(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING)).thenReturn(Optional.of(mapToInfra(
+                VALID_USER_FOR_ONE_MORE_DAY)));
 
-        assertThat(repository.findByUsername(VALID_USERNAME)).isNotNull();
-        assertThat(repository.findByUsername(SECOND_VALID_USERNAME)).isNotNull();
+        assertThat(repository.findByUsername(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING)).isNotNull();
+        assertThat(repository.findByUsername(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING)).isNotNull();
 
         repository.deleteAll();
 
-        when(crudUserRepository.findById(VALID_USERNAME)).thenReturn(Optional.empty());
-        when(crudUserRepository.findById(SECOND_VALID_USERNAME)).thenReturn(Optional.empty());
+        when(crudUserRepository.findById(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING)).thenReturn(Optional.empty());
+        when(crudUserRepository.findById(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> repository.findByUsername(VALID_USERNAME)).isInstanceOf(UserNotFoundException.class);
-        assertThatThrownBy(() -> repository.findByUsername(SECOND_VALID_USERNAME)).isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> repository.findByUsername(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING)).isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> repository.findByUsername(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING)).isInstanceOf(UserNotFoundException.class);
 
         verify(crudUserRepository, times(1)).deleteAll();
     }
@@ -99,13 +102,13 @@ class DatabaseUserRepositoryTest {
     @Test
     @DisplayName("should save all users and return the saved users with correct fields")
     void shouldSaveAllUsers() {
-        final Set<UserEntity> entities = mapToInfra(TEST_USERS);
+        final Set<UserEntity> entities = mapToInfra(USERS_AS_SET);
         when(crudUserRepository.saveAll(entities)).thenReturn(entities);
 
         final Set<User> savedUsers = repository.saveAll(entities);
 
         assertThat(savedUsers.size()).isEqualTo(3);
-        assertThat(savedUsers.containsAll(TEST_USERS)).isTrue();
+        assertThat(savedUsers.containsAll(USERS_AS_SET)).isTrue();
         verify(crudUserRepository, times(1)).saveAll(entities);
     }
 

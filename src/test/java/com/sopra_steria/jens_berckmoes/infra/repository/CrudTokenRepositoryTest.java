@@ -18,7 +18,8 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.BLANK;
-import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.REFERENCE_DATE;
+import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_YESTERDAY;
+import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_TODAY;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.*;
 import static com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper.mapToInfra;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
@@ -37,7 +38,7 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should save and retrieve token correctly")
     void shouldSaveAndRetrieveToken() {
-        final TokenEntity token = mapToInfra(VALID_TOKEN);
+        final TokenEntity token = mapToInfra(VALID_TOKEN_FOR_TEN_YEARS);
         tokenRepository.save(token);
         flushAndResetContext();
 
@@ -57,7 +58,7 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should be able to delete the token when delete is called")
     void shouldDeleteToken() {
-        final TokenEntity token = mapToInfra(VALID_TOKEN);
+        final TokenEntity token = mapToInfra(VALID_TOKEN_FOR_TEN_YEARS);
 
         tokenRepository.save(token);
         flushAndResetContext();
@@ -65,14 +66,14 @@ class CrudTokenRepositoryTest {
         tokenRepository.delete(token);
         flushAndResetContext();
 
-        assertThat(tokenRepository.findById(VALID_TOKEN.token())).isEmpty();
+        assertThat(tokenRepository.findById(VALID_TOKEN_FOR_TEN_YEARS.token())).isEmpty();
     }
 
     @ParameterizedTest
     @MethodSource("existByTokenInParameters")
     @DisplayName("Should be able to check if token exists by value in a set of values")
     void existsByTokenValueIn(final Set<String> values, final boolean expectedResult) {
-        tokenRepository.saveAll(mapToInfra(TEST_TOKENS));
+        tokenRepository.saveAll(mapToInfra(TOKENS_AS_SET));
         flushAndResetContext();
 
         assertThat(tokenRepository.existsByValueIn(values)).isEqualTo(expectedResult);
@@ -83,33 +84,35 @@ class CrudTokenRepositoryTest {
                 Arguments.of(Set.of(BLANK), false),
                 Arguments.of(Set.of("-"), false),
                 Arguments.of(null, false),
-                Arguments.of(Set.of(VALID_RAW_TOKEN), true),
-                Arguments.of(Set.of(VALID_RAW_TOKEN, "-"), true),
-                Arguments.of(Set.of(SECOND_VALID_RAW_TOKEN, "-"), true),
-                Arguments.of(Set.of(VALID_RAW_TOKEN, SECOND_VALID_RAW_TOKEN), true),
-                Arguments.of(Set.of(VALID_RAW_TOKEN, SECOND_VALID_RAW_TOKEN, "-"), true),
-                Arguments.of(Set.of(VALID_RAW_TOKEN, SECOND_VALID_RAW_TOKEN, EXPIRED_RAW_TOKEN), true),
-                Arguments.of(Set.of(VALID_RAW_TOKEN, SECOND_VALID_RAW_TOKEN, EXPIRED_RAW_TOKEN, "-"), true));
+                Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING), true),
+                Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, "-"), true),
+                Arguments.of(Set.of(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING, "-"), true),
+                Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING), true),
+                Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING, "-"), true),
+                Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING,
+                        EXPIRED_TOKEN_BY_ONE_DAY_RAW_STRING), true),
+                Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING,
+                        VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING, EXPIRED_TOKEN_BY_ONE_DAY_RAW_STRING, "-"), true));
     }
 
     @Test
     @DisplayName("should delete all tokens when deleteAll is called")
     void shouldDeleteAllTokens() {
-        tokenRepository.saveAll(mapToInfra(TEST_TOKENS));
+        tokenRepository.saveAll(mapToInfra(TOKENS_AS_SET));
         flushAndResetContext();
 
-        assertThat(tokenRepository.existsByValueIn(TOKEN_KEYS)).isTrue();
+        assertThat(tokenRepository.existsByValueIn(TOKEN_VALUES_AS_SET)).isTrue();
 
         tokenRepository.deleteAll();
         flushAndResetContext();
 
-        assertThat(tokenRepository.existsByValueIn(TOKEN_KEYS)).isFalse();
+        assertThat(tokenRepository.existsByValueIn(TOKEN_VALUES_AS_SET)).isFalse();
     }
 
     @Test
     @DisplayName("should find all tokens when findAll is called")
     void shouldFindAllTokens() {
-        tokenRepository.saveAll(mapToInfra(TEST_TOKENS));
+        tokenRepository.saveAll(mapToInfra(TOKENS_AS_SET));
         flushAndResetContext();
 
         assertThat(StreamUtils.toList(tokenRepository.findAll()).size()).isEqualTo(3);
@@ -118,7 +121,7 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should update token's expiration date when saving an existing token")
     void shouldUpdateToken() {
-        final TokenEntity token = mapToInfra(VALID_TOKEN);
+        final TokenEntity token = mapToInfra(VALID_TOKEN_FOR_TEN_YEARS);
         tokenRepository.save(token);
         flushAndResetContext();
 
@@ -136,7 +139,7 @@ class CrudTokenRepositoryTest {
     @DisplayName("should throw an exception when trying to save a token with null value")
     void shouldThrowWhenTokenValueIsNull() {
         assertThatThrownBy(() -> {
-            tokenRepository.save(new TokenEntity(null, REFERENCE_DATE.plusDays(7)));
+            tokenRepository.save(new TokenEntity(null, TEST_TODAY.plusDays(7)));
             entityManager.flush();
         }).isInstanceOf(JpaSystemException.class);
     }
@@ -144,11 +147,11 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should allow saving a token with an expiration date in the past")
     void shouldAllowTokenWithPastExpirationDate() {
-        tokenRepository.save(mapToInfra(EXPIRED_TOKEN));
+        tokenRepository.save(mapToInfra(EXPIRED_TOKEN_BY_ONE_DAY));
         flushAndResetContext();
 
-        final TokenEntity retrieved = tokenRepository.findById(EXPIRED_TOKEN.token()).orElseThrow();
-        assertThat(retrieved.getExpirationDate()).isEqualTo(REFERENCE_DATE.minusYears(10));
+        final TokenEntity retrieved = tokenRepository.findById(EXPIRED_TOKEN_BY_ONE_DAY.token()).orElseThrow();
+        assertThat(retrieved.getExpirationDate()).isEqualTo(TEST_YESTERDAY);
     }
 
     private void flushAndResetContext() {

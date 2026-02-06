@@ -1,9 +1,7 @@
 package com.sopra_steria.jens_berckmoes.integration;
 
-import com.sopra_steria.jens_berckmoes.TestConstants;
 import com.sopra_steria.jens_berckmoes.domain.LoginResult;
 import com.sopra_steria.jens_berckmoes.domain.LoginStatus;
-import com.sopra_steria.jens_berckmoes.domain.Token;
 import com.sopra_steria.jens_berckmoes.domain.User;
 import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
 import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
@@ -22,9 +20,10 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Set;
 
-import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.DATE_FAR_FUTURE;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Users.TEST_USERS;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USERNAME;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.VALID_TOKEN_FOR_TEN_YEARS;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.USERS_AS_SET;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @SpringBootTest
@@ -47,15 +46,15 @@ class LoginServiceIntegrationTest {
     }
 
     private void setUpTestUsersAndTokens() {
-        final Set<UserEntity> userEntities = UserMapper.mapToInfra(TEST_USERS);
+        final Set<UserEntity> userEntities = UserMapper.mapToInfra(USERS_AS_SET);
         userRepository.saveAll(userEntities);
     }
 
     @Test
     @DisplayName("Should successfully login")
     void shouldLoginWithRealDatabase() {
-        final LoginResult result = loginService.login(Username.of(VALID_USERNAME),
-                TokenValue.of(TestConstants.Tokens.VALID_RAW_TOKEN));
+        final LoginResult result = loginService.login(Username.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING), TokenValue.of(
+                VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING));
 
         assertThat(result.loginStatus()).isEqualTo(LoginStatus.SUCCESS);
     }
@@ -63,20 +62,12 @@ class LoginServiceIntegrationTest {
     @Test
     @DisplayName("Should block login when username is invalid")
     void shouldBlockWhenUsernameIsInvalid() {
-        final User user = userWithDefaultToken("-");
+        final User user = User.of("-", VALID_TOKEN_FOR_TEN_YEARS);
 
-        final LoginResult result = loginService.login(Username.of(user.username()),
-                TokenValue.of(defaultTestToken().token()));
+        final LoginResult result = loginService.login(Username.of(user.username()), TokenValue.of(
+                VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING));
 
         assertThat(result.loginStatus()).isEqualTo(LoginStatus.BLOCKED);
-    }
-
-    private Token defaultTestToken() {
-        return Token.of("ABCD", DATE_FAR_FUTURE);
-    }
-
-    private User userWithDefaultToken(final String username) {
-        return User.of(username, defaultTestToken());
     }
 
     private void wipeDatabaseClean() {

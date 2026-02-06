@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
 class LoginServiceTest {
     private final UserRepository userRepository = mock(UserRepository.class);
     private final TokenRepository tokenRepository = mock(TokenRepository.class);
-    private final Clock clock = Clock.fixed(TestConstants.TimeFixture.REFERENCE_DATE.atStartOfDay(ZoneId.systemDefault())
+    private final Clock clock = Clock.fixed(TestConstants.TimeFixture.TEST_TODAY.atStartOfDay(ZoneId.systemDefault())
             .toInstant(), ZoneId.systemDefault());
     private final LoginService loginService = new LoginService(userRepository, tokenRepository, clock);
 
@@ -54,29 +54,31 @@ class LoginServiceTest {
         switch(username) {
             case "-" -> when(userRepository.findByUsername(username)).thenThrow(new UserNotFoundException());
             case USER_WITH_DIFFERENT_TOKEN_USERNAME ->
-                    when(userRepository.findByUsername(username)).thenReturn(User.of(username, SECOND_VALID_TOKEN));
-            case EXPIRED_USERNAME -> when(userRepository.findByUsername(username)).thenReturn(EXPIRED_USER);
+                    when(userRepository.findByUsername(username)).thenReturn(User.of(username,
+                            VALID_TOKEN_FOR_ONE_MORE_DAY));
+            case EXPIRED_USERNAME_BY_ONE_DAY_RAW_STRING -> when(userRepository.findByUsername(username)).thenReturn(
+                    EXPIRED_USER_BY_ONE_DAY);
             default -> when(userRepository.findByUsername(username)).thenReturn(User.of(username,
-                    Token.of(tokenValue, TestConstants.TimeFixture.DATE_FAR_FUTURE)));
+                    Token.of(tokenValue, TestConstants.TimeFixture.TEST_TEN_YEARS_FROM_NOW)));
         }
     }
 
     void conditionallyMockFindByTokenValue(final String tokenValue) {
         switch(tokenValue) {
             case "-" -> when(tokenRepository.findByTokenValue(tokenValue)).thenThrow(new TokenNotFoundException());
-            case EXPIRED_RAW_TOKEN ->
+            case EXPIRED_TOKEN_BY_ONE_DAY_RAW_STRING ->
                     when(tokenRepository.findByTokenValue(tokenValue)).thenThrow(new TokenHasExpiredException());
             default -> when(tokenRepository.findByTokenValue(tokenValue)).thenReturn(Token.of(tokenValue,
-                    TestConstants.TimeFixture.DATE_FAR_FUTURE));
+                    TestConstants.TimeFixture.TEST_TEN_YEARS_FROM_NOW));
         }
     }
 
     public static Stream<Arguments> reasonsToBlockLoginParameters() {
         return Stream.of(Arguments.of("-", "-", blocked(),1,0),
-                Arguments.of("-", VALID_RAW_TOKEN, blocked(),1,0),
-                Arguments.of(USER_WITH_DIFFERENT_TOKEN_USERNAME, VALID_RAW_TOKEN, blocked(),1,1),
-                Arguments.of(EXPIRED_USERNAME, EXPIRED_RAW_TOKEN, blocked(),1,1),
-                Arguments.of(VALID_USERNAME, "-", blocked(),1,1),
-                Arguments.of(VALID_USERNAME, VALID_RAW_TOKEN, success(),1,1));
+                Arguments.of("-", VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, blocked(),1,0),
+                Arguments.of(USER_WITH_DIFFERENT_TOKEN_USERNAME, VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, blocked(),1,1),
+                Arguments.of(EXPIRED_USERNAME_BY_ONE_DAY_RAW_STRING, EXPIRED_TOKEN_BY_ONE_DAY_RAW_STRING, blocked(),1,1),
+                Arguments.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING, "-", blocked(),1,1),
+                Arguments.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING, VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, success(),1,1));
     }
 }
