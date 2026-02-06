@@ -1,8 +1,6 @@
 package com.sopra_steria.jens_berckmoes.integration;
 
 import com.sopra_steria.jens_berckmoes.domain.LoginResult;
-import com.sopra_steria.jens_berckmoes.domain.LoginStatus;
-import com.sopra_steria.jens_berckmoes.domain.User;
 import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
 import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
 import com.sopra_steria.jens_berckmoes.domain.valueobject.TokenValue;
@@ -13,17 +11,21 @@ import com.sopra_steria.jens_berckmoes.service.LoginService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
+import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.EXPIRED_TOKEN_BY_ONE_DAY_RAW_STRING;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.VALID_TOKEN_FOR_TEN_YEARS;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Users.USERS_AS_SET;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
+import static com.sopra_steria.jens_berckmoes.domain.LoginResult.blocked;
+import static com.sopra_steria.jens_berckmoes.domain.LoginResult.success;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @SpringBootTest
@@ -45,34 +47,34 @@ class LoginServiceIntegrationTest {
         setUpTestUsersAndTokens();
     }
 
-    private void setUpTestUsersAndTokens() {
-        final Set<UserEntity> userEntities = UserMapper.mapToInfra(USERS_AS_SET);
-        userRepository.saveAll(userEntities);
+    @ParameterizedTest
+    @MethodSource("reasonsToBlockLoginParameters")
+    @DisplayName("should block login when username or token are invalid, when token has expired or when token does not match the one associated with the user")
+    void shouldDecideLogin(final String username, final String tokenValue, final LoginResult expectedResult) {
+        //Act
+        final LoginResult result = loginService.login(Username.of(username), TokenValue.of(tokenValue));
+        //Assert
+        assertThat(result).isEqualTo(expectedResult);
+
     }
 
-    @Test
-    @DisplayName("Should successfully login")
-    void shouldLoginWithRealDatabase() {
-        final LoginResult result = loginService.login(Username.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING), TokenValue.of(
-                VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING));
-
-        assertThat(result.loginStatus()).isEqualTo(LoginStatus.SUCCESS);
-    }
-
-    @Test
-    @DisplayName("Should block login when username is invalid")
-    void shouldBlockWhenUsernameIsInvalid() {
-        final User user = User.of("-", VALID_TOKEN_FOR_TEN_YEARS);
-
-        final LoginResult result = loginService.login(Username.of(user.username()), TokenValue.of(
-                VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING));
-
-        assertThat(result.loginStatus()).isEqualTo(LoginStatus.BLOCKED);
+    public static Stream<Arguments> reasonsToBlockLoginParameters() {
+        return Stream.of(Arguments.of("-", "-", blocked()),
+                Arguments.of("-", VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, blocked()),
+                Arguments.of(USER_WITH_DIFFERENT_TOKEN_USERNAME, VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, blocked()),
+                Arguments.of(EXPIRED_USERNAME_BY_ONE_DAY_RAW_STRING, EXPIRED_TOKEN_BY_ONE_DAY_RAW_STRING, blocked()),
+                Arguments.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING, "-", blocked()),
+                Arguments.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING, VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, success()));
     }
 
     private void wipeDatabaseClean() {
         userRepository.deleteAll();
         tokenRepository.deleteAll();
+    }
+
+    private void setUpTestUsersAndTokens() {
+        final Set<UserEntity> userEntities = UserMapper.mapToInfra(USERS_AS_SET);
+        userRepository.saveAll(userEntities);
     }
 
 }
