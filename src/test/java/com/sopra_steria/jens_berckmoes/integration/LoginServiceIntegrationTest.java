@@ -14,6 +14,7 @@ import com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper;
 import com.sopra_steria.jens_berckmoes.service.LoginService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,10 +23,13 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.Set;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.DATE_FAR_FUTURE;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.TEST_USERS;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USERNAME;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("prod")
+@DisplayName("LoginService using a real database")
 class LoginServiceIntegrationTest {
     @Autowired private LoginService loginService;
     @Autowired private UserRepository userRepository;
@@ -43,19 +47,21 @@ class LoginServiceIntegrationTest {
     }
 
     private void setUpTestUsersAndTokens() {
-        final Set<UserEntity> userEntities = UserMapper.mapToInfra(TestConstants.Users.TEST_USERS.values());
+        final Set<UserEntity> userEntities = UserMapper.mapToInfra(TEST_USERS);
         userRepository.saveAll(userEntities);
     }
 
     @Test
+    @DisplayName("Should successfully login")
     void shouldLoginWithRealDatabase() {
-        final LoginResult result = loginService.login(Username.of(TestConstants.Users.VALID_USERNAME),
+        final LoginResult result = loginService.login(Username.of(VALID_USERNAME),
                 TokenValue.of(TestConstants.Tokens.VALID_RAW_TOKEN));
 
         assertThat(result.loginStatus()).isEqualTo(LoginStatus.SUCCESS);
     }
 
     @Test
+    @DisplayName("Should block login when username is invalid")
     void shouldBlockWhenUsernameIsInvalid() {
         final User user = userWithDefaultToken("-");
 

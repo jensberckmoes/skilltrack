@@ -7,10 +7,12 @@ import com.sopra_steria.jens_berckmoes.service.LoginService;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("Login Feature Step Definitions")
 public class LoginStepDefinitions {
     @Autowired
     private LoginService loginService;

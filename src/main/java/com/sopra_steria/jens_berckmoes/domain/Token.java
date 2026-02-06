@@ -1,7 +1,7 @@
 package com.sopra_steria.jens_berckmoes.domain;
 
 import com.sopra_steria.jens_berckmoes.domain.exception.TokenRawValueNullOrBlankException;
-import com.sopra_steria.jens_berckmoes.domain.exception.TokenValidUntilNullException;
+import com.sopra_steria.jens_berckmoes.domain.exception.TokenExpirationDateNullException;
 
 import java.time.LocalDate;
 
@@ -11,7 +11,7 @@ public record Token(String token, LocalDate expirationDate) {
             throw new TokenRawValueNullOrBlankException();
         }
         if (expirationDate == null) {
-            throw new TokenValidUntilNullException();
+            throw new TokenExpirationDateNullException();
         }
         return new Token(token, expirationDate);
     }

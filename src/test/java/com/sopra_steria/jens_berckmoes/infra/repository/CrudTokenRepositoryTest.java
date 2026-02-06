@@ -1,27 +1,33 @@
 package com.sopra_steria.jens_berckmoes.infra.repository;
 
 import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
-import com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper;
 import com.sopra_steria.jens_berckmoes.util.StreamUtils;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
+import static com.sopra_steria.jens_berckmoes.TestConstants.BLANK;
 import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.REFERENCE_DATE;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.VALID_TOKEN;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.*;
+import static com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper.mapToInfra;
+import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@DisplayName("CrudTokenRepository Integration Tests")
+@DisplayName("CrudTokenRepository")
 class CrudTokenRepositoryTest {
 
     @Autowired private CrudTokenRepository tokenRepository;
@@ -29,8 +35,9 @@ class CrudTokenRepositoryTest {
     @Autowired private EntityManager entityManager;
 
     @Test
+    @DisplayName("should save and retrieve token correctly")
     void shouldSaveAndRetrieveToken() {
-        final TokenEntity token = TokenMapper.mapToInfra(VALID_TOKEN);
+        final TokenEntity token = mapToInfra(VALID_TOKEN);
         tokenRepository.save(token);
         flushAndResetContext();
 
@@ -39,6 +46,7 @@ class CrudTokenRepositoryTest {
     }
 
     @Test
+    @DisplayName("should enforce not null expiration date")
     void shouldEnforceNotNullExpirationDate() {
         assertThatThrownBy(() -> {
             tokenRepository.save(new TokenEntity("token-1", null));
@@ -47,8 +55,9 @@ class CrudTokenRepositoryTest {
     }
 
     @Test
+    @DisplayName("should be able to delete the token when delete is called")
     void shouldDeleteToken() {
-        final TokenEntity token = new TokenEntity("token-1", REFERENCE_DATE);
+        final TokenEntity token = mapToInfra(VALID_TOKEN);
 
         tokenRepository.save(token);
         flushAndResetContext();
@@ -56,38 +65,60 @@ class CrudTokenRepositoryTest {
         tokenRepository.delete(token);
         flushAndResetContext();
 
-        assertThat(tokenRepository.findById("token-1")).isEmpty();
+        assertThat(tokenRepository.findById(VALID_TOKEN.token())).isEmpty();
+    }
+
+    @ParameterizedTest
+    @MethodSource("existByTokenInParameters")
+    @DisplayName("Should be able to check if token exists by value in a set of values")
+    void existsByTokenValueIn(final Set<String> values, final boolean expectedResult) {
+        tokenRepository.saveAll(mapToInfra(TEST_TOKENS));
+        flushAndResetContext();
+
+        assertThat(tokenRepository.existsByValueIn(values)).isEqualTo(expectedResult);
+    }
+
+    public static Stream<Arguments> existByTokenInParameters() {
+        return Stream.of(Arguments.of(Set.of(EMPTY), false),
+                Arguments.of(Set.of(BLANK), false),
+                Arguments.of(Set.of("-"), false),
+                Arguments.of(null, false),
+                Arguments.of(Set.of(VALID_RAW_TOKEN), true),
+                Arguments.of(Set.of(VALID_RAW_TOKEN, "-"), true),
+                Arguments.of(Set.of(SECOND_VALID_RAW_TOKEN, "-"), true),
+                Arguments.of(Set.of(VALID_RAW_TOKEN, SECOND_VALID_RAW_TOKEN), true),
+                Arguments.of(Set.of(VALID_RAW_TOKEN, SECOND_VALID_RAW_TOKEN, "-"), true),
+                Arguments.of(Set.of(VALID_RAW_TOKEN, SECOND_VALID_RAW_TOKEN, EXPIRED_RAW_TOKEN), true),
+                Arguments.of(Set.of(VALID_RAW_TOKEN, SECOND_VALID_RAW_TOKEN, EXPIRED_RAW_TOKEN, "-"), true));
     }
 
     @Test
+    @DisplayName("should delete all tokens when deleteAll is called")
     void shouldDeleteAllTokens() {
-        tokenRepository.saveAll(List.of(new TokenEntity("token-1", REFERENCE_DATE),
-                new TokenEntity("token-2", REFERENCE_DATE),
-                new TokenEntity("token-3", REFERENCE_DATE)));
+        tokenRepository.saveAll(mapToInfra(TEST_TOKENS));
         flushAndResetContext();
+
+        assertThat(tokenRepository.existsByValueIn(TOKEN_KEYS)).isTrue();
 
         tokenRepository.deleteAll();
         flushAndResetContext();
 
-        assertThat(StreamUtils.toList(tokenRepository.findAll()).size()).isEqualTo(0);
-        assertThat(tokenRepository.existsById("token-1")).isEqualTo(false);
-        assertThat(tokenRepository.existsById("token-2")).isEqualTo(false);
-        assertThat(tokenRepository.existsById("token-3")).isEqualTo(false);
+        assertThat(tokenRepository.existsByValueIn(TOKEN_KEYS)).isFalse();
     }
 
     @Test
+    @DisplayName("should find all tokens when findAll is called")
     void shouldFindAllTokens() {
-        tokenRepository.saveAll(List.of(new TokenEntity("token-1", REFERENCE_DATE),
-                new TokenEntity("token-2", REFERENCE_DATE),
-                new TokenEntity("token-3", REFERENCE_DATE)));
+        tokenRepository.saveAll(mapToInfra(TEST_TOKENS));
         flushAndResetContext();
 
         assertThat(StreamUtils.toList(tokenRepository.findAll()).size()).isEqualTo(3);
     }
 
     @Test
+    @DisplayName("should update token's expiration date when saving an existing token")
     void shouldUpdateToken() {
-        final TokenEntity token = TokenMapper.mapToInfra(VALID_TOKEN);
+        final TokenEntity token = mapToInfra(VALID_TOKEN);
         tokenRepository.save(token);
         flushAndResetContext();
 
@@ -102,6 +133,7 @@ class CrudTokenRepositoryTest {
     }
 
     @Test
+    @DisplayName("should throw an exception when trying to save a token with null value")
     void shouldThrowWhenTokenValueIsNull() {
         assertThatThrownBy(() -> {
             tokenRepository.save(new TokenEntity(null, REFERENCE_DATE.plusDays(7)));
@@ -110,13 +142,13 @@ class CrudTokenRepositoryTest {
     }
 
     @Test
+    @DisplayName("should allow saving a token with an expiration date in the past")
     void shouldAllowTokenWithPastExpirationDate() {
-        final TokenEntity expiredToken = new TokenEntity("expired-token", REFERENCE_DATE.minusDays(1));
-        tokenRepository.save(expiredToken);
+        tokenRepository.save(mapToInfra(EXPIRED_TOKEN));
         flushAndResetContext();
 
-        final TokenEntity retrieved = tokenRepository.findById("expired-token").orElseThrow();
-        assertThat(retrieved.getExpirationDate()).isEqualTo(REFERENCE_DATE.minusDays(1));
+        final TokenEntity retrieved = tokenRepository.findById(EXPIRED_TOKEN.token()).orElseThrow();
+        assertThat(retrieved.getExpirationDate()).isEqualTo(REFERENCE_DATE.minusYears(10));
     }
 
     private void flushAndResetContext() {

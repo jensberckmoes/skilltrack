@@ -26,12 +26,12 @@ public class TestConfig {
 
     @Bean
     public UserRepository userRepository() {
-        return new InMemoryUserRepository(TestConstants.Users.TEST_USERS);
+        return new InMemoryUserRepository(TestConstants.Users.USERS_DICTIONARY);
     }
 
     @Bean
     public TokenRepository tokenRepository() {
-        return new InMemoryTokenRepository(TestConstants.Tokens.TEST_TOKENS);
+        return new InMemoryTokenRepository(TestConstants.Tokens.TOKEN_DICTIONARY);
     }
 
     @Bean
