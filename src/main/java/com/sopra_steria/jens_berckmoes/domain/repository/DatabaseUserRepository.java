@@ -6,7 +6,6 @@ import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
 import com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper;
 import com.sopra_steria.jens_berckmoes.infra.repository.CrudUserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -17,7 +16,6 @@ import static com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper.mapToInfr
 
 
 @Repository
-@Profile("prod")
 @AllArgsConstructor
 public class DatabaseUserRepository implements UserRepository {
     private final CrudUserRepository crudUserRepository;

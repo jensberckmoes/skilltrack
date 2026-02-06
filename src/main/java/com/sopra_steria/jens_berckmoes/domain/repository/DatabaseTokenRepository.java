@@ -6,7 +6,6 @@ import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
 import com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper;
 import com.sopra_steria.jens_berckmoes.infra.repository.CrudTokenRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -16,7 +15,6 @@ import static com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper.mapToDom
 import static com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper.mapToInfra;
 
 @Repository
-@Profile("prod")
 @AllArgsConstructor
 public class DatabaseTokenRepository implements TokenRepository {
     private final CrudTokenRepository crudTokenRepository;
