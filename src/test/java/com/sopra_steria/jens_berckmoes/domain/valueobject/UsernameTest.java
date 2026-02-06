@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.BLANK;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USERNAME;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -21,7 +21,8 @@ class UsernameTest {
     @Test
     @DisplayName("should create a valid username when given a valid raw username")
     void shouldCreateValidUsername() {
-        assertThat(Username.of(VALID_USERNAME).value()).isEqualTo(VALID_USERNAME);
+        assertThat(Username.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING).value()).isEqualTo(
+                VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING);
     }
 
     @ParameterizedTest

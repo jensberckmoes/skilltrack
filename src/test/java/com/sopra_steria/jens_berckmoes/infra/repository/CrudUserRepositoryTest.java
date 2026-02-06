@@ -39,14 +39,14 @@ class CrudUserRepositoryTest {
     @Test
     @DisplayName("CrudUserRepository should save and retrieve user with token correctly via cascade all")
     void shouldPersistUserWithTokenViaCascadeAll() {
-        final UserEntity user = mapToInfra(VALID_USER);
-        final Token userToken = VALID_USER.token();
+        final UserEntity user = mapToInfra(VALID_USER_FOR_TEN_YEAR);
+        final Token userToken = VALID_USER_FOR_TEN_YEAR.token();
         userRepository.save(user);
         flushAndResetContext();
 
-        final UserEntity retrieved = userRepository.findById(VALID_USER.username()).orElseThrow();
+        final UserEntity retrieved = userRepository.findById(VALID_USER_FOR_TEN_YEAR.username()).orElseThrow();
 
-        assertThat(retrieved.getUsername()).isEqualTo(VALID_USER.username());
+        assertThat(retrieved.getUsername()).isEqualTo(VALID_USER_FOR_TEN_YEAR.username());
         assertThat(retrieved.getToken().getValue()).isEqualTo(userToken.token());
         assertThat(retrieved.getToken().getExpirationDate()).isEqualTo(userToken.expirationDate());
     }
@@ -54,15 +54,15 @@ class CrudUserRepositoryTest {
     @Test
     @DisplayName("Should cascade delete token when user is deleted")
     void shouldCascadeDeleteTokenWhenUserDeleted() {
-        final UserEntity user = mapToInfra(VALID_USER);
+        final UserEntity user = mapToInfra(VALID_USER_FOR_TEN_YEAR);
         userRepository.save(user);
         flushAndResetContext();
 
-        final String rawUserTokenString = VALID_USER.token().token();
+        final String rawUserTokenString = VALID_USER_FOR_TEN_YEAR.token().token();
 
         assertThat(crudTokenRepository.findById(rawUserTokenString)).isPresent();
 
-        userRepository.deleteById(VALID_USER.username());
+        userRepository.deleteById(VALID_USER_FOR_TEN_YEAR.username());
         flushAndResetContext();
 
         assertThat(crudTokenRepository.findById(rawUserTokenString)).isEmpty();
@@ -71,7 +71,7 @@ class CrudUserRepositoryTest {
     @Test
     @DisplayName("Should throw when username is null")
     void shouldThrowWhenUsernameIsNull() {
-        final UserEntity user = mapToInfra(VALID_USER);
+        final UserEntity user = mapToInfra(VALID_USER_FOR_TEN_YEAR);
         user.setUsername(null);
 
         assertThatThrownBy(() -> {
@@ -83,7 +83,7 @@ class CrudUserRepositoryTest {
     @Test
     @DisplayName("Should throw when token is null")
     void shouldThrowWhenTokenIsNull() {
-        final UserEntity user = UserEntity.builder().username(VALID_USERNAME).token(null).build();
+        final UserEntity user = UserEntity.builder().username(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING).token(null).build();
 
         assertThatThrownBy(() -> {
             userRepository.save(user);
@@ -95,7 +95,7 @@ class CrudUserRepositoryTest {
     @MethodSource("existByUsernameInParameters")
     @DisplayName("Should be able to check if users exist by username in a set of usernames")
     void existsByUsernameIn(final Set<String> usernames, final boolean expectedResult) {
-        userRepository.saveAll(mapToInfra(TEST_USERS));
+        userRepository.saveAll(mapToInfra(USERS_AS_SET));
         flushAndResetContext();
 
         assertThat(userRepository.existsByUsernameIn(usernames)).isEqualTo(expectedResult);
@@ -106,34 +106,36 @@ class CrudUserRepositoryTest {
                 Arguments.of(Set.of(BLANK), false),
                 Arguments.of(null, false),
                 Arguments.of(Set.of("-"), false),
-                Arguments.of(Set.of(VALID_USERNAME), true),
-                Arguments.of(Set.of(VALID_USERNAME, "-"), true),
-                Arguments.of(Set.of(SECOND_VALID_USERNAME, "-"), true),
-                Arguments.of(Set.of(VALID_USERNAME, SECOND_VALID_USERNAME), true),
-                Arguments.of(Set.of(VALID_USERNAME, SECOND_VALID_USERNAME, "-"), true),
-                Arguments.of(Set.of(VALID_USERNAME, SECOND_VALID_USERNAME, EXPIRED_USERNAME), true),
-                Arguments.of(Set.of(VALID_USERNAME, SECOND_VALID_USERNAME, EXPIRED_USERNAME, "-"), true));
+                Arguments.of(Set.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING), true),
+                Arguments.of(Set.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING, "-"), true),
+                Arguments.of(Set.of(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING, "-"), true),
+                Arguments.of(Set.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING, VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING), true),
+                Arguments.of(Set.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING, VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING, "-"), true),
+                Arguments.of(Set.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING,
+                        VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING, EXPIRED_USERNAME_BY_ONE_DAY_RAW_STRING), true),
+                Arguments.of(Set.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING,
+                        VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING, EXPIRED_USERNAME_BY_ONE_DAY_RAW_STRING, "-"), true));
     }
 
     @Test
     @DisplayName("Should delete all users and cascade delete all tokens when deleteAll is called")
     void shouldDeleteAllUsers() {
-        userRepository.saveAll(mapToInfra(TEST_USERS));
+        userRepository.saveAll(mapToInfra(USERS_AS_SET));
         flushAndResetContext();
 
-        assertThat(userRepository.existsByUsernameIn(USER_KEYS)).isTrue();
+        assertThat(userRepository.existsByUsernameIn(USERNAMES_AS_SET)).isTrue();
 
         userRepository.deleteAll();
         flushAndResetContext();
 
         assertThat(StreamUtils.toList(userRepository.findAll()).size()).isEqualTo(0);
-        assertThat(userRepository.existsByUsernameIn(USER_KEYS)).isFalse();
+        assertThat(userRepository.existsByUsernameIn(USERNAMES_AS_SET)).isFalse();
     }
 
     @Test
     @DisplayName("Should find all users when findAll is called")
     void shouldFindAllUsers() {
-        userRepository.saveAll(mapToInfra(TEST_USERS));
+        userRepository.saveAll(mapToInfra(USERS_AS_SET));
         flushAndResetContext();
 
         assertThat(StreamUtils.toList(userRepository.findAll()).size()).isEqualTo(3);

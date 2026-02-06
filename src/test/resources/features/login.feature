@@ -16,6 +16,10 @@ Feature: Login of a User
     When I attempt to log in with username "old.user@example.com" and token "expired_token"
     Then I am blocked
 
+  Scenario: fails when given a token that does not belong to given username
+    When I attempt to log in with username "belongs_to_other_user@example.com" and token "other_valid_token"
+    Then I am blocked
+
   Scenario: Succeeds when given a valid not-expired token and a valid username
     When I attempt to log in with username "jane.doe@example.com" and token "valid_token"
     Then I can successfully log in

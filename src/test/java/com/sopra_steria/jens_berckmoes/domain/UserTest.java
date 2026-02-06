@@ -7,7 +7,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.REFERENCE_DATE;
+import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_TODAY;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.VALID_TOKEN_FOR_TEN_YEARS;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USER_FOR_TEN_YEAR;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DisplayName("Domain User")
@@ -23,9 +25,7 @@ class UserTest {
     }
 
     public static Stream<Arguments> belongsToProvider() {
-        final Token candidateToken = Token.of("t", REFERENCE_DATE);
-        final String givenUserUsername = "u";
-        return Stream.of(Arguments.of(candidateToken, User.of(givenUserUsername, candidateToken), true),
-                Arguments.of(candidateToken, User.of(givenUserUsername, Token.of("s", REFERENCE_DATE)), false));
+        return Stream.of(Arguments.of(VALID_TOKEN_FOR_TEN_YEARS, VALID_USER_FOR_TEN_YEAR, true),
+                Arguments.of(VALID_TOKEN_FOR_TEN_YEARS, User.of("-", Token.of("-", TEST_TODAY)), false));
     }
 }

@@ -6,6 +6,7 @@ import com.sopra_steria.jens_berckmoes.domain.exception.TokenExpirationDateNullE
 import java.time.LocalDate;
 
 public record Token(String token, LocalDate expirationDate) {
+    public static final Token NULL = new Token("", LocalDate.MIN);
     public static Token of(final String token, final LocalDate expirationDate) {
         if (token == null || token.isBlank()) {
             throw new TokenRawValueNullOrBlankException();

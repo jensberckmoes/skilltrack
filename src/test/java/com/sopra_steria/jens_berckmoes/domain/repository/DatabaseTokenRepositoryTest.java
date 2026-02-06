@@ -25,23 +25,24 @@ class DatabaseTokenRepositoryTest {
     @Test
     @DisplayName("should find token by token value")
     void shouldFindTokenByTokenValue() {
-        when(crudTokenRepository.findById(VALID_RAW_TOKEN)).thenReturn(Optional.ofNullable(mapToInfra(VALID_TOKEN)));
+        when(crudTokenRepository.findById(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING)).thenReturn(Optional.ofNullable(mapToInfra(
+                VALID_TOKEN_FOR_TEN_YEARS)));
 
-        final Token tokenOnDatabase = repository.findByTokenValue(VALID_RAW_TOKEN);
+        final Token tokenOnDatabase = repository.findByTokenValue(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING);
 
-        assertTokenFieldsAreEqual(tokenOnDatabase, VALID_TOKEN);
+        assertTokenFieldsAreEqual(tokenOnDatabase, VALID_TOKEN_FOR_TEN_YEARS);
     }
 
     @Test
     @DisplayName("should actually find a token using the database when finding by token value")
     void shouldActuallyHitTheDatabase() {
-        when(crudTokenRepository.findById(SECOND_VALID_RAW_TOKEN)).thenReturn(Optional.ofNullable(mapToInfra(
-                SECOND_VALID_TOKEN)));
+        when(crudTokenRepository.findById(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING)).thenReturn(Optional.ofNullable(mapToInfra(
+                VALID_TOKEN_FOR_ONE_MORE_DAY)));
 
-        final Token tokenOnDatabase = repository.findByTokenValue(SECOND_VALID_RAW_TOKEN);
+        final Token tokenOnDatabase = repository.findByTokenValue(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING);
 
-        assertTokenFieldsAreEqual(tokenOnDatabase, SECOND_VALID_TOKEN);
-        verify(crudTokenRepository, times(1)).findById(SECOND_VALID_RAW_TOKEN);
+        assertTokenFieldsAreEqual(tokenOnDatabase, VALID_TOKEN_FOR_ONE_MORE_DAY);
+        verify(crudTokenRepository, times(1)).findById(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING);
     }
 
     @Test
@@ -56,41 +57,43 @@ class DatabaseTokenRepositoryTest {
     @Test
     @DisplayName("should save token and return the saved token with correct fields")
     void shouldSaveToken() {
-        when(crudTokenRepository.save(mapToInfra(VALID_TOKEN))).thenReturn(mapToInfra(VALID_TOKEN));
+        when(crudTokenRepository.save(mapToInfra(VALID_TOKEN_FOR_TEN_YEARS))).thenReturn(mapToInfra(
+                VALID_TOKEN_FOR_TEN_YEARS));
 
-        final Token savedToken = repository.save(VALID_TOKEN);
+        final Token savedToken = repository.save(VALID_TOKEN_FOR_TEN_YEARS);
 
-        assertTokenFieldsAreEqual(savedToken, VALID_TOKEN);
+        assertTokenFieldsAreEqual(savedToken, VALID_TOKEN_FOR_TEN_YEARS);
     }
 
     @Test
     @DisplayName("should actually save to the database when saving a token")
     void shouldActuallySaveToTheDatabase() {
-        final TokenEntity tokenEntity = mapToInfra(SECOND_VALID_TOKEN);
+        final TokenEntity tokenEntity = mapToInfra(VALID_TOKEN_FOR_ONE_MORE_DAY);
         when(crudTokenRepository.save(tokenEntity)).thenReturn(tokenEntity);
 
-        final Token savedToken = repository.save(SECOND_VALID_TOKEN);
+        final Token savedToken = repository.save(VALID_TOKEN_FOR_ONE_MORE_DAY);
 
-        assertTokenFieldsAreEqual(savedToken, SECOND_VALID_TOKEN);
+        assertTokenFieldsAreEqual(savedToken, VALID_TOKEN_FOR_ONE_MORE_DAY);
         verify(crudTokenRepository, times(1)).save(tokenEntity);
     }
 
     @Test
     @DisplayName("should delete all tokens and throw TokenNotFoundException when trying to find deleted tokens")
     void shouldDeleteAllTokens() {
-        when(crudTokenRepository.findById(VALID_RAW_TOKEN)).thenReturn(Optional.of(mapToInfra(VALID_TOKEN)));
-        when(crudTokenRepository.findById(SECOND_VALID_RAW_TOKEN)).thenReturn(Optional.of(mapToInfra(SECOND_VALID_TOKEN)));
+        when(crudTokenRepository.findById(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING)).thenReturn(Optional.of(mapToInfra(VALID_TOKEN_FOR_TEN_YEARS)));
+        when(crudTokenRepository.findById(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING)).thenReturn(Optional.of(mapToInfra(
+                VALID_TOKEN_FOR_ONE_MORE_DAY)));
 
-        assertThat(repository.findByTokenValue(VALID_RAW_TOKEN)).isNotNull();
-        assertThat(repository.findByTokenValue(SECOND_VALID_RAW_TOKEN)).isNotNull();
+        assertThat(repository.findByTokenValue(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING)).isNotNull();
+        assertThat(repository.findByTokenValue(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING)).isNotNull();
 
         repository.deleteAll();
 
-        when(crudTokenRepository.findById(VALID_RAW_TOKEN)).thenReturn(Optional.empty());
-        when(crudTokenRepository.findById(SECOND_VALID_RAW_TOKEN)).thenReturn(Optional.empty());
+        when(crudTokenRepository.findById(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING)).thenReturn(Optional.empty());
+        when(crudTokenRepository.findById(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> repository.findByTokenValue(VALID_RAW_TOKEN)).isInstanceOf(TokenNotFoundException.class);
-        assertThatThrownBy(() -> repository.findByTokenValue(SECOND_VALID_RAW_TOKEN)).isInstanceOf(
+        assertThatThrownBy(() -> repository.findByTokenValue(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING)).isInstanceOf(TokenNotFoundException.class);
+        assertThatThrownBy(() -> repository.findByTokenValue(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING)).isInstanceOf(
                 TokenNotFoundException.class);
 
         verify(crudTokenRepository, times(1)).deleteAll();
@@ -99,13 +102,13 @@ class DatabaseTokenRepositoryTest {
     @Test
     @DisplayName("should save all tokens and return the saved tokens with correct fields")
     void shouldSaveAllTokens() {
-        final Set<TokenEntity> entities = mapToInfra(TEST_TOKENS);
+        final Set<TokenEntity> entities = mapToInfra(TOKENS_AS_SET);
         when(crudTokenRepository.saveAll(entities)).thenReturn(entities);
 
         final Set<Token> savedTokens = repository.saveAll(entities);
 
         assertThat(savedTokens.size()).isEqualTo(3);
-        assertThat(savedTokens.containsAll(TEST_TOKENS)).isTrue();
+        assertThat(savedTokens.containsAll(TOKENS_AS_SET)).isTrue();
         verify(crudTokenRepository, times(1)).saveAll(entities);
     }
 

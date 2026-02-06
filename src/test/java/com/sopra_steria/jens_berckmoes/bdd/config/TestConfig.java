@@ -1,6 +1,5 @@
 package com.sopra_steria.jens_berckmoes.bdd.config;
 
-import com.sopra_steria.jens_berckmoes.TestConstants;
 import com.sopra_steria.jens_berckmoes.bdd.fakes.InMemoryTokenRepository;
 import com.sopra_steria.jens_berckmoes.bdd.fakes.InMemoryUserRepository;
 import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
@@ -13,7 +12,9 @@ import org.springframework.context.annotation.Profile;
 import java.time.Clock;
 import java.time.ZoneId;
 
-import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.REFERENCE_DATE;
+import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_TODAY;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.BDD_TOKENS;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.BDD_USERS;
 
 @Configuration
 @Profile("test")
@@ -26,20 +27,17 @@ public class TestConfig {
 
     @Bean
     public UserRepository userRepository() {
-        return new InMemoryUserRepository(TestConstants.Users.USERS_DICTIONARY);
+        return new InMemoryUserRepository(BDD_USERS);
     }
 
     @Bean
     public TokenRepository tokenRepository() {
-        return new InMemoryTokenRepository(TestConstants.Tokens.TOKEN_DICTIONARY);
+        return new InMemoryTokenRepository(BDD_TOKENS);
     }
 
     @Bean
     public Clock clock() {
-        return Clock.fixed(
-                REFERENCE_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant(),
-                ZoneId.systemDefault()
-        );
+        return Clock.fixed(TEST_TODAY.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
     }
 
 }
