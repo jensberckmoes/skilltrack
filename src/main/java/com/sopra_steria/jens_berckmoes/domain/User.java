@@ -1,6 +1,9 @@
 package com.sopra_steria.jens_berckmoes.domain;
 
 public record User(String username, Token token) {
+    public static User nullToken(final String username) {
+        return new User(username, Token.NULL);
+    }
     public static User of(final String username, final Token token) {
         return new User(username, token);
     }

@@ -10,6 +10,8 @@ import java.util.Set;
 public interface UserRepository {
     User findByUsername(final String username) throws UserNotFoundException;
 
+    Set<User> findALl();
+
     User save(final User of);
 
     void deleteAll();

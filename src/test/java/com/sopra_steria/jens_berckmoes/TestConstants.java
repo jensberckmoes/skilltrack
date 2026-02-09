@@ -2,6 +2,7 @@ package com.sopra_steria.jens_berckmoes;
 
 import com.sopra_steria.jens_berckmoes.domain.Token;
 import com.sopra_steria.jens_berckmoes.domain.User;
+import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
 import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
 import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
 import lombok.AccessLevel;
@@ -12,7 +13,10 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.*;
+import static com.sopra_steria.jens_berckmoes.TestConstants.TokenEntities.VALID_TOKEN_ENTITY_FOR_ONE_MORE_DAY;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.*;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestConstants {
@@ -59,6 +63,11 @@ public final class TestConstants {
                 .value(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING)
                 .expirationDate(TEST_TEN_YEARS_FROM_NOW)
                 .build();
+
+        public static final TokenEntity VALID_TOKEN_ENTITY_FOR_ONE_MORE_DAY = TokenEntity.builder()
+                .value(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING)
+                .expirationDate(TEST_TOMORROW)
+                .build();
     }
 
     public static final class Users {
@@ -90,8 +99,20 @@ public final class TestConstants {
     public static final class UserEntities {
 
         public static final UserEntity VALID_USER_ENTITY_FOR_TEN_YEARS = UserEntity.builder()
-                .username(Users.VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING)
-                .token(TestConstants.TokenEntities.VALID_TOKEN_ENTITY_FOR_TEN_YEARS)
+                .username(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING)
+                .token(TokenEntities.VALID_TOKEN_ENTITY_FOR_TEN_YEARS)
                 .build();
+
+        public static final UserEntity VALID_USER_ENTITY_FOR_ONE_MORE_DAY = UserEntity.builder()
+                .username(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING)
+                .token(VALID_TOKEN_ENTITY_FOR_ONE_MORE_DAY)
+                .build();
+    }
+
+    public static final class UserDtos {
+
+        public static final UserDto VALID_USER_DTO_FOR_TEN_YEARS = UserDto.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING);
+
+        public static final UserDto VALID_USER_DTO_FOR_ONE_MORE_DAY = UserDto.of(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING);
     }
 }

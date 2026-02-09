@@ -2,12 +2,14 @@ package com.sopra_steria.jens_berckmoes.bdd.config;
 
 import com.sopra_steria.jens_berckmoes.bdd.fakes.InMemoryTokenRepository;
 import com.sopra_steria.jens_berckmoes.bdd.fakes.InMemoryUserRepository;
+import com.sopra_steria.jens_berckmoes.controller.UserController;
 import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
 import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
 import com.sopra_steria.jens_berckmoes.service.LoginService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import java.time.Clock;
 import java.time.ZoneId;
@@ -40,4 +42,13 @@ public class TestConfig {
         return Clock.fixed(TEST_TODAY.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
     }
 
+    @Bean
+    public UserController userController() {
+        return new UserController(userRepository(), tokenRepository());
+    }
+
+    @Bean
+    public RestTestClient restClient() {
+        return RestTestClient.bindToController(userController()).build();
+    }
 }
