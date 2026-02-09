@@ -29,6 +29,11 @@ public class DatabaseUserRepository implements UserRepository {
     }
 
     @Override
+    public Set<User> findALl() {
+        return Set.of();
+    }
+
+    @Override
     public User save(final User user) {
         final UserEntity entityToSave = mapToInfra(user);
         return mapToDomain(crudUserRepository.save(entityToSave));

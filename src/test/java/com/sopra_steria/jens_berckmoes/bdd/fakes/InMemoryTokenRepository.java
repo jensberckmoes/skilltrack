@@ -32,7 +32,7 @@ public record InMemoryTokenRepository(Map<String, Token> tokens) implements Toke
     @Override
     public Set<Token> saveAll(final Collection<TokenEntity> entities) {
         return entities.stream()
-                .map(TokenMapper::mapToDomain)
+                .map(TokenMapper::toDomain)
                 .peek(token -> tokens.put(token.token(), token))
                 .collect(Collectors.toSet());
     }

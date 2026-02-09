@@ -6,10 +6,7 @@ import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
 import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
 import com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public record InMemoryUserRepository(Map<String, User> users) implements UserRepository {
@@ -17,6 +14,11 @@ public record InMemoryUserRepository(Map<String, User> users) implements UserRep
     @Override
     public User findByUsername(final String username) throws UserNotFoundException {
         return Optional.ofNullable(users.get(username)).orElseThrow(UserNotFoundException::new);
+    }
+
+    @Override
+    public Set<User> findALl() {
+        return new HashSet<>(users.values());
     }
 
     @Override
