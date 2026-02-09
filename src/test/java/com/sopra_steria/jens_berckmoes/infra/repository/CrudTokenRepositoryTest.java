@@ -1,7 +1,6 @@
 package com.sopra_steria.jens_berckmoes.infra.repository;
 
 import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
-import com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper;
 import com.sopra_steria.jens_berckmoes.util.StreamUtils;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
@@ -19,8 +18,8 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.BLANK;
-import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_YESTERDAY;
 import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_TODAY;
+import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_YESTERDAY;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.*;
 import static com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper.toInfra;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
@@ -39,7 +38,7 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should save and retrieve token correctly")
     void shouldSaveAndRetrieveToken() {
-        final TokenEntity token = TokenMapper.toInfra(VALID_TOKEN_FOR_TEN_YEARS);
+        final TokenEntity token = toInfra(VALID_TOKEN_FOR_TEN_YEARS);
         tokenRepository.save(token);
         flushAndResetContext();
 
@@ -59,7 +58,7 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should be able to delete the token when delete is called")
     void shouldDeleteToken() {
-        final TokenEntity token = TokenMapper.toInfra(VALID_TOKEN_FOR_TEN_YEARS);
+        final TokenEntity token = toInfra(VALID_TOKEN_FOR_TEN_YEARS);
 
         tokenRepository.save(token);
         flushAndResetContext();
@@ -88,12 +87,17 @@ class CrudTokenRepositoryTest {
                 Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING), true),
                 Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, "-"), true),
                 Arguments.of(Set.of(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING, "-"), true),
-                Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING), true),
-                Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING, "-"), true),
-                Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING,
+                Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING),
+                        true),
+                Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING, "-"),
+                        true),
+                Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING,
+                        VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING,
                         EXPIRED_TOKEN_BY_ONE_DAY_RAW_STRING), true),
                 Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING,
-                        VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING, EXPIRED_TOKEN_BY_ONE_DAY_RAW_STRING, "-"), true));
+                        VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING,
+                        EXPIRED_TOKEN_BY_ONE_DAY_RAW_STRING,
+                        "-"), true));
     }
 
     @Test
@@ -122,7 +126,7 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should update token's expiration date when saving an existing token")
     void shouldUpdateToken() {
-        final TokenEntity token = TokenMapper.toInfra(VALID_TOKEN_FOR_TEN_YEARS);
+        final TokenEntity token = toInfra(VALID_TOKEN_FOR_TEN_YEARS);
         tokenRepository.save(token);
         flushAndResetContext();
 
@@ -148,7 +152,7 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should allow saving a token with an expiration date in the past")
     void shouldAllowTokenWithPastExpirationDate() {
-        tokenRepository.save(TokenMapper.toInfra(EXPIRED_TOKEN_BY_ONE_DAY));
+        tokenRepository.save(toInfra(EXPIRED_TOKEN_BY_ONE_DAY));
         flushAndResetContext();
 
         final TokenEntity retrieved = tokenRepository.findById(EXPIRED_TOKEN_BY_ONE_DAY.token()).orElseThrow();

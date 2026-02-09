@@ -1,6 +1,5 @@
 package com.sopra_steria.jens_berckmoes.domain.mapping;
 
-import com.sopra_steria.jens_berckmoes.TestConstants;
 import com.sopra_steria.jens_berckmoes.domain.User;
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
 import org.assertj.core.api.Assertions;

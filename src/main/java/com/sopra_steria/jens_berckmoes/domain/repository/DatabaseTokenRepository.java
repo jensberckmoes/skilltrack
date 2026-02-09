@@ -28,8 +28,8 @@ public class DatabaseTokenRepository implements TokenRepository {
 
     @Override
     public Token save(final Token token) {
-        final TokenEntity entityToSave = TokenMapper.toInfra(token);
-        return TokenMapper.toDomain(crudTokenRepository.save(entityToSave));
+        final TokenEntity entityToSave = toInfra(token);
+        return toDomain(crudTokenRepository.save(entityToSave));
     }
 
     @Override
