@@ -1,6 +1,7 @@
 package com.sopra_steria.jens_berckmoes.infra.repository;
 
 import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
+import com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper;
 import com.sopra_steria.jens_berckmoes.util.StreamUtils;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
@@ -21,7 +22,7 @@ import static com.sopra_steria.jens_berckmoes.TestConstants.BLANK;
 import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_YESTERDAY;
 import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_TODAY;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.*;
-import static com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper.mapToInfra;
+import static com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper.toInfra;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -38,7 +39,7 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should save and retrieve token correctly")
     void shouldSaveAndRetrieveToken() {
-        final TokenEntity token = mapToInfra(VALID_TOKEN_FOR_TEN_YEARS);
+        final TokenEntity token = TokenMapper.toInfra(VALID_TOKEN_FOR_TEN_YEARS);
         tokenRepository.save(token);
         flushAndResetContext();
 
@@ -58,7 +59,7 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should be able to delete the token when delete is called")
     void shouldDeleteToken() {
-        final TokenEntity token = mapToInfra(VALID_TOKEN_FOR_TEN_YEARS);
+        final TokenEntity token = TokenMapper.toInfra(VALID_TOKEN_FOR_TEN_YEARS);
 
         tokenRepository.save(token);
         flushAndResetContext();
@@ -73,7 +74,7 @@ class CrudTokenRepositoryTest {
     @MethodSource("existByTokenInParameters")
     @DisplayName("Should be able to check if token exists by value in a set of values")
     void existsByTokenValueIn(final Set<String> values, final boolean expectedResult) {
-        tokenRepository.saveAll(mapToInfra(TOKENS_AS_SET));
+        tokenRepository.saveAll(toInfra(TOKENS_AS_SET));
         flushAndResetContext();
 
         assertThat(tokenRepository.existsByValueIn(values)).isEqualTo(expectedResult);
@@ -98,7 +99,7 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should delete all tokens when deleteAll is called")
     void shouldDeleteAllTokens() {
-        tokenRepository.saveAll(mapToInfra(TOKENS_AS_SET));
+        tokenRepository.saveAll(toInfra(TOKENS_AS_SET));
         flushAndResetContext();
 
         assertThat(tokenRepository.existsByValueIn(TOKEN_VALUES_AS_SET)).isTrue();
@@ -112,7 +113,7 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should find all tokens when findAll is called")
     void shouldFindAllTokens() {
-        tokenRepository.saveAll(mapToInfra(TOKENS_AS_SET));
+        tokenRepository.saveAll(toInfra(TOKENS_AS_SET));
         flushAndResetContext();
 
         assertThat(StreamUtils.toList(tokenRepository.findAll()).size()).isEqualTo(3);
@@ -121,7 +122,7 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should update token's expiration date when saving an existing token")
     void shouldUpdateToken() {
-        final TokenEntity token = mapToInfra(VALID_TOKEN_FOR_TEN_YEARS);
+        final TokenEntity token = TokenMapper.toInfra(VALID_TOKEN_FOR_TEN_YEARS);
         tokenRepository.save(token);
         flushAndResetContext();
 
@@ -147,7 +148,7 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should allow saving a token with an expiration date in the past")
     void shouldAllowTokenWithPastExpirationDate() {
-        tokenRepository.save(mapToInfra(EXPIRED_TOKEN_BY_ONE_DAY));
+        tokenRepository.save(TokenMapper.toInfra(EXPIRED_TOKEN_BY_ONE_DAY));
         flushAndResetContext();
 
         final TokenEntity retrieved = tokenRepository.findById(EXPIRED_TOKEN_BY_ONE_DAY.token()).orElseThrow();

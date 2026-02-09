@@ -11,8 +11,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 import java.util.Set;
 
-import static com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper.mapToDomain;
-import static com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper.mapToInfra;
+import static com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper.toDomain;
+import static com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper.toInfra;
 
 @Repository
 @AllArgsConstructor
@@ -22,14 +22,14 @@ public class DatabaseTokenRepository implements TokenRepository {
     @Override
     public Token findByTokenValue(final String token) throws TokenNotFoundException {
         return crudTokenRepository.findById(token)
-                .map(TokenMapper::mapToDomain)
+                .map(TokenMapper::toDomain)
                 .orElseThrow(TokenNotFoundException::new);
     }
 
     @Override
     public Token save(final Token token) {
-        final TokenEntity entityToSave = mapToInfra(token);
-        return mapToDomain(crudTokenRepository.save(entityToSave));
+        final TokenEntity entityToSave = TokenMapper.toInfra(token);
+        return TokenMapper.toDomain(crudTokenRepository.save(entityToSave));
     }
 
     @Override
@@ -39,6 +39,6 @@ public class DatabaseTokenRepository implements TokenRepository {
 
     @Override
     public Set<Token> saveAll(final Collection<TokenEntity> entities) {
-        return mapToDomain(crudTokenRepository.saveAll(entities));
+        return toDomain(crudTokenRepository.saveAll(entities));
     }
 }

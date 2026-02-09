@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 
 public class UserMapper {
     public static User mapToDomain(final UserEntity entity) {
-        return User.of(entity.getUsername(), TokenMapper.mapToDomain(entity.getToken()));
+        return User.of(entity.getUsername(), TokenMapper.toDomain(entity.getToken()));
     }
 
     public static UserEntity mapToInfra(final User user) {
-        return UserEntity.builder().username(user.username()).token(TokenMapper.mapToInfra(user.token())).build();
+        return UserEntity.builder().username(user.username()).token(TokenMapper.toInfra(user.token())).build();
     }
 
     public static Set<User> mapToDomain(final Iterable<UserEntity> entities) {
