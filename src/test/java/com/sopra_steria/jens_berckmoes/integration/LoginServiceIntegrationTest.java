@@ -28,7 +28,7 @@ import static com.sopra_steria.jens_berckmoes.domain.LoginResult.blocked;
 import static com.sopra_steria.jens_berckmoes.domain.LoginResult.success;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("prod")
 @DisplayName("LoginService using a real database")
 class LoginServiceIntegrationTest {

@@ -3,6 +3,7 @@ package com.sopra_steria.jens_berckmoes.domain.mapping;
 import com.sopra_steria.jens_berckmoes.domain.User;
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
 
+import java.util.Collection;
 import java.util.Set;
 
 public class UserDtoMapper {
@@ -15,11 +16,11 @@ public class UserDtoMapper {
         return User.nullToken(dto.username());
     }
 
-    public static Set<UserDto> toDto(final Set<User> users) {
+    public static Set<UserDto> toDtos(final Collection<User> users) {
         return users.stream().map(UserDtoMapper::toDto).collect(java.util.stream.Collectors.toSet());
     }
 
-    public static Set<User> toUsers(final Set<UserDto> dtos) {
+    public static Set<User> toUsers(final Collection<UserDto> dtos) {
         return dtos.stream().map(UserDtoMapper::toUser).collect(java.util.stream.Collectors.toSet());
     }
 }

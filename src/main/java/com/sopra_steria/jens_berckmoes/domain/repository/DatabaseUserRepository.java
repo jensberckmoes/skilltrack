@@ -29,8 +29,8 @@ public class DatabaseUserRepository implements UserRepository {
     }
 
     @Override
-    public Set<User> findALl() {
-        return Set.of();
+    public Set<User> findAll() {
+        return mapToDomain(crudUserRepository.findAll());
     }
 
     @Override

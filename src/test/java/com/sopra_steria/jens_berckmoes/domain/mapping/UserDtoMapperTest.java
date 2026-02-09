@@ -36,7 +36,7 @@ public class UserDtoMapperTest {
     @Test
     @DisplayName("should correctly map from UserSet to UserDTOSet")
     void shouldMapUserSetToUserDtoSetCorrectly() {
-        final Set<UserDto> mappedResult = toDto(Set.of(VALID_USER_FOR_TEN_YEAR, VALID_USER_FOR_ONE_MORE_DAY));
+        final Set<UserDto> mappedResult = toDtos(Set.of(VALID_USER_FOR_TEN_YEAR, VALID_USER_FOR_ONE_MORE_DAY));
 
         Assertions.assertThat(mappedResult).isEqualTo(Set.of(VALID_USER_DTO_FOR_TEN_YEARS, VALID_USER_DTO_FOR_ONE_MORE_DAY));
     }

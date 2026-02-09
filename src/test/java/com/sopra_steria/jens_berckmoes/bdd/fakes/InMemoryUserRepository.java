@@ -17,7 +17,7 @@ public record InMemoryUserRepository(Map<String, User> users) implements UserRep
     }
 
     @Override
-    public Set<User> findALl() {
+    public Set<User> findAll() {
         return new HashSet<>(users.values());
     }
 
