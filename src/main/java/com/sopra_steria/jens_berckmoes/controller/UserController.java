@@ -1,6 +1,7 @@
 package com.sopra_steria.jens_berckmoes.controller;
 
 import com.sopra_steria.jens_berckmoes.domain.User;
+import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDtoResponse;
 import com.sopra_steria.jens_berckmoes.domain.exception.NoUsersFoundException;
 import com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper;
@@ -26,6 +27,11 @@ public record UserController(UserRepository userRepository, TokenRepository toke
         }
         final UserDtoResponse response = new UserDtoResponse(UserDtoMapper.toDtos(all));
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    public UserDto getUserByUsername(final String username) {
+        final User user = userRepository.findByUsername(username);
+        return UserDtoMapper.toDto(user);
     }
 }
 

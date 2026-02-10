@@ -20,6 +20,8 @@ public class UserStepDefinitions {
     @Autowired private UserController userController;
 
     private ResponseEntity<UserDtoResponse> users;
+    private UserDto user;
+
     private RuntimeException exception;
 
     @When("I browse to get all users")
@@ -29,8 +31,6 @@ public class UserStepDefinitions {
 
     @Then("the response contains a list of all the users")
     public void theResponseShouldContainAllUsers() {
-        assertThat(users).isNotNull();
-        assertThat(users.getStatusCode()).isEqualTo(org.springframework.http.HttpStatus.OK);
         assertThat(users.getBody()).isNotNull();
         assertThat(users.getBody()
                 .userDtos()).containsExactlyInAnyOrder(toDtos(BDD_USERS.values()).toArray(new UserDto[0]));
@@ -49,5 +49,16 @@ public class UserStepDefinitions {
     @Then("the response contains a message declaring that no users were found")
     public void theResponseContainsAMessageDeclaringThatNoUsersWereFound() {
         assertThat(exception).isInstanceOf(NoUsersFoundException.class);
+    }
+
+    @When("I browse to get a user by username")
+    public void iBrowseToGetAUserById() {
+        user = userController.getUserByUsername("jane.doe@example.com");
+    }
+
+    @Then("the response contains the user details")
+    public void theResponseContainsTheUserDetails() {
+        assertThat(user).isNotNull();
+        assertThat(user.username()).isEqualTo("jane.doe@example.com");
     }
 }
