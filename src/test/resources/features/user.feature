@@ -25,3 +25,7 @@ Feature: User Management via controller
   Scenario: fails when given an null username
     When I browse to get a user with username ""
     Then the response contains a message "Username can not be blank"
+
+  Scenario: fails when given a non existing username
+    When I browse to get a user with username "jane.doe2@example.com"
+    Then the response contains a message "User not found: jane.doe2@example.com"

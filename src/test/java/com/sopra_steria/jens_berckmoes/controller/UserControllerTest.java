@@ -2,6 +2,7 @@ package com.sopra_steria.jens_berckmoes.controller;
 
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
 import com.sopra_steria.jens_berckmoes.domain.exception.NoUsersFoundException;
+import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
 import com.sopra_steria.jens_berckmoes.domain.exception.UsernameRawValueNullOrBlankException;
 import com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper;
 import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
@@ -21,7 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 
-@DisplayName(("User controller"))
+@DisplayName("User controller")
 class UserControllerTest {
 
     final UserRepository userRepository = mock(UserRepository.class);
@@ -70,22 +71,10 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("should get a 400 Bad Request status code when trying to get a user by empty username")
-    void shouldGetBadRequestWhenEmptyUsername() {
+    @DisplayName("should get a 404 Not found status code when trying to get a non existing user")
+    void shouldGetNotFoundWhenNonExistingUsername() {
         // Assess
-        when(userRepository.findByUsername(BLANK)).thenThrow(UsernameRawValueNullOrBlankException.class);
-
-        // Act + Assert
-        assertThatThrownBy(() -> userController.getUserByUsername(BLANK)).isInstanceOf(
-                UsernameRawValueNullOrBlankException.class);
-
-    }
-
-    @Test
-    @DisplayName("should get a 400 Bad Request status code when trying to get a user by no username")
-    void shouldGetBadRequestWhenNoUsername() {
-        // Assess
-        when(userRepository.findByUsername(null)).thenThrow(UsernameRawValueNullOrBlankException.class);
+        when(userRepository.findByUsername("xq7")).thenThrow(UserNotFoundException.class);
 
         // Act + Assert
         assertThatThrownBy(() -> userController.getUserByUsername(BLANK)).isInstanceOf(

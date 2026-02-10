@@ -24,7 +24,7 @@ public class DatabaseUserRepository implements UserRepository {
     public User findByUsername(final String username) throws UserNotFoundException {
         return crudUserRepository.findById(username)
                 .map(UserMapper::mapToDomain)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
 
     }
 

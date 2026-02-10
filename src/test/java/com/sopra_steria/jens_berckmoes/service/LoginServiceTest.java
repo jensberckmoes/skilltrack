@@ -52,7 +52,7 @@ class LoginServiceTest {
 
     void conditionallyMockFindByUsername(final String username, final String tokenValue) {
         switch(username) {
-            case "-" -> when(userRepository.findByUsername(username)).thenThrow(new UserNotFoundException());
+            case "-" -> when(userRepository.findByUsername(username)).thenThrow(new UserNotFoundException("User not found: " + username));
             case USER_WITH_DIFFERENT_TOKEN_USERNAME ->
                     when(userRepository.findByUsername(username)).thenReturn(User.of(username,
                             VALID_TOKEN_FOR_ONE_MORE_DAY));

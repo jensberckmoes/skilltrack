@@ -6,6 +6,7 @@ import com.sopra_steria.jens_berckmoes.domain.User;
 import com.sopra_steria.jens_berckmoes.domain.dto.ErrorResponse;
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDtoResponse;
+import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
 import com.sopra_steria.jens_berckmoes.domain.exception.UsernameRawValueNullOrBlankException;
 import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
 import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
@@ -109,7 +110,7 @@ public class UserControllerIntegrationTest {
                 .expectStatus()
                 .is4xxClientError()
                 .expectBody(ErrorResponse.class)
-                .value(t-> testErrorResponseWithMessage("Username can not be blank").accept(t));
+                .value(t -> testErrorResponseUsernameWithMessage("Username can not be blank").accept(t));
     }
 
     @Test
@@ -121,16 +122,34 @@ public class UserControllerIntegrationTest {
                 .expectStatus()
                 .is4xxClientError()
                 .expectBody(ErrorResponse.class)
-                .value(t-> testErrorResponseWithMessage("Username can not be null").accept(t));
+                .value(t -> testErrorResponseUsernameWithMessage("Username can not be null").accept(t));
     }
 
-    private Consumer<ErrorResponse> testErrorResponseWithMessage(final String errorMessage) {
+    @Test
+    @DisplayName("should get a 404 Not found status code when trying to get a non existing user")
+    void shouldGetNotFoundWhenNonExistingUsername() {
+        webClient.get()
+                .uri("/api/users/xq7")
+                .exchange()
+                .expectStatus()
+                .is4xxClientError()
+                .expectBody(ErrorResponse.class)
+                .value(t -> testErrorResponseWithMessage(new ErrorResponse("User not found: xq7",
+                        404,
+                        UserNotFoundException.class.getSimpleName())).accept(t));
+    }
+
+    private Consumer<ErrorResponse> testErrorResponseWithMessage(final ErrorResponse error) {
         return errorResponse -> {
             assertThat(errorResponse).isNotNull();
-            assertThat(errorResponse.status()).isEqualTo(400);
-            assertThat(errorResponse.exception()).isEqualTo(UsernameRawValueNullOrBlankException.class.getSimpleName());
-            assertThat(errorResponse.message()).isEqualTo(errorMessage);
+            assertThat(errorResponse.status()).isEqualTo(error.status());
+            assertThat(errorResponse.exception()).isEqualTo(error.exception());
+            assertThat(errorResponse.message()).isEqualTo(error.message());
         };
+    }
+
+    private Consumer<ErrorResponse> testErrorResponseUsernameWithMessage(final String message) {
+        return testErrorResponseWithMessage(new ErrorResponse(message, 400, UsernameRawValueNullOrBlankException.class.getSimpleName()));
     }
 }
 
