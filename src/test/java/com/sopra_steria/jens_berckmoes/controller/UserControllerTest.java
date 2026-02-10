@@ -80,4 +80,16 @@ class UserControllerTest {
                 UsernameRawValueNullOrBlankException.class);
 
     }
+
+    @Test
+    @DisplayName("should get a 400 Bad Request status code when trying to get a user by no username")
+    void shouldGetBadRequestWhenNoUsername() {
+        // Assess
+        when(userRepository.findByUsername(null)).thenThrow(UsernameRawValueNullOrBlankException.class);
+
+        // Act + Assert
+        assertThatThrownBy(() -> userController.getUserByUsername(BLANK)).isInstanceOf(
+                UsernameRawValueNullOrBlankException.class);
+    }
+
 }

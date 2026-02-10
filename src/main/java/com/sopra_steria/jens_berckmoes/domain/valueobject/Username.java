@@ -5,8 +5,11 @@ import com.sopra_steria.jens_berckmoes.domain.exception.UsernameRawValueNullOrBl
 public record Username(String value) {
 
     public Username {
-        if (value == null || value.isBlank()) {
-            throw new UsernameRawValueNullOrBlankException();
+        if(value == null) {
+            throw new UsernameRawValueNullOrBlankException("Username can not be null");
+        }
+        if(value.isBlank()) {
+            throw new UsernameRawValueNullOrBlankException("Username can not be blank");
         }
     }
 

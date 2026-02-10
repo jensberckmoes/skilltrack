@@ -3,8 +3,10 @@ package com.sopra_steria.jens_berckmoes.integration;
 import com.sopra_steria.jens_berckmoes.TestConstants;
 import com.sopra_steria.jens_berckmoes.domain.Token;
 import com.sopra_steria.jens_berckmoes.domain.User;
+import com.sopra_steria.jens_berckmoes.domain.dto.ErrorResponse;
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDtoResponse;
+import com.sopra_steria.jens_berckmoes.domain.exception.UsernameRawValueNullOrBlankException;
 import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
 import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
 import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
@@ -20,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.Set;
+import java.util.function.Consumer;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.USERS_AS_SET;
 import static com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper.toDto;
@@ -95,6 +98,39 @@ public class UserControllerIntegrationTest {
                 .isOk()
                 .expectBody(UserDto.class)
                 .isEqualTo(toDto(user));
+    }
+
+    @Test
+    @DisplayName("should get a 400 Bad Request status code when trying to get a user by null username")
+    void shouldGetBadRequestWhenEmptyUsername() {
+        webClient.get()
+                .uri("/api/users/ ")
+                .exchange()
+                .expectStatus()
+                .is4xxClientError()
+                .expectBody(ErrorResponse.class)
+                .value(t-> testErrorResponseWithMessage("Username can not be blank").accept(t));
+    }
+
+    @Test
+    @DisplayName("should get a 400 Bad Request status code when trying to get a user by empty username")
+    void shouldGetBadRequestWhenNoUsername() {
+        webClient.get()
+                .uri("/api/users/")
+                .exchange()
+                .expectStatus()
+                .is4xxClientError()
+                .expectBody(ErrorResponse.class)
+                .value(t-> testErrorResponseWithMessage("Username can not be null").accept(t));
+    }
+
+    private Consumer<ErrorResponse> testErrorResponseWithMessage(final String errorMessage) {
+        return errorResponse -> {
+            assertThat(errorResponse).isNotNull();
+            assertThat(errorResponse.status()).isEqualTo(400);
+            assertThat(errorResponse.exception()).isEqualTo(UsernameRawValueNullOrBlankException.class.getSimpleName());
+            assertThat(errorResponse.message()).isEqualTo(errorMessage);
+        };
     }
 }
 

@@ -11,7 +11,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
-import static com.sopra_steria.jens_berckmoes.TestConstants.BLANK;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.BDD_USERS;
 import static com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper.toDtos;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,9 +52,22 @@ public class UserStepDefinitions {
         assertThat(exception).isInstanceOf(NoUsersFoundException.class);
     }
 
-    @When("I browse to get a user by username")
-    public void iBrowseToGetAUserById() {
-        user = userController.getUserByUsername("jane.doe@example.com");
+    @When("I browse to get a user with username {string}")
+    public void iBrowseToGetAUserWithUsername(final String arg0) {
+        try {
+            user = userController.getUserByUsername(arg0);
+        } catch(final UsernameRawValueNullOrBlankException e) {
+            exception = e;
+        }
+    }
+
+    @When("I browse to get a user with no username")
+    public void iBrowseToGetAUserWithNoUsername() {
+        try {
+            user = userController.getUserByUsername(null);
+        } catch(final UsernameRawValueNullOrBlankException e) {
+            exception = e;
+        }
     }
 
     @Then("the response contains the user details")
@@ -65,17 +77,10 @@ public class UserStepDefinitions {
         assertThat(user.getBody().username()).isEqualTo("jane.doe@example.com");
     }
 
-    @When("I browse to get a user by empty username but none are found")
-    public void iBrowseToGetAUserByEmptyUsernameButNoneAreFound() {
-        try {
-            user = userController.getUserByUsername(BLANK);
-        } catch(final UsernameRawValueNullOrBlankException e) {
-            exception = e;
-        }
+    @Then("the response contains a message {string}")
+    public void theResponseContainsAMessage(final String arg0) {
+        assertThat(exception).isInstanceOf(UsernameRawValueNullOrBlankException.class);
+        assertThat(exception.getMessage()).isEqualTo(arg0);
     }
 
-    @Then("the response contains a message declaring that the request was invalid")
-    public void theResponseContainsAMessageDeclaringThatTheRequestWasInvalid() {
-        assertThat(exception).isInstanceOf(UsernameRawValueNullOrBlankException.class);
-    }
 }
