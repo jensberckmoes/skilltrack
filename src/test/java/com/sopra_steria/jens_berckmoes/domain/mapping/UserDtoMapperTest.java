@@ -1,7 +1,7 @@
 package com.sopra_steria.jens_berckmoes.domain.mapping;
 
 import com.sopra_steria.jens_berckmoes.domain.User;
-import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
+import com.sopra_steria.jens_berckmoes.domain.dto.GetUserResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ public class UserDtoMapperTest {
     @Test
     @DisplayName("should correctly map from User to UserDTO")
     void shouldMapUserToUserDtoCorrectly() {
-        final UserDto mappedResult = toDto(VALID_USER_FOR_TEN_YEAR);
+        final GetUserResponse mappedResult = toGetUserResponse(VALID_USER_FOR_TEN_YEAR);
 
         Assertions.assertThat(mappedResult).isEqualTo(VALID_USER_DTO_FOR_TEN_YEARS);
     }
@@ -36,7 +36,7 @@ public class UserDtoMapperTest {
     @Test
     @DisplayName("should correctly map from UserSet to UserDTOSet")
     void shouldMapUserSetToUserDtoSetCorrectly() {
-        final Set<UserDto> mappedResult = toDtos(Set.of(VALID_USER_FOR_TEN_YEAR, VALID_USER_FOR_ONE_MORE_DAY));
+        final Set<GetUserResponse> mappedResult = toGetUsersResponse(Set.of(VALID_USER_FOR_TEN_YEAR, VALID_USER_FOR_ONE_MORE_DAY));
 
         Assertions.assertThat(mappedResult).isEqualTo(Set.of(VALID_USER_DTO_FOR_TEN_YEARS, VALID_USER_DTO_FOR_ONE_MORE_DAY));
     }

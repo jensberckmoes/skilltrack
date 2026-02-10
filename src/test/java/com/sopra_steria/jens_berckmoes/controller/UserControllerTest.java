@@ -1,6 +1,6 @@
 package com.sopra_steria.jens_berckmoes.controller;
 
-import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
+import com.sopra_steria.jens_berckmoes.domain.dto.GetUserResponse;
 import com.sopra_steria.jens_berckmoes.domain.exception.NoUsersFoundException;
 import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
 import com.sopra_steria.jens_berckmoes.domain.exception.UsernameRawValueNullOrBlankException;
@@ -15,7 +15,7 @@ import java.util.HashSet;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.BLANK;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
-import static com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper.toDto;
+import static com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper.toGetUserResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
@@ -41,8 +41,8 @@ class UserControllerTest {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().userDtos()).containsExactlyInAnyOrder(UserDtoMapper.toDtos(USERS_AS_SET)
-                .toArray(new UserDto[0]));
+        assertThat(response.getBody().getUserResponses()).containsExactlyInAnyOrder(UserDtoMapper.toGetUsersResponse(USERS_AS_SET)
+                .toArray(new GetUserResponse[0]));
     }
 
     @Test
@@ -62,12 +62,12 @@ class UserControllerTest {
         when(userRepository.findByUsername(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING)).thenReturn(VALID_USER_FOR_TEN_YEAR);
 
         // Act
-        final ResponseEntity<UserDto> response = userController.getUserByUsername(
+        final ResponseEntity<GetUserResponse> response = userController.getUserByUsername(
                 VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(OK);
-        assertThat(response.getBody()).isEqualTo(toDto(VALID_USER_FOR_TEN_YEAR));
+        assertThat(response.getBody()).isEqualTo(toGetUserResponse(VALID_USER_FOR_TEN_YEAR));
     }
 
     @Test

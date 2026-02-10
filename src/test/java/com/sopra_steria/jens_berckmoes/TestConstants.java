@@ -2,7 +2,7 @@ package com.sopra_steria.jens_berckmoes;
 
 import com.sopra_steria.jens_berckmoes.domain.Token;
 import com.sopra_steria.jens_berckmoes.domain.User;
-import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
+import com.sopra_steria.jens_berckmoes.domain.dto.GetUserResponse;
 import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
 import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
 import lombok.AccessLevel;
@@ -111,8 +111,8 @@ public final class TestConstants {
 
     public static final class UserDtos {
 
-        public static final UserDto VALID_USER_DTO_FOR_TEN_YEARS = UserDto.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING);
+        public static final GetUserResponse VALID_USER_DTO_FOR_TEN_YEARS = GetUserResponse.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING);
 
-        public static final UserDto VALID_USER_DTO_FOR_ONE_MORE_DAY = UserDto.of(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING);
+        public static final GetUserResponse VALID_USER_DTO_FOR_ONE_MORE_DAY = GetUserResponse.of(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING);
     }
 }

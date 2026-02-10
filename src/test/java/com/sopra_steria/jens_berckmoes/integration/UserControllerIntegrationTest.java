@@ -3,9 +3,9 @@ package com.sopra_steria.jens_berckmoes.integration;
 import com.sopra_steria.jens_berckmoes.TestConstants;
 import com.sopra_steria.jens_berckmoes.domain.Token;
 import com.sopra_steria.jens_berckmoes.domain.User;
-import com.sopra_steria.jens_berckmoes.domain.dto.ErrorResponse;
-import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
-import com.sopra_steria.jens_berckmoes.domain.dto.UserDtoResponse;
+import com.sopra_steria.jens_berckmoes.domain.ErrorResponse;
+import com.sopra_steria.jens_berckmoes.domain.dto.GetUserResponse;
+import com.sopra_steria.jens_berckmoes.domain.dto.GetAllUsersResponse;
 import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
 import com.sopra_steria.jens_berckmoes.domain.exception.UsernameRawValueNullOrBlankException;
 import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
@@ -26,8 +26,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.USERS_AS_SET;
-import static com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper.toDto;
-import static com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper.toDtos;
+import static com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper.toGetUserResponse;
+import static com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper.toGetUsersResponse;
 import static com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper.mapToInfra;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -64,17 +64,17 @@ public class UserControllerIntegrationTest {
     @Test
     @DisplayName("should get all users as user dto objects with status code 200 OK")
     void shouldGetAllUsers() {
-        final UserDtoResponse response = webClient.get()
+        final GetAllUsersResponse response = webClient.get()
                 .uri("/api/users")
                 .exchange()
                 .expectStatus()
                 .isOk()
-                .expectBody(new ParameterizedTypeReference<UserDtoResponse>() {})
+                .expectBody(new ParameterizedTypeReference<GetAllUsersResponse>() {})
                 .returnResult()
                 .getResponseBody();
         assertThat(response).isNotNull();
-        assertThat(response.userDtos()).isNotEmpty();
-        assertThat(response.userDtos()).containsExactlyInAnyOrder(toDtos(USERS_AS_SET).toArray(new UserDto[0]));
+        assertThat(response.getUserResponses()).isNotEmpty();
+        assertThat(response.getUserResponses()).containsExactlyInAnyOrder(toGetUsersResponse(USERS_AS_SET).toArray(new GetUserResponse[0]));
     }
 
     @Test
@@ -97,8 +97,8 @@ public class UserControllerIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .isOk()
-                .expectBody(UserDto.class)
-                .isEqualTo(toDto(user));
+                .expectBody(GetUserResponse.class)
+                .isEqualTo(toGetUserResponse(user));
     }
 
     @Test

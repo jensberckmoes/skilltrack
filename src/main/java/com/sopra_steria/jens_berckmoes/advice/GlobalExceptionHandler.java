@@ -1,6 +1,6 @@
 package com.sopra_steria.jens_berckmoes.advice;
 
-import com.sopra_steria.jens_berckmoes.domain.dto.ErrorResponse;
+import com.sopra_steria.jens_berckmoes.domain.ErrorResponse;
 import com.sopra_steria.jens_berckmoes.domain.exception.NoUsersFoundException;
 import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
 import com.sopra_steria.jens_berckmoes.domain.exception.UsernameRawValueNullOrBlankException;
