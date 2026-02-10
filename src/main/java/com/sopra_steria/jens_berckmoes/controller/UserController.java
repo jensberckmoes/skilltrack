@@ -7,6 +7,7 @@ import com.sopra_steria.jens_berckmoes.domain.exception.NoUsersFoundException;
 import com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper;
 import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
 import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
+import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +33,8 @@ public record UserController(UserRepository userRepository, TokenRepository toke
 
     @GetMapping("/{username:.+}")
     public ResponseEntity<UserDto> getUserByUsername(@PathVariable final String username) {
-        final User user = userRepository.findByUsername(username);
+        final Username usernameValueObject = Username.of(username);
+        final User user = userRepository.findByUsername(usernameValueObject.value());
         final UserDto userDto = UserDtoMapper.toDto(user);
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }

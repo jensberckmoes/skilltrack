@@ -13,3 +13,7 @@ Feature: User Management via controller
   Scenario: Get user by username
     When I browse to get a user by username
     Then the response contains the user details
+
+  Scenario: Get user by empty username
+    When I browse to get a user by empty username but none are found
+    Then the response contains a message declaring that the request was invalid

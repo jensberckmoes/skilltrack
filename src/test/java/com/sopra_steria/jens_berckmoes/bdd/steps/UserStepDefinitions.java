@@ -4,12 +4,14 @@ import com.sopra_steria.jens_berckmoes.controller.UserController;
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDtoResponse;
 import com.sopra_steria.jens_berckmoes.domain.exception.NoUsersFoundException;
+import com.sopra_steria.jens_berckmoes.domain.exception.UsernameRawValueNullOrBlankException;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
+import static com.sopra_steria.jens_berckmoes.TestConstants.BLANK;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.BDD_USERS;
 import static com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper.toDtos;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,5 +63,19 @@ public class UserStepDefinitions {
         assertThat(user).isNotNull();
         assertThat(user.getBody()).isNotNull();
         assertThat(user.getBody().username()).isEqualTo("jane.doe@example.com");
+    }
+
+    @When("I browse to get a user by empty username but none are found")
+    public void iBrowseToGetAUserByEmptyUsernameButNoneAreFound() {
+        try {
+            user = userController.getUserByUsername(BLANK);
+        } catch(final UsernameRawValueNullOrBlankException e) {
+            exception = e;
+        }
+    }
+
+    @Then("the response contains a message declaring that the request was invalid")
+    public void theResponseContainsAMessageDeclaringThatTheRequestWasInvalid() {
+        assertThat(exception).isInstanceOf(UsernameRawValueNullOrBlankException.class);
     }
 }
