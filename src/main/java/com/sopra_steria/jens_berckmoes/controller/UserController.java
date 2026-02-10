@@ -1,8 +1,8 @@
 package com.sopra_steria.jens_berckmoes.controller;
 
 import com.sopra_steria.jens_berckmoes.domain.User;
-import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDtoResponse;
+import com.sopra_steria.jens_berckmoes.domain.exception.NoUsersFoundException;
 import com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper;
 import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
 import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
@@ -21,8 +21,10 @@ public record UserController(UserRepository userRepository, TokenRepository toke
     @GetMapping
     public ResponseEntity<UserDtoResponse> getAllUsers() {
         final Set<User> all = userRepository.findAll();
-        final Set<UserDto> userDtos = UserDtoMapper.toDtos(all);
-        final UserDtoResponse response = new UserDtoResponse(userDtos);
+        if(all.isEmpty()) {
+            throw new NoUsersFoundException();
+        }
+        final UserDtoResponse response = new UserDtoResponse(UserDtoMapper.toDtos(all));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

@@ -3,6 +3,7 @@ package com.sopra_steria.jens_berckmoes.bdd.steps;
 import com.sopra_steria.jens_berckmoes.controller.UserController;
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDtoResponse;
+import com.sopra_steria.jens_berckmoes.domain.exception.NoUsersFoundException;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +18,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("User Feature CRUD Operations Step Definitions")
 public class UserStepDefinitions {
     @Autowired private UserController userController;
+
     private ResponseEntity<UserDtoResponse> users;
+    private RuntimeException exception;
 
     @When("I browse to get all users")
     public void iCallGETApiUsers() {
@@ -33,4 +36,18 @@ public class UserStepDefinitions {
                 .userDtos()).containsExactlyInAnyOrder(toDtos(BDD_USERS.values()).toArray(new UserDto[0]));
     }
 
+    @When("I browse to get all users but none are found")
+    public void iBrowseToGetAllUsersButNoneAreFound() {
+        try {
+            users = userController.getAllUsers();
+        } catch(final NoUsersFoundException e) {
+            exception = e;
+        }
+
+    }
+
+    @Then("the response contains a message declaring that no users were found")
+    public void theResponseContainsAMessageDeclaringThatNoUsersWereFound() {
+        assertThat(exception).isInstanceOf(NoUsersFoundException.class);
+    }
 }

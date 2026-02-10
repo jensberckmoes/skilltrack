@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 
 import java.time.Clock;
 import java.time.ZoneId;
+import java.util.HashMap;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_TODAY;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.BDD_TOKENS;
@@ -29,12 +30,12 @@ public class TestConfig {
 
     @Bean
     public UserRepository userRepository() {
-        return new InMemoryUserRepository(BDD_USERS);
+        return new InMemoryUserRepository(new HashMap<>(BDD_USERS));
     }
 
     @Bean
     public TokenRepository tokenRepository() {
-        return new InMemoryTokenRepository(BDD_TOKENS);
+        return new InMemoryTokenRepository(new HashMap<>(BDD_TOKENS));
     }
 
     @Bean
