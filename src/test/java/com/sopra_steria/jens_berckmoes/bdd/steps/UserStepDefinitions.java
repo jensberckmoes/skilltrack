@@ -4,6 +4,7 @@ import com.sopra_steria.jens_berckmoes.controller.UserController;
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDtoResponse;
 import com.sopra_steria.jens_berckmoes.domain.exception.NoUsersFoundException;
+import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
 import com.sopra_steria.jens_berckmoes.domain.exception.UsernameRawValueNullOrBlankException;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -56,7 +57,7 @@ public class UserStepDefinitions {
     public void iBrowseToGetAUserWithUsername(final String arg0) {
         try {
             user = userController.getUserByUsername(arg0);
-        } catch(final UsernameRawValueNullOrBlankException e) {
+        } catch(final UsernameRawValueNullOrBlankException | UserNotFoundException e) {
             exception = e;
         }
     }
@@ -79,7 +80,6 @@ public class UserStepDefinitions {
 
     @Then("the response contains a message {string}")
     public void theResponseContainsAMessage(final String arg0) {
-        assertThat(exception).isInstanceOf(UsernameRawValueNullOrBlankException.class);
         assertThat(exception.getMessage()).isEqualTo(arg0);
     }
 

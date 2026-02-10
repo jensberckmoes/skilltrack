@@ -13,7 +13,7 @@ public record InMemoryUserRepository(Map<String, User> users) implements UserRep
 
     @Override
     public User findByUsername(final String username) throws UserNotFoundException {
-        return Optional.ofNullable(users.get(username)).orElseThrow(UserNotFoundException::new);
+        return Optional.ofNullable(users.get(username)).orElseThrow(() -> new UserNotFoundException("User not found: " + username));
     }
 
     @Override
