@@ -1,14 +1,17 @@
 package com.sopra_steria.jens_berckmoes.controller;
 
 import com.sopra_steria.jens_berckmoes.domain.User;
+import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDtoResponse;
 import com.sopra_steria.jens_berckmoes.domain.exception.NoUsersFoundException;
 import com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper;
 import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
 import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
+import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +29,14 @@ public record UserController(UserRepository userRepository, TokenRepository toke
         }
         final UserDtoResponse response = new UserDtoResponse(UserDtoMapper.toDtos(all));
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = {"/", "/{username:.+}"})
+    public ResponseEntity<UserDto> getUserByUsername(@PathVariable(required = false) final String username) {
+        final Username usernameValueObject = Username.of(username);
+        final User user = userRepository.findByUsername(usernameValueObject.value());
+        final UserDto userDto = UserDtoMapper.toDto(user);
+        return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 }
 

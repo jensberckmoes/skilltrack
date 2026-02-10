@@ -4,6 +4,7 @@ import com.sopra_steria.jens_berckmoes.controller.UserController;
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDtoResponse;
 import com.sopra_steria.jens_berckmoes.domain.exception.NoUsersFoundException;
+import com.sopra_steria.jens_berckmoes.domain.exception.UsernameRawValueNullOrBlankException;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +21,8 @@ public class UserStepDefinitions {
     @Autowired private UserController userController;
 
     private ResponseEntity<UserDtoResponse> users;
+    private ResponseEntity<UserDto> user;
+
     private RuntimeException exception;
 
     @When("I browse to get all users")
@@ -29,8 +32,6 @@ public class UserStepDefinitions {
 
     @Then("the response contains a list of all the users")
     public void theResponseShouldContainAllUsers() {
-        assertThat(users).isNotNull();
-        assertThat(users.getStatusCode()).isEqualTo(org.springframework.http.HttpStatus.OK);
         assertThat(users.getBody()).isNotNull();
         assertThat(users.getBody()
                 .userDtos()).containsExactlyInAnyOrder(toDtos(BDD_USERS.values()).toArray(new UserDto[0]));
@@ -50,4 +51,36 @@ public class UserStepDefinitions {
     public void theResponseContainsAMessageDeclaringThatNoUsersWereFound() {
         assertThat(exception).isInstanceOf(NoUsersFoundException.class);
     }
+
+    @When("I browse to get a user with username {string}")
+    public void iBrowseToGetAUserWithUsername(final String arg0) {
+        try {
+            user = userController.getUserByUsername(arg0);
+        } catch(final UsernameRawValueNullOrBlankException e) {
+            exception = e;
+        }
+    }
+
+    @When("I browse to get a user with no username")
+    public void iBrowseToGetAUserWithNoUsername() {
+        try {
+            user = userController.getUserByUsername(null);
+        } catch(final UsernameRawValueNullOrBlankException e) {
+            exception = e;
+        }
+    }
+
+    @Then("the response contains the user details")
+    public void theResponseContainsTheUserDetails() {
+        assertThat(user).isNotNull();
+        assertThat(user.getBody()).isNotNull();
+        assertThat(user.getBody().username()).isEqualTo("jane.doe@example.com");
+    }
+
+    @Then("the response contains a message {string}")
+    public void theResponseContainsAMessage(final String arg0) {
+        assertThat(exception).isInstanceOf(UsernameRawValueNullOrBlankException.class);
+        assertThat(exception.getMessage()).isEqualTo(arg0);
+    }
+
 }

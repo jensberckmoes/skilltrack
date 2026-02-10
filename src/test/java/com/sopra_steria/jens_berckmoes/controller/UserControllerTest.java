@@ -2,15 +2,19 @@ package com.sopra_steria.jens_berckmoes.controller;
 
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
 import com.sopra_steria.jens_berckmoes.domain.exception.NoUsersFoundException;
+import com.sopra_steria.jens_berckmoes.domain.exception.UsernameRawValueNullOrBlankException;
 import com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper;
 import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
 import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.ResponseEntity;
 
 import java.util.HashSet;
 
-import static com.sopra_steria.jens_berckmoes.TestConstants.Users.USERS_AS_SET;
+import static com.sopra_steria.jens_berckmoes.TestConstants.BLANK;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
+import static com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper.toDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
@@ -49,4 +53,43 @@ class UserControllerTest {
         // Act
         assertThatThrownBy(userController::getAllUsers).isInstanceOf(NoUsersFoundException.class);
     }
+
+    @Test
+    @DisplayName("should be able to get a User using username with status code 200 OK")
+    void shouldBeAbleToGetUserByUsername() {
+        // Assess
+        when(userRepository.findByUsername(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING)).thenReturn(VALID_USER_FOR_TEN_YEAR);
+
+        // Act
+        final ResponseEntity<UserDto> response = userController.getUserByUsername(
+                VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+        assertThat(response.getBody()).isEqualTo(toDto(VALID_USER_FOR_TEN_YEAR));
+    }
+
+    @Test
+    @DisplayName("should get a 400 Bad Request status code when trying to get a user by empty username")
+    void shouldGetBadRequestWhenEmptyUsername() {
+        // Assess
+        when(userRepository.findByUsername(BLANK)).thenThrow(UsernameRawValueNullOrBlankException.class);
+
+        // Act + Assert
+        assertThatThrownBy(() -> userController.getUserByUsername(BLANK)).isInstanceOf(
+                UsernameRawValueNullOrBlankException.class);
+
+    }
+
+    @Test
+    @DisplayName("should get a 400 Bad Request status code when trying to get a user by no username")
+    void shouldGetBadRequestWhenNoUsername() {
+        // Assess
+        when(userRepository.findByUsername(null)).thenThrow(UsernameRawValueNullOrBlankException.class);
+
+        // Act + Assert
+        assertThatThrownBy(() -> userController.getUserByUsername(BLANK)).isInstanceOf(
+                UsernameRawValueNullOrBlankException.class);
+    }
+
 }
