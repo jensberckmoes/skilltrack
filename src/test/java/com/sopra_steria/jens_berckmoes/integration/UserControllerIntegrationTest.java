@@ -68,5 +68,13 @@ public class UserControllerIntegrationTest {
         assertThat(response.userDtos()).isNotEmpty();
         assertThat(response.userDtos()).containsExactlyInAnyOrder(toDtos(USERS_AS_SET).toArray(new UserDto[0]));
     }
+
+    @Test
+    @DisplayName("should get status code 204 No Content when there are no users found")
+    void shouldGetNoContentWhenNoUsers() {
+        wipeDatabaseClean();
+
+        webClient.get().uri("/api/users").exchange().expectStatus().isNoContent().expectBody().isEmpty();
+    }
 }
 
