@@ -10,6 +10,7 @@ import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,7 +30,8 @@ public record UserController(UserRepository userRepository, TokenRepository toke
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    public ResponseEntity<UserDto> getUserByUsername(final String username) {
+    @GetMapping("/{username:.+}")
+    public ResponseEntity<UserDto> getUserByUsername(@PathVariable final String username) {
         final User user = userRepository.findByUsername(username);
         final UserDto userDto = UserDtoMapper.toDto(user);
         return new ResponseEntity<>(userDto, HttpStatus.OK);

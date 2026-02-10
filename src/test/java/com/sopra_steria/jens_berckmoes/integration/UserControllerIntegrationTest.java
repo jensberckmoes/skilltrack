@@ -1,5 +1,8 @@
 package com.sopra_steria.jens_berckmoes.integration;
 
+import com.sopra_steria.jens_berckmoes.TestConstants;
+import com.sopra_steria.jens_berckmoes.domain.Token;
+import com.sopra_steria.jens_berckmoes.domain.User;
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
 import com.sopra_steria.jens_berckmoes.domain.dto.UserDtoResponse;
 import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
@@ -19,6 +22,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.util.Set;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.USERS_AS_SET;
+import static com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper.toDto;
 import static com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper.toDtos;
 import static com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper.mapToInfra;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,6 +79,22 @@ public class UserControllerIntegrationTest {
         wipeDatabaseClean();
 
         webClient.get().uri("/api/users").exchange().expectStatus().isNoContent().expectBody().isEmpty();
+    }
+
+    @Test
+    @DisplayName("should be able to get a User using username with status code 200 OK")
+    void shouldBeAbleToGetUserByUsername() {
+        wipeDatabaseClean();
+        final User user = User.of("jane.doe@example.com", Token.of("abcdef", TestConstants.TimeFixture.TEST_TODAY));
+        userRepository.save(user);
+
+        webClient.get()
+                .uri("/api/users/jane.doe@example.com")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(UserDto.class)
+                .isEqualTo(toDto(user));
     }
 }
 
