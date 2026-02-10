@@ -35,7 +35,7 @@ public class TestConfig {
 
     @Bean
     public TokenRepository tokenRepository() {
-        return new InMemoryTokenRepository(BDD_TOKENS);
+        return new InMemoryTokenRepository(new HashMap<>(BDD_TOKENS));
     }
 
     @Bean
