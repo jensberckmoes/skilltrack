@@ -20,7 +20,7 @@ public class UserStepDefinitions {
     @Autowired private UserController userController;
 
     private ResponseEntity<UserDtoResponse> users;
-    private UserDto user;
+    private ResponseEntity<UserDto> user;
 
     private RuntimeException exception;
 
@@ -59,6 +59,7 @@ public class UserStepDefinitions {
     @Then("the response contains the user details")
     public void theResponseContainsTheUserDetails() {
         assertThat(user).isNotNull();
-        assertThat(user.username()).isEqualTo("jane.doe@example.com");
+        assertThat(user.getBody()).isNotNull();
+        assertThat(user.getBody().username()).isEqualTo("jane.doe@example.com");
     }
 }

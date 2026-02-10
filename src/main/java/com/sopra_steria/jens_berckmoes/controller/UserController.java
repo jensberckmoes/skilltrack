@@ -29,9 +29,10 @@ public record UserController(UserRepository userRepository, TokenRepository toke
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    public UserDto getUserByUsername(final String username) {
+    public ResponseEntity<UserDto> getUserByUsername(final String username) {
         final User user = userRepository.findByUsername(username);
-        return UserDtoMapper.toDto(user);
+        final UserDto userDto = UserDtoMapper.toDto(user);
+        return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 }
 
