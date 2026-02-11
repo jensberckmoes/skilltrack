@@ -38,7 +38,6 @@ public final class TestConstants {
     public static final class Tokens {
         public static final String VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING = "valid_token_for_ten_years";
         public static final String VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING = "valid_token_for_one_more_day";
-        public static final String EXPIRED_TOKEN_BY_ONE_DAY_RAW_STRING = "expired_token_by_one_day";
         public static final String NON_EXISTING_TOKEN_RAW_STRING = "abc123";
 
         public static final Token VALID_TOKEN_FOR_TEN_YEARS = Token.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, TEST_TEN_YEARS_FROM_NOW);
