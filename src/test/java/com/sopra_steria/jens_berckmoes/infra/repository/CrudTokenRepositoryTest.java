@@ -82,14 +82,14 @@ class CrudTokenRepositoryTest {
     public static Stream<Arguments> existByTokenInParameters() {
         return Stream.of(Arguments.of(Set.of(EMPTY), false),
                 Arguments.of(Set.of(BLANK), false),
-                Arguments.of(Set.of("-"), false),
+                Arguments.of(Set.of(NON_EXISTING_TOKEN_RAW_STRING), false),
                 Arguments.of(null, false),
                 Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING), true),
-                Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, "-"), true),
-                Arguments.of(Set.of(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING, "-"), true),
+                Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, NON_EXISTING_TOKEN_RAW_STRING), true),
+                Arguments.of(Set.of(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING, NON_EXISTING_TOKEN_RAW_STRING), true),
                 Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING),
                         true),
-                Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING, "-"),
+                Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING, NON_EXISTING_TOKEN_RAW_STRING),
                         true),
                 Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING,
                         VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING,
@@ -97,7 +97,7 @@ class CrudTokenRepositoryTest {
                 Arguments.of(Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING,
                         VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING,
                         EXPIRED_TOKEN_BY_ONE_DAY_RAW_STRING,
-                        "-"), true));
+                                    NON_EXISTING_TOKEN_RAW_STRING), true));
     }
 
     @Test

@@ -5,7 +5,7 @@ import com.sopra_steria.jens_berckmoes.bdd.fakes.InMemoryUserRepository;
 import com.sopra_steria.jens_berckmoes.controller.UserController;
 import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
 import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
-import com.sopra_steria.jens_berckmoes.service.LoginService;
+import com.sopra_steria.jens_berckmoes.service.ValidateAssessmentAccessService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -24,8 +24,8 @@ import static com.sopra_steria.jens_berckmoes.TestConstants.Users.BDD_USERS;
 public class TestConfig {
 
     @Bean
-    public LoginService loginService() {
-        return new LoginService(userRepository(), tokenRepository(), clock());
+    public ValidateAssessmentAccessService loginService() {
+        return new ValidateAssessmentAccessService(userRepository(), tokenRepository(), clock());
     }
 
     @Bean

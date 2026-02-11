@@ -17,7 +17,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 
 @Service
-public record LoginService(UserRepository userRepository, TokenRepository tokenRepository, Clock clock) {
+public record ValidateAssessmentAccessService(UserRepository userRepository, TokenRepository tokenRepository, Clock clock) {
 
     public LoginResult login(final Username username, final TokenValue tokenValue) {
         final LocalDate now = LocalDate.now(clock);
@@ -26,8 +26,8 @@ public record LoginService(UserRepository userRepository, TokenRepository tokenR
 
     private LoginResult loginAt(final Username username, final TokenValue tokenValue, final LocalDate now) {
         try {
-            final User user = userRepository.findByUsername(username.value());
-            final Token token = tokenRepository.findByTokenValue(tokenValue.value());
+            final User user = userRepository.findByUsername(username);
+            final Token token = tokenRepository.findByTokenValue(tokenValue);
             ensureTokenBelongsToUser(token, user);
             ensureTokenNotExpired(token, now);
             return LoginResult.success();

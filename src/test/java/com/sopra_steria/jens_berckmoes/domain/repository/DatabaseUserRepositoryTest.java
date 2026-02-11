@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.sopra_steria.jens_berckmoes.TestConstants.Usernames.*;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
 import static com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper.mapToInfra;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -28,7 +29,7 @@ class DatabaseUserRepositoryTest {
         when(crudUserRepository.findById(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING)).thenReturn(Optional.ofNullable(mapToInfra(
                 VALID_USER_FOR_TEN_YEAR)));
 
-        final User databaseUsername = repository.findByUsername(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING);
+        final User databaseUsername = repository.findByUsername(VALID_USERNAME_FOR_TEN_YEARS);
 
         assertUserFieldsAreEqual(databaseUsername, VALID_USER_FOR_TEN_YEAR);
     }
@@ -39,7 +40,7 @@ class DatabaseUserRepositoryTest {
         when(crudUserRepository.findById(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING)).thenReturn(Optional.ofNullable(mapToInfra(
                 VALID_USER_FOR_ONE_MORE_DAY)));
 
-        final User databaseUsername = repository.findByUsername(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING);
+        final User databaseUsername = repository.findByUsername(VALID_USERNAME_FOR_ONE_MORE_DAY);
 
         assertUserFieldsAreEqual(databaseUsername, VALID_USER_FOR_ONE_MORE_DAY);
         verify(crudUserRepository, times(1)).findById(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING);
@@ -48,10 +49,10 @@ class DatabaseUserRepositoryTest {
     @Test
     @DisplayName("should throw UserNotFoundException when user is not found by username")
     void shouldThrowUserNotFoundWhenNotFound() {
-        when(crudUserRepository.findById("-")).thenReturn(Optional.empty());
+        when(crudUserRepository.findById(NON_EXISTING_USERNAME_RAW_STRING)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> repository.findByUsername("-")).isInstanceOf(UserNotFoundException.class);
-        verify(crudUserRepository, times(1)).findById("-");
+        assertThatThrownBy(() -> repository.findByUsername(NON_EXISTING_USERNAME)).isInstanceOf(UserNotFoundException.class);
+        verify(crudUserRepository, times(1)).findById(NON_EXISTING_USERNAME_RAW_STRING);
     }
 
     @Test
@@ -85,16 +86,16 @@ class DatabaseUserRepositoryTest {
         when(crudUserRepository.findById(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING)).thenReturn(Optional.of(mapToInfra(
                 VALID_USER_FOR_ONE_MORE_DAY)));
 
-        assertThat(repository.findByUsername(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING)).isNotNull();
-        assertThat(repository.findByUsername(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING)).isNotNull();
+        assertThat(repository.findByUsername(VALID_USERNAME_FOR_TEN_YEARS)).isNotNull();
+        assertThat(repository.findByUsername(VALID_USERNAME_FOR_ONE_MORE_DAY)).isNotNull();
 
         repository.deleteAll();
 
         when(crudUserRepository.findById(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING)).thenReturn(Optional.empty());
         when(crudUserRepository.findById(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> repository.findByUsername(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING)).isInstanceOf(UserNotFoundException.class);
-        assertThatThrownBy(() -> repository.findByUsername(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING)).isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> repository.findByUsername(VALID_USERNAME_FOR_TEN_YEARS)).isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> repository.findByUsername(VALID_USERNAME_FOR_ONE_MORE_DAY)).isInstanceOf(UserNotFoundException.class);
 
         verify(crudUserRepository, times(1)).deleteAll();
     }

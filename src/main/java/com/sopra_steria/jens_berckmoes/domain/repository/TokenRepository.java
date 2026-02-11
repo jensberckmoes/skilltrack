@@ -2,13 +2,14 @@ package com.sopra_steria.jens_berckmoes.domain.repository;
 
 import com.sopra_steria.jens_berckmoes.domain.Token;
 import com.sopra_steria.jens_berckmoes.domain.exception.TokenNotFoundException;
+import com.sopra_steria.jens_berckmoes.domain.valueobject.TokenValue;
 import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
 
 import java.util.Collection;
 import java.util.Set;
 
 public interface TokenRepository {
-    Token findByTokenValue(final String token) throws TokenNotFoundException;
+    Token findByTokenValue(final TokenValue token) throws TokenNotFoundException;
 
     Token save(final Token token);
 

@@ -8,7 +8,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_TODAY;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.NON_EXISTING_TOKEN_RAW_STRING;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.VALID_TOKEN_FOR_TEN_YEARS;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.NON_EXISTING_USERNAME_RAW_STRING;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USER_FOR_TEN_YEAR;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -26,6 +28,6 @@ class UserTest {
 
     public static Stream<Arguments> belongsToProvider() {
         return Stream.of(Arguments.of(VALID_TOKEN_FOR_TEN_YEARS, VALID_USER_FOR_TEN_YEAR, true),
-                Arguments.of(VALID_TOKEN_FOR_TEN_YEARS, User.of("-", Token.of("-", TEST_TODAY)), false));
+                Arguments.of(VALID_TOKEN_FOR_TEN_YEARS, User.of(NON_EXISTING_USERNAME_RAW_STRING, Token.of(NON_EXISTING_TOKEN_RAW_STRING, TEST_TODAY)), false));
     }
 }

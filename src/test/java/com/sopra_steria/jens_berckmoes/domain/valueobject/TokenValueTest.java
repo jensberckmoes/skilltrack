@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.BLANK;
+import static com.sopra_steria.jens_berckmoes.TestConstants.TokenValues.VALID_TOKEN_VALUE_FOR_TEN_YEARS;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -20,7 +21,7 @@ class TokenValueTest {
     @Test
     @DisplayName("should create a valid token value when given a valid raw token")
     void shouldCreateValidTokenValue() {
-        assertThat(TokenValue.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING).value()).isEqualTo(
+        assertThat(VALID_TOKEN_VALUE_FOR_TEN_YEARS.value()).isEqualTo(
                 VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING);
     }
 

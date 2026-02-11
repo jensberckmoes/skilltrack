@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import java.util.HashSet;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.BLANK;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Usernames.NON_EXISTING_USERNAME;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Usernames.VALID_USERNAME_FOR_TEN_YEARS;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
 import static com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper.toGetUserResponse;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,7 +61,7 @@ class UserControllerTest {
     @DisplayName("should be able to get a User using username with status code 200 OK")
     void shouldBeAbleToGetUserByUsername() {
         // Assess
-        when(userRepository.findByUsername(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING)).thenReturn(VALID_USER_FOR_TEN_YEAR);
+        when(userRepository.findByUsername(VALID_USERNAME_FOR_TEN_YEARS)).thenReturn(VALID_USER_FOR_TEN_YEAR);
 
         // Act
         final ResponseEntity<GetUserResponse> response = userController.getUserByUsername(
@@ -74,7 +76,7 @@ class UserControllerTest {
     @DisplayName("should get a 404 Not found status code when trying to get a non existing user")
     void shouldGetNotFoundWhenNonExistingUsername() {
         // Assess
-        when(userRepository.findByUsername("xq7")).thenThrow(UserNotFoundException.class);
+        when(userRepository.findByUsername(NON_EXISTING_USERNAME)).thenThrow(UserNotFoundException.class);
 
         // Act + Assert
         assertThatThrownBy(() -> userController.getUserByUsername(BLANK)).isInstanceOf(

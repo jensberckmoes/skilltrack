@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static com.sopra_steria.jens_berckmoes.TestConstants.UserDtos.VALID_USER_DTO_FOR_ONE_MORE_DAY;
-import static com.sopra_steria.jens_berckmoes.TestConstants.UserDtos.VALID_USER_DTO_FOR_TEN_YEARS;
+import static com.sopra_steria.jens_berckmoes.TestConstants.getUserResponses.VALID_USER_DTO_FOR_ONE_MORE_DAY;
+import static com.sopra_steria.jens_berckmoes.TestConstants.getUserResponses.VALID_USER_DTO_FOR_TEN_YEARS;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
 import static com.sopra_steria.jens_berckmoes.domain.User.nullToken;
 import static com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper.*;

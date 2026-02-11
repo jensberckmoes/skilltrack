@@ -35,7 +35,7 @@ public record UserController(UserRepository userRepository, TokenRepository toke
     @GetMapping(value = {"/", "/{username:.+}"})
     public ResponseEntity<GetUserResponse> getUserByUsername(@PathVariable(required = false) final String username) {
         final Username usernameValueObject = Username.of(username);
-        final User user = userRepository.findByUsername(usernameValueObject.value());
+        final User user = userRepository.findByUsername(usernameValueObject);
         final GetUserResponse getUserResponse = UserDtoMapper.toGetUserResponse(user);
         return new ResponseEntity<>(getUserResponse, HttpStatus.OK);
     }

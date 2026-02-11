@@ -30,11 +30,14 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 @DisplayName("CrudUserRepository Integration Tests")
 class CrudUserRepositoryTest {
 
-    @Autowired private CrudUserRepository userRepository;
+    @Autowired
+    private CrudUserRepository userRepository;
 
-    @Autowired private CrudTokenRepository crudTokenRepository;
+    @Autowired
+    private CrudTokenRepository crudTokenRepository;
 
-    @Autowired private EntityManager entityManager;
+    @Autowired
+    private EntityManager entityManager;
 
     @Test
     @DisplayName("CrudUserRepository should save and retrieve user with token correctly via cascade all")
@@ -94,7 +97,8 @@ class CrudUserRepositoryTest {
     @ParameterizedTest
     @MethodSource("existByUsernameInParameters")
     @DisplayName("Should be able to check if users exist by username in a set of usernames")
-    void existsByUsernameIn(final Set<String> usernames, final boolean expectedResult) {
+    void existsByUsernameIn(final Set<String> usernames,
+                            final boolean expectedResult) {
         userRepository.saveAll(mapToInfra(USERS_AS_SET));
         flushAndResetContext();
 
@@ -105,16 +109,14 @@ class CrudUserRepositoryTest {
         return Stream.of(Arguments.of(Set.of(EMPTY), false),
                 Arguments.of(Set.of(BLANK), false),
                 Arguments.of(null, false),
-                Arguments.of(Set.of("-"), false),
+                Arguments.of(Set.of(NON_EXISTING_USERNAME_RAW_STRING), false),
                 Arguments.of(Set.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING), true),
-                Arguments.of(Set.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING, "-"), true),
-                Arguments.of(Set.of(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING, "-"), true),
+                Arguments.of(Set.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING, NON_EXISTING_USERNAME_RAW_STRING), true),
+                Arguments.of(Set.of(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING, NON_EXISTING_USERNAME_RAW_STRING), true),
                 Arguments.of(Set.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING, VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING), true),
-                Arguments.of(Set.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING, VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING, "-"), true),
-                Arguments.of(Set.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING,
-                        VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING, EXPIRED_USERNAME_BY_ONE_DAY_RAW_STRING), true),
-                Arguments.of(Set.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING,
-                        VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING, EXPIRED_USERNAME_BY_ONE_DAY_RAW_STRING, "-"), true));
+                Arguments.of(Set.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING, VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING, NON_EXISTING_USERNAME_RAW_STRING), true),
+                Arguments.of(Set.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING, VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING, EXPIRED_USERNAME_BY_ONE_DAY_RAW_STRING), true),
+                Arguments.of(Set.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING, VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING, EXPIRED_USERNAME_BY_ONE_DAY_RAW_STRING, NON_EXISTING_USERNAME_RAW_STRING), true));
     }
 
     @Test

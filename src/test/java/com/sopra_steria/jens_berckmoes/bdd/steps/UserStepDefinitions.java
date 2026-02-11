@@ -27,7 +27,7 @@ public class UserStepDefinitions {
 
     private String exceptionMessage;
 
-    @When("I browse to get all users")
+    @When("I browse to get all users and users exist in the database")
     public void iCallGETApiUsers() {
         users = userController.getAllUsers();
     }
@@ -39,7 +39,7 @@ public class UserStepDefinitions {
                 .getUserResponses()).containsExactlyInAnyOrder(toGetUsersResponse(BDD_USERS.values()).toArray(new GetUserResponse[0]));
     }
 
-    @When("I browse to get all users but none are found")
+    @When("I browse to get all users but none are in the database")
     public void iBrowseToGetAllUsersButNoneAreFound() {
         try {
             users = userController.getAllUsers();

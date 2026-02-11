@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.BLANK;
 import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.*;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.NON_EXISTING_TOKEN_RAW_STRING;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.VALID_TOKEN_FOR_ONE_MORE_DAY;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -23,7 +24,7 @@ class TokenTest {
     @Test
     @DisplayName("should throw TokenExpirationDateNullException when given a null expiration date")
     void shouldThrowIfValidUntilIsInvalid() {
-        assertThatThrownBy(() -> Token.of("-", null)).isInstanceOf(TokenExpirationDateNullException.class);
+        assertThatThrownBy(() -> Token.of(NON_EXISTING_TOKEN_RAW_STRING, null)).isInstanceOf(TokenExpirationDateNullException.class);
     }
 
     @ParameterizedTest

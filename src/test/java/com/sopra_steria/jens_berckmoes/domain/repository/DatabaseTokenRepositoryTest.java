@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.sopra_steria.jens_berckmoes.TestConstants.TokenValues.*;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.*;
 import static com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper.toInfra;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -28,7 +29,7 @@ class DatabaseTokenRepositoryTest {
         when(crudTokenRepository.findById(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING)).thenReturn(Optional.ofNullable(toInfra(
                 VALID_TOKEN_FOR_TEN_YEARS)));
 
-        final Token tokenOnDatabase = repository.findByTokenValue(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING);
+        final Token tokenOnDatabase = repository.findByTokenValue(VALID_TOKEN_VALUE_FOR_TEN_YEARS);
 
         assertTokenFieldsAreEqual(tokenOnDatabase, VALID_TOKEN_FOR_TEN_YEARS);
     }
@@ -39,7 +40,7 @@ class DatabaseTokenRepositoryTest {
         when(crudTokenRepository.findById(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING)).thenReturn(Optional.ofNullable(
                 toInfra(VALID_TOKEN_FOR_ONE_MORE_DAY)));
 
-        final Token tokenOnDatabase = repository.findByTokenValue(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING);
+        final Token tokenOnDatabase = repository.findByTokenValue(VALID_TOKEN_VALUE_FOR_ONE_MORE_DAY);
 
         assertTokenFieldsAreEqual(tokenOnDatabase, VALID_TOKEN_FOR_ONE_MORE_DAY);
         verify(crudTokenRepository, times(1)).findById(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING);
@@ -48,10 +49,10 @@ class DatabaseTokenRepositoryTest {
     @Test
     @DisplayName("should throw TokenNotFoundException when token is not found by token value")
     void shouldThrowTokenNotFoundWhenNotFound() {
-        when(crudTokenRepository.findById("-")).thenReturn(Optional.empty());
+        when(crudTokenRepository.findById(NON_EXISTING_TOKEN_RAW_STRING)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> repository.findByTokenValue("-")).isInstanceOf(TokenNotFoundException.class);
-        verify(crudTokenRepository, times(1)).findById("-");
+        assertThatThrownBy(() -> repository.findByTokenValue(NON_EXISTING_TOKEN_VALUE)).isInstanceOf(TokenNotFoundException.class);
+        verify(crudTokenRepository, times(1)).findById(NON_EXISTING_TOKEN_RAW_STRING);
     }
 
     @Test
@@ -84,17 +85,17 @@ class DatabaseTokenRepositoryTest {
         when(crudTokenRepository.findById(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING)).thenReturn(Optional.of(toInfra(
                 VALID_TOKEN_FOR_ONE_MORE_DAY)));
 
-        assertThat(repository.findByTokenValue(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING)).isNotNull();
-        assertThat(repository.findByTokenValue(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING)).isNotNull();
+        assertThat(repository.findByTokenValue(VALID_TOKEN_VALUE_FOR_TEN_YEARS)).isNotNull();
+        assertThat(repository.findByTokenValue(VALID_TOKEN_VALUE_FOR_ONE_MORE_DAY)).isNotNull();
 
         repository.deleteAll();
 
         when(crudTokenRepository.findById(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING)).thenReturn(Optional.empty());
         when(crudTokenRepository.findById(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> repository.findByTokenValue(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING)).isInstanceOf(
+        assertThatThrownBy(() -> repository.findByTokenValue(VALID_TOKEN_VALUE_FOR_TEN_YEARS)).isInstanceOf(
                 TokenNotFoundException.class);
-        assertThatThrownBy(() -> repository.findByTokenValue(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING)).isInstanceOf(
+        assertThatThrownBy(() -> repository.findByTokenValue(VALID_TOKEN_VALUE_FOR_ONE_MORE_DAY)).isInstanceOf(
                 TokenNotFoundException.class);
 
         verify(crudTokenRepository, times(1)).deleteAll();
