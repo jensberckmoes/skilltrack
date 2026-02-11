@@ -186,12 +186,6 @@ public final class TestConstants {
                 .token(TokenEntities.ALICE_TOKEN_ENTITY)
                 .build();
 
-        public static final UserEntity BOB_ENTITY = UserEntity
-                .builder()
-                .username(BOB.username())
-                .token(TokenEntities.BOB_TOKEN_ENTITY)
-                .build();
-
         public static Set<UserEntity> USER_ENTITIES_AS_SET = USERS_AS_SET.stream()
                 .map(user -> UserEntity.builder()
                         .username(user.username())
