@@ -111,30 +111,6 @@ public final class TestConstants {
                 .expirationDate(CHARLIE_TOKEN.expirationDate())
                 .build();
 
-        public static final TokenEntity DAVE_TOKEN_ENTITY = TokenEntity
-                .builder()
-                .value(DAVE_TOKEN.token())
-                .expirationDate(DAVE_TOKEN.expirationDate())
-                .build();
-
-        public static final TokenEntity EVE_TOKEN_ENTITY = TokenEntity
-                .builder()
-                .value(EVE_TOKEN.token())
-                .expirationDate(EVE_TOKEN.expirationDate())
-                .build();
-
-        public static final TokenEntity FRANK_TOKEN_ENTITY = TokenEntity
-                .builder()
-                .value(FRANK_TOKEN.token())
-                .expirationDate(FRANK_TOKEN.expirationDate())
-                .build();
-
-        public static final TokenEntity GEERT_TOKEN_ENTITY = TokenEntity
-                .builder()
-                .value(GEERT_TOKEN.token())
-                .expirationDate(GEERT_TOKEN.expirationDate())
-                .build();
-
         public static Set<TokenEntity> TOKEN_ENTITIES_AS_SET = TOKENS_AS_SET.stream()
                 .map(token -> TokenEntity.builder()
                         .value(token.token())

@@ -9,7 +9,6 @@ import com.sopra_steria.jens_berckmoes.domain.valueobject.TokenValue;
 import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
 import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
 import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
-import com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper;
 import com.sopra_steria.jens_berckmoes.service.ValidateAssessmentAccessService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,10 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_TODAY;
-import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_YESTERDAY;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.*;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.GEERT_TOKEN;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
 import static com.sopra_steria.jens_berckmoes.domain.LoginResult.blocked;
 import static com.sopra_steria.jens_berckmoes.domain.LoginResult.success;

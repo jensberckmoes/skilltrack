@@ -22,7 +22,6 @@ import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_TOD
 import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_YESTERDAY;
 import static com.sopra_steria.jens_berckmoes.TestConstants.TokenEntities.*;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.*;
-import static com.sopra_steria.jens_berckmoes.TestConstants.UserEntities.ALICE_ENTITY;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
