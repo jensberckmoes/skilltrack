@@ -108,7 +108,7 @@ class DatabaseUserRepositoryTest {
 
         final Set<User> savedUsers = repository.saveAll(entities);
 
-        assertThat(savedUsers.size()).isEqualTo(3);
+        assertThat(savedUsers.size()).isEqualTo(USERS_AS_SET.size());
         assertThat(savedUsers.containsAll(USERS_AS_SET)).isTrue();
         verify(crudUserRepository, times(1)).saveAll(entities);
     }

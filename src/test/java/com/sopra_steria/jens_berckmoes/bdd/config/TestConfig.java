@@ -16,8 +16,8 @@ import java.time.ZoneId;
 import java.util.HashMap;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_TODAY;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.BDD_TOKENS;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Users.BDD_USERS;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.BDD_TOKENS_WITH_REALISTIC_VALUES;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.BDD_USERS_WITH_REALISTIC_VALUES;
 
 @Configuration
 @Profile("test")
@@ -30,12 +30,12 @@ public class TestConfig {
 
     @Bean
     public UserRepository userRepository() {
-        return new InMemoryUserRepository(new HashMap<>(BDD_USERS));
+        return new InMemoryUserRepository(new HashMap<>(BDD_USERS_WITH_REALISTIC_VALUES));
     }
 
     @Bean
     public TokenRepository tokenRepository() {
-        return new InMemoryTokenRepository(new HashMap<>(BDD_TOKENS));
+        return new InMemoryTokenRepository(new HashMap<>(BDD_TOKENS_WITH_REALISTIC_VALUES));
     }
 
     @Bean

@@ -11,7 +11,7 @@ Feature: User Management via controller
     Then the response contains a message declaring that no users were found
 
   Scenario: Finding a user by id: succeeds when given a valid username
-    When I browse to get a user with username "jane.doe@example.com"
+    When I browse to get a user with username "alice@example.com"
     Then the response contains the user details
 
   Scenario: Finding a user by id: fails when given an empty username
