@@ -43,7 +43,6 @@ public final class TestConstants {
 
         public static final Token VALID_TOKEN_FOR_TEN_YEARS = Token.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, TEST_TEN_YEARS_FROM_NOW);
         public static final Token VALID_TOKEN_FOR_ONE_MORE_DAY = Token.of(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING, TEST_TOMORROW);
-        public static final Token EXPIRED_TOKEN_BY_ONE_DAY = Token.of(EXPIRED_TOKEN_BY_ONE_DAY_RAW_STRING, TEST_YESTERDAY);
 
         public static final Token ALICE_TOKEN = Token.of("A1b2C3d4E5f6G7h8I9j", TEST_TODAY);
         public static final Token BOB_TOKEN = Token.of("Z9y8X7w6V5u4T3s2R1q", TEST_YESTERDAY);
@@ -123,13 +122,10 @@ public final class TestConstants {
     public static final class Users {
         public static final String VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING = "valid_username_for_ten_years";
         public static final String VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING = "valid_username_for_one_more_day";
-        public static final String EXPIRED_USERNAME_BY_ONE_DAY_RAW_STRING = "expired_username_by_one_day";
-        public static final String USER_WITH_DIFFERENT_TOKEN_USERNAME_RAW_STRING = "user_with_different_token";
         public static final String NON_EXISTING_USERNAME_RAW_STRING = "xq7";
 
         public static final User VALID_USER_FOR_TEN_YEAR = User.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING, VALID_TOKEN_FOR_TEN_YEARS);
         public static final User VALID_USER_FOR_ONE_MORE_DAY = User.of(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING, VALID_TOKEN_FOR_ONE_MORE_DAY);
-        public static final User EXPIRED_USER_BY_ONE_DAY = User.of(EXPIRED_USERNAME_BY_ONE_DAY_RAW_STRING, EXPIRED_TOKEN_BY_ONE_DAY);
 
         public static final User ALICE = User.of("alice@example.com", ALICE_TOKEN);
         public static final User BOB = User.of("bob@example.com", BOB_TOKEN);

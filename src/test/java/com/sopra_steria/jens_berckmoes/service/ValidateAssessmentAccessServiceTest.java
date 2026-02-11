@@ -55,8 +55,8 @@ class ValidateAssessmentAccessServiceTest {
     void conditionallyMockFindByUsername(final Username username, final TokenValue tokenValue) {
         switch(username.value()) {
             case NON_EXISTING_USERNAME_RAW_STRING -> when(userRepository.findByUsername(username)).thenThrow(new UserNotFoundException("User not found: " + username));
-            case USER_WITH_DIFFERENT_TOKEN_USERNAME_RAW_STRING -> when(userRepository.findByUsername(username)).thenReturn(User.of(username.value(), VALID_TOKEN_FOR_ONE_MORE_DAY));
-            case EXPIRED_USERNAME_BY_ONE_DAY_RAW_STRING -> when(userRepository.findByUsername(username)).thenReturn(EXPIRED_USER_BY_ONE_DAY);
+            case "geert@example.com" -> when(userRepository.findByUsername(username)).thenReturn(User.of(username.value(), VALID_TOKEN_FOR_ONE_MORE_DAY));
+            case "bob@example.com" -> when(userRepository.findByUsername(username)).thenReturn(BOB);
             default -> when(userRepository.findByUsername(username)).thenReturn(User.of(username.value(), Token.of(tokenValue.value(), TestConstants.TimeFixture.TEST_TEN_YEARS_FROM_NOW)));
         }
     }
@@ -64,17 +64,17 @@ class ValidateAssessmentAccessServiceTest {
     void conditionallyMockFindByTokenValue(final TokenValue tokenValue) {
         switch(tokenValue.value()) {
             case NON_EXISTING_TOKEN_RAW_STRING -> when(tokenRepository.findByTokenValue(tokenValue)).thenThrow(new TokenNotFoundException());
-            case EXPIRED_TOKEN_BY_ONE_DAY_RAW_STRING -> when(tokenRepository.findByTokenValue(tokenValue)).thenThrow(new TokenHasExpiredException());
+            case "Z9y8X7w6V5u4T3s2R1q" -> when(tokenRepository.findByTokenValue(tokenValue)).thenThrow(new TokenHasExpiredException());
             default -> when(tokenRepository.findByTokenValue(tokenValue)).thenReturn(Token.of(tokenValue.value(), TestConstants.TimeFixture.TEST_TEN_YEARS_FROM_NOW));
         }
     }
 
     public static Stream<Arguments> reasonsToBlockLoginParameters() {
         return Stream.of(Arguments.of(NON_EXISTING_USERNAME_RAW_STRING, NON_EXISTING_TOKEN_RAW_STRING, blocked(), 1, 0),
-                Arguments.of(NON_EXISTING_USERNAME_RAW_STRING, VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, blocked(), 1, 0),
-                Arguments.of(USER_WITH_DIFFERENT_TOKEN_USERNAME_RAW_STRING, VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, blocked(), 1, 1),
-                Arguments.of(EXPIRED_USERNAME_BY_ONE_DAY_RAW_STRING, EXPIRED_TOKEN_BY_ONE_DAY_RAW_STRING, blocked(), 1, 1),
-                Arguments.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING, NON_EXISTING_TOKEN_RAW_STRING, blocked(), 1, 1),
-                Arguments.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING, VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, success(), 1, 1));
+                Arguments.of(NON_EXISTING_USERNAME_RAW_STRING, ALICE_TOKEN.token(), blocked(), 1, 0),
+                Arguments.of(GEERT.username(), ALICE_TOKEN.token(), blocked(), 1, 1),
+                Arguments.of(BOB.username(), BOB_TOKEN.token(), blocked(), 1, 1),
+                Arguments.of(ALICE.username(), NON_EXISTING_TOKEN_RAW_STRING, blocked(), 1, 1),
+                Arguments.of(ALICE.username(), ALICE_TOKEN.token(), success(), 1, 1));
     }
 }

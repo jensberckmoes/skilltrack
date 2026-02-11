@@ -66,10 +66,10 @@ class ValidateAssessmentAccessServiceIntegrationTest {
 
     public static Stream<Arguments> reasonsToBlockLoginParameters() {
         return Stream.of(Arguments.of(NON_EXISTING_USERNAME_RAW_STRING, NON_EXISTING_TOKEN_RAW_STRING, blocked()),
-                Arguments.of(NON_EXISTING_TOKEN_RAW_STRING, ALICE_TOKEN.token(), blocked()),
-                Arguments.of(USER_WITH_DIFFERENT_TOKEN_USERNAME_RAW_STRING, VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING, blocked()),
-                Arguments.of(EXPIRED_USERNAME_BY_ONE_DAY_RAW_STRING, EXPIRED_TOKEN_BY_ONE_DAY_RAW_STRING, blocked()),
-                Arguments.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING, NON_EXISTING_TOKEN_RAW_STRING, blocked()),
+                Arguments.of(NON_EXISTING_USERNAME_RAW_STRING, ALICE_TOKEN.token(), blocked()),
+                Arguments.of(GEERT.username(), ALICE_TOKEN.token(), blocked()),
+                Arguments.of(BOB.username(), BOB_TOKEN.token(), blocked()),
+                Arguments.of(ALICE.username(), NON_EXISTING_TOKEN_RAW_STRING, blocked()),
                 Arguments.of(ALICE.username(), ALICE_TOKEN.token(), success()));
     }
 
