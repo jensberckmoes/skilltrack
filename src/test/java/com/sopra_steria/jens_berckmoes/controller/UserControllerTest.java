@@ -3,7 +3,6 @@ package com.sopra_steria.jens_berckmoes.controller;
 import com.sopra_steria.jens_berckmoes.domain.dto.GetUserResponse;
 import com.sopra_steria.jens_berckmoes.domain.exception.NoUsersFoundException;
 import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
-import com.sopra_steria.jens_berckmoes.domain.exception.UsernameRawValueNullOrBlankException;
 import com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper;
 import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
 import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
@@ -13,10 +12,10 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.HashSet;
 
-import static com.sopra_steria.jens_berckmoes.TestConstants.BLANK;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Usernames.ALICE_USERNAME;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Usernames.NON_EXISTING_USERNAME;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Usernames.VALID_USERNAME_FOR_TEN_YEARS;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.ALICE;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.USERS_AS_SET;
 import static com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper.toGetUserResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -43,8 +42,7 @@ class UserControllerTest {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getUserResponses()).containsExactlyInAnyOrder(UserDtoMapper.toGetUsersResponse(USERS_AS_SET)
-                .toArray(new GetUserResponse[0]));
+        assertThat(response.getBody().getUserResponses()).containsExactlyInAnyOrderElementsOf(UserDtoMapper.toGetUsersResponse(USERS_AS_SET));
     }
 
     @Test
@@ -61,15 +59,14 @@ class UserControllerTest {
     @DisplayName("should be able to get a User using username with status code 200 OK")
     void shouldBeAbleToGetUserByUsername() {
         // Assess
-        when(userRepository.findByUsername(VALID_USERNAME_FOR_TEN_YEARS)).thenReturn(VALID_USER_FOR_TEN_YEAR);
+        when(userRepository.findByUsername(ALICE_USERNAME)).thenReturn(ALICE);
 
         // Act
-        final ResponseEntity<GetUserResponse> response = userController.getUserByUsername(
-                VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING);
+        final ResponseEntity<GetUserResponse> response = userController.getUserByUsername(ALICE.username());
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(OK);
-        assertThat(response.getBody()).isEqualTo(toGetUserResponse(VALID_USER_FOR_TEN_YEAR));
+        assertThat(response.getBody()).isEqualTo(toGetUserResponse(ALICE));
     }
 
     @Test
@@ -79,8 +76,8 @@ class UserControllerTest {
         when(userRepository.findByUsername(NON_EXISTING_USERNAME)).thenThrow(UserNotFoundException.class);
 
         // Act + Assert
-        assertThatThrownBy(() -> userController.getUserByUsername(BLANK)).isInstanceOf(
-                UsernameRawValueNullOrBlankException.class);
+        assertThatThrownBy(() -> userController.getUserByUsername(NON_EXISTING_USERNAME.value())).isInstanceOf(
+                UserNotFoundException.class);
     }
 
 }

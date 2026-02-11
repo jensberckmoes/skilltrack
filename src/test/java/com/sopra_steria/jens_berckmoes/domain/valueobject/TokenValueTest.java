@@ -10,8 +10,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.BLANK;
-import static com.sopra_steria.jens_berckmoes.TestConstants.TokenValues.VALID_TOKEN_VALUE_FOR_TEN_YEARS;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.ALICE_TOKEN;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.ALICE_TOKEN_RAW_STRING;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -21,8 +21,8 @@ class TokenValueTest {
     @Test
     @DisplayName("should create a valid token value when given a valid raw token")
     void shouldCreateValidTokenValue() {
-        assertThat(VALID_TOKEN_VALUE_FOR_TEN_YEARS.value()).isEqualTo(
-                VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING);
+        final TokenValue value = TokenValue.of(ALICE_TOKEN_RAW_STRING);
+        assertThat(value.value()).isEqualTo(ALICE_TOKEN_RAW_STRING);
     }
 
     @ParameterizedTest
@@ -34,6 +34,7 @@ class TokenValueTest {
 
     public static Stream<Arguments> invalidRawTokensValues() {
         return Stream.of(Arguments.of((String) null),//cast for confused varargs
-                Arguments.of(EMPTY), Arguments.of(BLANK));
+                Arguments.of(EMPTY),
+                Arguments.of(BLANK));
     }
 }

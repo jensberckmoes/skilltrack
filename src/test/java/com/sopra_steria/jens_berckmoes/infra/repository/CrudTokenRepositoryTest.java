@@ -1,5 +1,6 @@
 package com.sopra_steria.jens_berckmoes.infra.repository;
 
+import com.sopra_steria.jens_berckmoes.domain.Token;
 import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
 import com.sopra_steria.jens_berckmoes.util.StreamUtils;
 import jakarta.persistence.EntityManager;
@@ -14,12 +15,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.BLANK;
 import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_TODAY;
-import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_YESTERDAY;
 import static com.sopra_steria.jens_berckmoes.TestConstants.TokenEntities.*;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.*;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
@@ -105,6 +107,7 @@ class CrudTokenRepositoryTest {
         tokenRepository.saveAll(TOKEN_ENTITIES_AS_SET);
         flushAndResetContext();
 
+        final Set<String> TOKEN_VALUES_AS_SET = BDD_TOKENS_WITH_REALISTIC_VALUES.values().stream().map(Token::token).collect(Collectors.toSet());
         assertThat(tokenRepository.existsByValueIn(TOKEN_VALUES_AS_SET)).isTrue();
 
         tokenRepository.deleteAll();
@@ -119,7 +122,7 @@ class CrudTokenRepositoryTest {
         tokenRepository.saveAll(TOKEN_ENTITIES_AS_SET);
         flushAndResetContext();
 
-        assertThat(StreamUtils.toList(tokenRepository.findAll()).size()).isEqualTo(TOKENS_AS_SET.size());
+        assertThat(StreamUtils.toList(tokenRepository.findAll()).size()).isEqualTo(new HashSet<>(BDD_TOKENS_WITH_REALISTIC_VALUES.values()).size());
     }
 
     @Test
@@ -154,7 +157,7 @@ class CrudTokenRepositoryTest {
         flushAndResetContext();
 
         final TokenEntity retrieved = tokenRepository.findById(BOB_TOKEN.token()).orElseThrow();
-        assertThat(retrieved.getExpirationDate()).isEqualTo(TEST_YESTERDAY);
+        assertThat(retrieved.getExpirationDate()).isEqualTo(TEST_TODAY.minusDays(1));
     }
 
     private void flushAndResetContext() {

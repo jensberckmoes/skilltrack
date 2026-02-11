@@ -32,4 +32,4 @@ Feature: User Management via controller
 
   Scenario: Create a user: succeeds when given valid user details
     When I browse to create a user with username "josken.vermeulen@gmail.com"
-    Then the response contains the created user details
+    Then the response contains the created username "josken.vermeulen@gmail.com"

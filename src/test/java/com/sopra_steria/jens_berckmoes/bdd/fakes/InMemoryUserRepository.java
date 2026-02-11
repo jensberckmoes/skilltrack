@@ -24,8 +24,7 @@ public record InMemoryUserRepository(Map<String, User> users) implements UserRep
 
     @Override
     public User save(final User of) {
-        users.put(of.username(), of);
-        return of;
+        return users.put(of.username(), of);
     }
 
     @Override

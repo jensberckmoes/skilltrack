@@ -2,6 +2,7 @@ package com.sopra_steria.jens_berckmoes.domain.repository;
 
 import com.sopra_steria.jens_berckmoes.domain.Token;
 import com.sopra_steria.jens_berckmoes.domain.exception.TokenNotFoundException;
+import com.sopra_steria.jens_berckmoes.domain.exception.TokenValueNullException;
 import com.sopra_steria.jens_berckmoes.domain.valueobject.TokenValue;
 import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
 import com.sopra_steria.jens_berckmoes.infra.mapping.TokenMapper;
@@ -22,9 +23,12 @@ public class DatabaseTokenRepository implements TokenRepository {
 
     @Override
     public Token findByTokenValue(final TokenValue token) throws TokenNotFoundException {
+        if (token == null) {
+            throw new TokenValueNullException("TokenValue cannot be null");
+        }
         return crudTokenRepository.findById(token.value())
                 .map(TokenMapper::toDomain)
-                .orElseThrow(TokenNotFoundException::new);
+                .orElseThrow(() -> new TokenNotFoundException("Token not found: " + token.value()));
     }
 
     @Override

@@ -1,9 +1,12 @@
 package com.sopra_steria.jens_berckmoes.domain.repository;
 
+import com.sopra_steria.jens_berckmoes.bdd.fakes.StepResult;
 import com.sopra_steria.jens_berckmoes.domain.Token;
 import com.sopra_steria.jens_berckmoes.domain.exception.TokenNotFoundException;
+import com.sopra_steria.jens_berckmoes.domain.exception.TokenValueNullException;
 import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
 import com.sopra_steria.jens_berckmoes.infra.repository.CrudTokenRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,6 +16,7 @@ import java.util.Set;
 import static com.sopra_steria.jens_berckmoes.TestConstants.TokenEntities.*;
 import static com.sopra_steria.jens_berckmoes.TestConstants.TokenValues.*;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.*;
+import static com.sopra_steria.jens_berckmoes.bdd.fakes.StepResult.callController;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -24,13 +28,12 @@ class DatabaseTokenRepositoryTest {
     final TokenRepository repository = new DatabaseTokenRepository(crudTokenRepository);
 
     @Test
-    @DisplayName("should find token by token value")
-    void shouldFindTokenByTokenValue() {
-        when(crudTokenRepository.findById(ALICE_TOKEN.token())).thenReturn(Optional.ofNullable(ALICE_TOKEN_ENTITY));
+    @DisplayName("should throw NullPointerException when token value is null")
+    void shouldThrowWhenTokenValueIsNull() {
+        final StepResult<Token> result = callController(() -> repository.findByTokenValue(null));
 
-        final Token tokenOnDatabase = repository.findByTokenValue(ALICE_TOKEN_VALUE);
-
-        assertTokenFieldsAreEqual(tokenOnDatabase, ALICE_TOKEN);
+        assertThat(result.isSuccess()).isFalse();
+        assertThat(result.exceptionMessage()).isEqualTo("TokenValue cannot be null");
     }
 
     @Test
@@ -38,9 +41,10 @@ class DatabaseTokenRepositoryTest {
     void shouldActuallyHitTheDatabase() {
         when(crudTokenRepository.findById(BOB_TOKEN.token())).thenReturn(Optional.ofNullable(BOB_TOKEN_ENTITY));
 
-        final Token tokenOnDatabase = repository.findByTokenValue(BOB_TOKEN_VALUE);
+        final StepResult<Token> result = callController(() -> repository.findByTokenValue(BOB_TOKEN_VALUE));
 
-        assertTokenFieldsAreEqual(tokenOnDatabase, BOB_TOKEN);
+        assertTokenFieldsAreEqual(result.body(), BOB_TOKEN);
+        assertThat(result.isSuccess()).isTrue();
         verify(crudTokenRepository, times(1)).findById(BOB_TOKEN.token());
     }
 
@@ -49,7 +53,10 @@ class DatabaseTokenRepositoryTest {
     void shouldThrowTokenNotFoundWhenNotFound() {
         when(crudTokenRepository.findById(ALICE_TOKEN.token())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> repository.findByTokenValue(ALICE_TOKEN_VALUE)).isInstanceOf(TokenNotFoundException.class);
+        final StepResult<Token> result = callController(() -> repository.findByTokenValue(ALICE_TOKEN_VALUE));
+
+        assertThat(result.isSuccess()).isFalse();
+        assertThat(result.exceptionMessage()).isEqualTo("Token not found: " + ALICE_TOKEN.token());
         verify(crudTokenRepository, times(1)).findById(ALICE_TOKEN.token());
     }
 
@@ -72,6 +79,13 @@ class DatabaseTokenRepositoryTest {
 
         assertTokenFieldsAreEqual(savedToken, ALICE_TOKEN);
         verify(crudTokenRepository, times(1)).save(ALICE_TOKEN_ENTITY);
+    }
+
+    @Test
+    @DisplayName("should return empty set when saving an empty set of tokens")
+    void shouldReturnEmptySetWhenSavingEmptySet() {
+        final Set<Token> saved = repository.saveAll(Set.of());
+        Assertions.assertThat(saved).isEmpty();
     }
 
     @Test
@@ -107,6 +121,13 @@ class DatabaseTokenRepositoryTest {
         assertThat(savedTokens.size()).isEqualTo(3);
         assertThat(savedTokens.containsAll(Set.of(ALICE_TOKEN, BOB_TOKEN, CHARLIE_TOKEN))).isTrue();
         verify(crudTokenRepository, times(1)).saveAll(entities);
+    }
+
+    @Test
+    @DisplayName("should have an idempotent deleteAll method")
+    void deleteAllIsIdempotent() {
+        repository.deleteAll();
+        repository.deleteAll();
     }
 
     private static void assertTokenFieldsAreEqual(final Token tokenOnDatabase, final Token validToken) {

@@ -1,5 +1,6 @@
 package com.sopra_steria.jens_berckmoes.infra.repository;
 
+import com.sopra_steria.jens_berckmoes.domain.User;
 import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
 import com.sopra_steria.jens_berckmoes.util.StreamUtils;
 import jakarta.persistence.EntityManager;
@@ -15,6 +16,7 @@ import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.BLANK;
@@ -117,6 +119,7 @@ class CrudUserRepositoryTest {
         userRepository.saveAll(USER_ENTITIES_AS_SET);
         flushAndResetContext();
 
+        final Set<String> USERNAMES_AS_SET = BDD_USERS_WITH_REALISTIC_VALUES.values().stream().map(User::username).collect(Collectors.toSet());
         assertThat(userRepository.existsByUsernameIn(USERNAMES_AS_SET)).isTrue();
 
         userRepository.deleteAll();

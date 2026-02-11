@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static com.sopra_steria.jens_berckmoes.TestConstants.UserEntities.VALID_USER_ENTITY_FOR_ONE_MORE_DAY;
-import static com.sopra_steria.jens_berckmoes.TestConstants.UserEntities.VALID_USER_ENTITY_FOR_TEN_YEARS;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USER_FOR_ONE_MORE_DAY;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USER_FOR_TEN_YEAR;
+import static com.sopra_steria.jens_berckmoes.TestConstants.UserEntities.ALICE_ENTITY;
+import static com.sopra_steria.jens_berckmoes.TestConstants.UserEntities.BOB_ENTITY;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.ALICE;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.BOB;
 import static com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper.mapToDomain;
 import static com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper.mapToInfra;
 
@@ -22,32 +22,32 @@ class UserMapperTest {
     @Test
     @DisplayName("should correctly map from UserEntity to User")
     void shouldMapUserEntityToUserCorrectly() {
-        final User mappedResult = mapToDomain(VALID_USER_ENTITY_FOR_TEN_YEARS);
+        final User mappedResult = mapToDomain(ALICE_ENTITY);
 
-        Assertions.assertThat(mappedResult).isEqualTo(VALID_USER_FOR_TEN_YEAR);
+        Assertions.assertThat(mappedResult).isEqualTo(ALICE);
     }
 
     @Test
     @DisplayName("should correctly map from User to UserEntity")
     void shouldMapUserToUserEntityCorrectly() {
-        final UserEntity mappedResult = mapToInfra(VALID_USER_FOR_TEN_YEAR);
+        final UserEntity mappedResult = mapToInfra(ALICE);
 
-        Assertions.assertThat(mappedResult).isEqualTo(VALID_USER_ENTITY_FOR_TEN_YEARS);
+        Assertions.assertThat(mappedResult).isEqualTo(ALICE_ENTITY);
     }
 
     @Test
     @DisplayName("should correctly map from UserEntitySet to UserSet")
     void shouldMapUserEntitySetToUserSetCorrectly() {
-        final Set<User> mappedResult = mapToDomain(Set.of(VALID_USER_ENTITY_FOR_TEN_YEARS,VALID_USER_ENTITY_FOR_ONE_MORE_DAY));
+        final Set<User> mappedResult = mapToDomain(Set.of(ALICE_ENTITY, BOB_ENTITY));
 
-        Assertions.assertThat(mappedResult).isEqualTo(Set.of(VALID_USER_FOR_TEN_YEAR,VALID_USER_FOR_ONE_MORE_DAY));
+        Assertions.assertThat(mappedResult).isEqualTo(Set.of(ALICE, BOB));
     }
 
     @Test
     @DisplayName("should correctly map from UserSet to UserEntitySet")
     void shouldMapUserSetToUserEntitySetCorrectly() {
-        final Set<UserEntity> mappedResult = mapToInfra(Set.of(VALID_USER_FOR_TEN_YEAR,VALID_USER_FOR_ONE_MORE_DAY));
+        final Set<UserEntity> mappedResult = mapToInfra(Set.of(ALICE, BOB));
 
-        Assertions.assertThat(mappedResult).isEqualTo(Set.of(VALID_USER_ENTITY_FOR_TEN_YEARS,VALID_USER_ENTITY_FOR_ONE_MORE_DAY));
+        Assertions.assertThat(mappedResult).isEqualTo(Set.of(ALICE_ENTITY, BOB_ENTITY));
     }
 }

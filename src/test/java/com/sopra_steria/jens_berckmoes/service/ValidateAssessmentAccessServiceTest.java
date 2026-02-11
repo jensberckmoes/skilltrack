@@ -2,8 +2,6 @@ package com.sopra_steria.jens_berckmoes.service;
 
 import com.sopra_steria.jens_berckmoes.TestConstants;
 import com.sopra_steria.jens_berckmoes.domain.LoginResult;
-import com.sopra_steria.jens_berckmoes.domain.Token;
-import com.sopra_steria.jens_berckmoes.domain.User;
 import com.sopra_steria.jens_berckmoes.domain.exception.TokenHasExpiredException;
 import com.sopra_steria.jens_berckmoes.domain.exception.TokenNotFoundException;
 import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
@@ -41,7 +39,7 @@ class ValidateAssessmentAccessServiceTest {
         final Username username = Username.of(usernameRaw);
         final TokenValue tokenValue = TokenValue.of(token);
 
-        conditionallyMockFindByUsername(username, tokenValue);
+        conditionallyMockFindByUsername(username);
         conditionallyMockFindByTokenValue(tokenValue);
 
         //Act
@@ -52,20 +50,23 @@ class ValidateAssessmentAccessServiceTest {
         verify(tokenRepository, times(amountOfFindByTokenValueCalls)).findByTokenValue(tokenValue);
     }
 
-    void conditionallyMockFindByUsername(final Username username, final TokenValue tokenValue) {
-        switch(username.value()) {
-            case NON_EXISTING_USERNAME_RAW_STRING -> when(userRepository.findByUsername(username)).thenThrow(new UserNotFoundException("User not found: " + username));
-            case "geert@example.com" -> when(userRepository.findByUsername(username)).thenReturn(User.of(username.value(), VALID_TOKEN_FOR_ONE_MORE_DAY));
+    void conditionallyMockFindByUsername(final Username username) {
+        switch (username.value()) {
+            case NON_EXISTING_USERNAME_RAW_STRING ->
+                    when(userRepository.findByUsername(username)).thenThrow(new UserNotFoundException("User not found: " + username));
+            case "geert@example.com" -> when(userRepository.findByUsername(username)).thenReturn(GEERT);
             case "bob@example.com" -> when(userRepository.findByUsername(username)).thenReturn(BOB);
-            default -> when(userRepository.findByUsername(username)).thenReturn(User.of(username.value(), Token.of(tokenValue.value(), TestConstants.TimeFixture.TEST_TEN_YEARS_FROM_NOW)));
+            default -> when(userRepository.findByUsername(username)).thenReturn(ALICE);
         }
     }
 
     void conditionallyMockFindByTokenValue(final TokenValue tokenValue) {
-        switch(tokenValue.value()) {
-            case NON_EXISTING_TOKEN_RAW_STRING -> when(tokenRepository.findByTokenValue(tokenValue)).thenThrow(new TokenNotFoundException());
-            case "Z9y8X7w6V5u4T3s2R1q" -> when(tokenRepository.findByTokenValue(tokenValue)).thenThrow(new TokenHasExpiredException());
-            default -> when(tokenRepository.findByTokenValue(tokenValue)).thenReturn(Token.of(tokenValue.value(), TestConstants.TimeFixture.TEST_TEN_YEARS_FROM_NOW));
+        switch (tokenValue.value()) {
+            case NON_EXISTING_TOKEN_RAW_STRING ->
+                    when(tokenRepository.findByTokenValue(tokenValue)).thenThrow(new TokenNotFoundException("Token not found: " + NON_EXISTING_TOKEN_RAW_STRING));
+            case "Z9y8X7w6V5u4T3s2R1q" ->
+                    when(tokenRepository.findByTokenValue(tokenValue)).thenThrow(new TokenHasExpiredException());
+            default -> when(tokenRepository.findByTokenValue(tokenValue)).thenReturn(ALICE_TOKEN);
         }
     }
 

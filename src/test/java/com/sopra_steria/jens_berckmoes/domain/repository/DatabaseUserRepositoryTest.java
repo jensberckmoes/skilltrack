@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.sopra_steria.jens_berckmoes.TestConstants.UserEntities.*;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Usernames.*;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
 import static com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper.mapToInfra;
@@ -21,29 +22,27 @@ import static org.mockito.Mockito.*;
 class DatabaseUserRepositoryTest {
 
     final CrudUserRepository crudUserRepository = mock(CrudUserRepository.class);
-    final DatabaseUserRepository repository = new DatabaseUserRepository(crudUserRepository);
+    final DatabaseUserRepository domainRepository = new DatabaseUserRepository(crudUserRepository);
 
     @Test
     @DisplayName("should find user by username")
     void shouldFindByUsername() {
-        when(crudUserRepository.findById(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING)).thenReturn(Optional.ofNullable(mapToInfra(
-                VALID_USER_FOR_TEN_YEAR)));
+        when(crudUserRepository.findById(ALICE.username())).thenReturn(Optional.ofNullable(ALICE_ENTITY));
 
-        final User databaseUsername = repository.findByUsername(VALID_USERNAME_FOR_TEN_YEARS);
+        final User databaseUsername = domainRepository.findByUsername(ALICE_USERNAME);
 
-        assertUserFieldsAreEqual(databaseUsername, VALID_USER_FOR_TEN_YEAR);
+        assertUserFieldsAreEqual(databaseUsername, ALICE);
     }
 
     @Test
     @DisplayName("should actually hit the database when finding by username")
     void shouldActuallyHitTheDatabase() {
-        when(crudUserRepository.findById(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING)).thenReturn(Optional.ofNullable(mapToInfra(
-                VALID_USER_FOR_ONE_MORE_DAY)));
+        when(crudUserRepository.findById(BOB.username())).thenReturn(Optional.ofNullable(BOB_ENTITY));
 
-        final User databaseUsername = repository.findByUsername(VALID_USERNAME_FOR_ONE_MORE_DAY);
+        final User databaseUsername = domainRepository.findByUsername(BOB_USERNAME);
 
-        assertUserFieldsAreEqual(databaseUsername, VALID_USER_FOR_ONE_MORE_DAY);
-        verify(crudUserRepository, times(1)).findById(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING);
+        assertUserFieldsAreEqual(databaseUsername, BOB);
+        verify(crudUserRepository, times(1)).findById(BOB.username());
     }
 
     @Test
@@ -51,51 +50,51 @@ class DatabaseUserRepositoryTest {
     void shouldThrowUserNotFoundWhenNotFound() {
         when(crudUserRepository.findById(NON_EXISTING_USERNAME_RAW_STRING)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> repository.findByUsername(NON_EXISTING_USERNAME)).isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> domainRepository.findByUsername(NON_EXISTING_USERNAME)).isInstanceOf(UserNotFoundException.class);
         verify(crudUserRepository, times(1)).findById(NON_EXISTING_USERNAME_RAW_STRING);
     }
 
     @Test
     @DisplayName("should save user and return the saved user with correct fields")
     void shouldSaveUser() {
-        final UserEntity userEntity = mapToInfra(VALID_USER_FOR_TEN_YEAR);
-        when(crudUserRepository.save(userEntity)).thenReturn(userEntity);
+        when(crudUserRepository.save(ALICE_ENTITY)).thenReturn(ALICE_ENTITY);
 
-        final User savedUser = repository.save(VALID_USER_FOR_TEN_YEAR);
+        final User savedUser = domainRepository.save(ALICE);
 
-        assertUserFieldsAreEqual(savedUser, VALID_USER_FOR_TEN_YEAR);
+        assertUserFieldsAreEqual(savedUser, ALICE);
     }
 
     @Test
     @DisplayName("should actually save to the database when saving a user")
     void shouldActuallySaveToTheDatabase() {
-        final UserEntity userEntity = mapToInfra(VALID_USER_FOR_ONE_MORE_DAY);
-        when(crudUserRepository.save(userEntity)).thenReturn(userEntity);
+        when(crudUserRepository.save(BOB_ENTITY)).thenReturn(BOB_ENTITY);
 
-        final User savedUser = repository.save(VALID_USER_FOR_ONE_MORE_DAY);
+        final User savedUser = domainRepository.save(BOB);
 
-        assertUserFieldsAreEqual(savedUser, VALID_USER_FOR_ONE_MORE_DAY);
-        verify(crudUserRepository, times(1)).save(userEntity);
+        assertUserFieldsAreEqual(savedUser, BOB);
+        verify(crudUserRepository, times(1)).save(BOB_ENTITY);
     }
 
     @Test
     @DisplayName("should delete all users and actually hit the database when deleting all users")
     void shouldDeleteAllUsers() {
-        when(crudUserRepository.findById(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING)).thenReturn(Optional.of(mapToInfra(
-                VALID_USER_FOR_TEN_YEAR)));
-        when(crudUserRepository.findById(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING)).thenReturn(Optional.of(mapToInfra(
-                VALID_USER_FOR_ONE_MORE_DAY)));
+        when(crudUserRepository.findById(ALICE_USERNAME.value())).thenReturn(Optional.of(ALICE_ENTITY));
+        when(crudUserRepository.findById(BOB_USERNAME.value())).thenReturn(Optional.of(BOB_ENTITY));
 
-        assertThat(repository.findByUsername(VALID_USERNAME_FOR_TEN_YEARS)).isNotNull();
-        assertThat(repository.findByUsername(VALID_USERNAME_FOR_ONE_MORE_DAY)).isNotNull();
+        assertThat(domainRepository.findByUsername(ALICE_USERNAME)).isNotNull();
+        assertThat(domainRepository.findByUsername(BOB_USERNAME)).isNotNull();
+        verify(crudUserRepository, times(1)).findById(ALICE_USERNAME.value());
+        verify(crudUserRepository, times(1)).findById(BOB_USERNAME.value());
 
-        repository.deleteAll();
+        domainRepository.deleteAll();
 
-        when(crudUserRepository.findById(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING)).thenReturn(Optional.empty());
-        when(crudUserRepository.findById(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING)).thenReturn(Optional.empty());
+        when(crudUserRepository.findById(ALICE_USERNAME.value())).thenReturn(Optional.empty());
+        when(crudUserRepository.findById(BOB_USERNAME.value())).thenReturn(Optional.empty());
+        verify(crudUserRepository, times(1)).findById(ALICE_USERNAME.value());
+        verify(crudUserRepository, times(1)).findById(BOB_USERNAME.value());
 
-        assertThatThrownBy(() -> repository.findByUsername(VALID_USERNAME_FOR_TEN_YEARS)).isInstanceOf(UserNotFoundException.class);
-        assertThatThrownBy(() -> repository.findByUsername(VALID_USERNAME_FOR_ONE_MORE_DAY)).isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> domainRepository.findByUsername(ALICE_USERNAME)).isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> domainRepository.findByUsername(BOB_USERNAME)).isInstanceOf(UserNotFoundException.class);
 
         verify(crudUserRepository, times(1)).deleteAll();
     }
@@ -103,14 +102,13 @@ class DatabaseUserRepositoryTest {
     @Test
     @DisplayName("should save all users and return the saved users with correct fields")
     void shouldSaveAllUsers() {
-        final Set<UserEntity> entities = mapToInfra(USERS_AS_SET);
-        when(crudUserRepository.saveAll(entities)).thenReturn(entities);
+        when(crudUserRepository.saveAll(USER_ENTITIES_AS_SET)).thenReturn(USER_ENTITIES_AS_SET);
 
-        final Set<User> savedUsers = repository.saveAll(entities);
+        final Set<User> savedUsers = domainRepository.saveAll(USER_ENTITIES_AS_SET);
 
-        assertThat(savedUsers.size()).isEqualTo(USERS_AS_SET.size());
+        assertThat(savedUsers.size()).isEqualTo(USER_ENTITIES_AS_SET.size());
         assertThat(savedUsers.containsAll(USERS_AS_SET)).isTrue();
-        verify(crudUserRepository, times(1)).saveAll(entities);
+        verify(crudUserRepository, times(1)).saveAll(USER_ENTITIES_AS_SET);
     }
 
     private static void assertUserFieldsAreEqual(final User databaseUsername, final User secondValidUser) {

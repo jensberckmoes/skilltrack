@@ -1,5 +1,6 @@
 package com.sopra_steria.jens_berckmoes.domain.valueobject;
 
+import com.sopra_steria.jens_berckmoes.domain.User;
 import com.sopra_steria.jens_berckmoes.domain.exception.UsernameRawValueNullOrBlankException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.BLANK;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -21,8 +22,8 @@ class UsernameTest {
     @Test
     @DisplayName("should create a valid username when given a valid raw username")
     void shouldCreateValidUsername() {
-        assertThat(Username.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING).value()).isEqualTo(
-                VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING);
+        final Username username = Username.of(ALICE_USERNAME_RAW_STRING);
+        assertThat(username.value()).isEqualTo(ALICE_USERNAME_RAW_STRING);
     }
 
     @ParameterizedTest
