@@ -1,7 +1,9 @@
 package com.sopra_steria.jens_berckmoes.domain.repository;
 
+import com.sopra_steria.jens_berckmoes.bdd.fakes.StepResult;
 import com.sopra_steria.jens_berckmoes.domain.User;
 import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
+import com.sopra_steria.jens_berckmoes.domain.exception.UsernameNullException;
 import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
 import com.sopra_steria.jens_berckmoes.infra.repository.CrudUserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -11,11 +13,11 @@ import java.util.Optional;
 import java.util.Set;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.UserEntities.*;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Usernames.*;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Usernames.ALICE_USERNAME;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Usernames.NON_EXISTING_USERNAME;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
-import static com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper.mapToInfra;
+import static com.sopra_steria.jens_berckmoes.bdd.fakes.StepResult.callController;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @DisplayName("DatabaseUserRepository")
@@ -25,24 +27,26 @@ class DatabaseUserRepositoryTest {
     final DatabaseUserRepository domainRepository = new DatabaseUserRepository(crudUserRepository);
 
     @Test
-    @DisplayName("should find user by username")
-    void shouldFindByUsername() {
-        when(crudUserRepository.findById(ALICE.username())).thenReturn(Optional.ofNullable(ALICE_ENTITY));
+    @DisplayName("should throw UsernameNullException when token value is null")
+    void shouldThrowWhenTokenValueIsNull() {
+        final StepResult<User> result = callController(() -> domainRepository.findByUsername(null));
 
-        final User databaseUsername = domainRepository.findByUsername(ALICE_USERNAME);
-
-        assertUserFieldsAreEqual(databaseUsername, ALICE);
+        assertThat(result.isFailure()).isTrue();
+        assertThat(result.exception()).isInstanceOf(UsernameNullException.class);
+        assertThat(result.exception().getMessage()).isEqualTo("Username cannot be null");
+        verify(crudUserRepository, times(0)).findById(any());
     }
 
     @Test
-    @DisplayName("should actually hit the database when finding by username")
+    @DisplayName("should actually find a user using the database when findByUsername")
     void shouldActuallyHitTheDatabase() {
-        when(crudUserRepository.findById(BOB.username())).thenReturn(Optional.ofNullable(BOB_ENTITY));
+        when(crudUserRepository.findById(ALICE.username())).thenReturn(Optional.ofNullable(ALICE_ENTITY));
 
-        final User databaseUsername = domainRepository.findByUsername(BOB_USERNAME);
+        final StepResult<User> result = callController(() -> domainRepository.findByUsername(ALICE_USERNAME));
 
-        assertUserFieldsAreEqual(databaseUsername, BOB);
-        verify(crudUserRepository, times(1)).findById(BOB.username());
+        assertThat(result.isSuccess()).isTrue();
+        assertUserFieldsAreEqual(result.body(), ALICE);
+        verify(crudUserRepository, times(1)).findById(ALICE.username());
     }
 
     @Test
@@ -50,18 +54,12 @@ class DatabaseUserRepositoryTest {
     void shouldThrowUserNotFoundWhenNotFound() {
         when(crudUserRepository.findById(NON_EXISTING_USERNAME_RAW_STRING)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> domainRepository.findByUsername(NON_EXISTING_USERNAME)).isInstanceOf(UserNotFoundException.class);
+        final StepResult<User> result = callController(() -> domainRepository.findByUsername(NON_EXISTING_USERNAME));
+
+        assertThat(result.isFailure()).isTrue();
+        assertThat(result.exception()).isInstanceOf(UserNotFoundException.class);
+        assertThat(result.exception().getMessage()).isEqualTo("User not found: " + NON_EXISTING_USERNAME_RAW_STRING);
         verify(crudUserRepository, times(1)).findById(NON_EXISTING_USERNAME_RAW_STRING);
-    }
-
-    @Test
-    @DisplayName("should save user and return the saved user with correct fields")
-    void shouldSaveUser() {
-        when(crudUserRepository.save(ALICE_ENTITY)).thenReturn(ALICE_ENTITY);
-
-        final User savedUser = domainRepository.save(ALICE);
-
-        assertUserFieldsAreEqual(savedUser, ALICE);
     }
 
     @Test
@@ -69,32 +67,29 @@ class DatabaseUserRepositoryTest {
     void shouldActuallySaveToTheDatabase() {
         when(crudUserRepository.save(BOB_ENTITY)).thenReturn(BOB_ENTITY);
 
-        final User savedUser = domainRepository.save(BOB);
+        final StepResult<User> result = callController(() -> domainRepository.save(BOB));
 
-        assertUserFieldsAreEqual(savedUser, BOB);
+        assertThat(result.isSuccess()).isTrue();
+        assertUserFieldsAreEqual(result.body(), BOB);
         verify(crudUserRepository, times(1)).save(BOB_ENTITY);
     }
 
     @Test
-    @DisplayName("should delete all users and actually hit the database when deleting all users")
-    void shouldDeleteAllUsers() {
-        when(crudUserRepository.findById(ALICE_USERNAME.value())).thenReturn(Optional.of(ALICE_ENTITY));
-        when(crudUserRepository.findById(BOB_USERNAME.value())).thenReturn(Optional.of(BOB_ENTITY));
+    @DisplayName("should return empty set when saving an empty set of tokens")
+    void shouldReturnEmptySetWhenSavingEmptySet() {
+        when(crudUserRepository.saveAll(any())).thenReturn(Set.of());
 
-        assertThat(domainRepository.findByUsername(ALICE_USERNAME)).isNotNull();
-        assertThat(domainRepository.findByUsername(BOB_USERNAME)).isNotNull();
-        verify(crudUserRepository, times(1)).findById(ALICE_USERNAME.value());
-        verify(crudUserRepository, times(1)).findById(BOB_USERNAME.value());
+        final StepResult<Set<User>> result = callController(() -> domainRepository.saveAll(Set.of()));
 
+        assertThat(result.isSuccess()).isTrue();
+        assertThat(result.body()).isEqualTo(Set.of());
+        verify(crudUserRepository, times(1)).saveAll(any());
+    }
+
+    @Test
+    @DisplayName("should be able to delete all users")
+    void shouldDeleteAllTokens2() {
         domainRepository.deleteAll();
-
-        when(crudUserRepository.findById(ALICE_USERNAME.value())).thenReturn(Optional.empty());
-        when(crudUserRepository.findById(BOB_USERNAME.value())).thenReturn(Optional.empty());
-        verify(crudUserRepository, times(1)).findById(ALICE_USERNAME.value());
-        verify(crudUserRepository, times(1)).findById(BOB_USERNAME.value());
-
-        assertThatThrownBy(() -> domainRepository.findByUsername(ALICE_USERNAME)).isInstanceOf(UserNotFoundException.class);
-        assertThatThrownBy(() -> domainRepository.findByUsername(BOB_USERNAME)).isInstanceOf(UserNotFoundException.class);
 
         verify(crudUserRepository, times(1)).deleteAll();
     }
@@ -102,14 +97,27 @@ class DatabaseUserRepositoryTest {
     @Test
     @DisplayName("should save all users and return the saved users with correct fields")
     void shouldSaveAllUsers() {
-        when(crudUserRepository.saveAll(USER_ENTITIES_AS_SET)).thenReturn(USER_ENTITIES_AS_SET);
+        final Set<UserEntity> entities = Set.of(ALICE_ENTITY, BOB_ENTITY, CHARLIE_ENTITY);
+        when(crudUserRepository.saveAll(entities)).thenReturn(entities);
 
-        final Set<User> savedUsers = domainRepository.saveAll(USER_ENTITIES_AS_SET);
+        final StepResult<Set<User>> result = callController(() -> domainRepository.saveAll(entities));
 
-        assertThat(savedUsers.size()).isEqualTo(USER_ENTITIES_AS_SET.size());
-        assertThat(savedUsers.containsAll(USERS_AS_SET)).isTrue();
-        verify(crudUserRepository, times(1)).saveAll(USER_ENTITIES_AS_SET);
+        assertThat(result.isSuccess()).isTrue();
+        final Set<User> savedUsers = result.body();
+        assertThat(savedUsers.size()).isEqualTo(3);
+        assertThat(savedUsers.containsAll(Set.of(ALICE, BOB, CHARLIE))).isTrue();
+        verify(crudUserRepository, times(1)).saveAll(entities);
+
     }
+
+    @Test
+    @DisplayName("should have an idempotent deleteAll method")
+    void deleteAllIsIdempotent() {
+        domainRepository.deleteAll();
+        domainRepository.deleteAll();
+        verify(crudUserRepository, times(2)).deleteAll();
+    }
+
 
     private static void assertUserFieldsAreEqual(final User databaseUsername, final User secondValidUser) {
         assertThat(databaseUsername).isNotNull();

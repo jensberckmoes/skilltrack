@@ -2,6 +2,7 @@ package com.sopra_steria.jens_berckmoes.domain.repository;
 
 import com.sopra_steria.jens_berckmoes.domain.User;
 import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
+import com.sopra_steria.jens_berckmoes.domain.exception.UsernameNullException;
 import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
 import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
 import com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper;
@@ -23,6 +24,9 @@ public class DatabaseUserRepository implements UserRepository {
 
     @Override
     public User findByUsername(final Username username) throws UserNotFoundException {
+        if(username == null) {
+            throw new UsernameNullException("Username cannot be null");
+        }
         return crudUserRepository.findById(username.value())
                 .map(UserMapper::mapToDomain)
                 .orElseThrow(() -> new UserNotFoundException("User not found: " + username.value()));

@@ -45,7 +45,8 @@ public class UserStepDefinitions {
 
     @Then("the response contains a message declaring that no users were found")
     public void theResponseContainsAMessageDeclaringThatNoUsersWereFound() {
-        assertThat(getUsersResult.exceptionMessage()).isEqualTo("No users found in the database.");
+        assertThat(getUsersResult.isFailure()).isTrue();
+        assertThat(getUsersResult.exception().getMessage()).isEqualTo("No users found in the database.");
     }
 
     @When("I browse to get a user with username {string}")
@@ -67,7 +68,8 @@ public class UserStepDefinitions {
 
     @Then("the response contains a message {string}")
     public void theResponseContainsAMessage(final String arg0) {
-        assertThat(getUserResult.exceptionMessage()).isEqualTo(arg0);
+        assertThat(getUserResult.isFailure()).isTrue();
+        assertThat(getUserResult.exception().getMessage()).isEqualTo(arg0);
     }
 
     @When("I browse to create a user with username {string}")
