@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,8 +43,7 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should save and retrieve token correctly")
     void shouldSaveAndRetrieveToken() {
-        tokenRepository.save(ALICE_TOKEN_ENTITY);
-        flushAndResetContext();
+        flushAndResetContext(() -> tokenRepository.save(ALICE_TOKEN_ENTITY));
 
         final TokenEntity retrieved = tokenRepository.findById(ALICE_TOKEN.token()).orElseThrow();
         assertThat(retrieved).isEqualTo(ALICE_TOKEN_ENTITY);
@@ -52,20 +52,14 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should enforce not null expiration date")
     void shouldEnforceNotNullExpirationDate() {
-        assertThatThrownBy(() -> {
-            tokenRepository.save(new TokenEntity("token-1", null));
-            entityManager.flush();
-        }).isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> flushAndResetContext(() -> tokenRepository.save(new TokenEntity("token-1", null)))).isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
     @DisplayName("should be able to delete the token when delete is called")
     void shouldDeleteToken() {
-        tokenRepository.save(ALICE_TOKEN_ENTITY);
-        flushAndResetContext();
-
-        tokenRepository.delete(ALICE_TOKEN_ENTITY);
-        flushAndResetContext();
+        flushAndResetContext(() -> tokenRepository.save(ALICE_TOKEN_ENTITY));
+        flushAndResetContext(() -> tokenRepository.delete(ALICE_TOKEN_ENTITY));
 
         assertThat(tokenRepository.findById(ALICE_TOKEN.token())).isEmpty();
     }
@@ -74,14 +68,14 @@ class CrudTokenRepositoryTest {
     @MethodSource("existByTokenInParameters")
     @DisplayName("Should be able to check if token exists by value in a set of values")
     void existsByTokenValueIn(final Set<String> values, final boolean expectedResult) {
-        tokenRepository.saveAll(TOKEN_ENTITIES_AS_SET);
-        flushAndResetContext();
+        flushAndResetContext(() -> tokenRepository.saveAll(TOKEN_ENTITIES_AS_SET));
 
         assertThat(tokenRepository.existsByValueIn(values)).isEqualTo(expectedResult);
     }
 
     public static Stream<Arguments> existByTokenInParameters() {
         return Stream.of(Arguments.of(Set.of(EMPTY), false),
+                Arguments.of(Set.of(), false),
                 Arguments.of(Set.of(BLANK), false),
                 Arguments.of(Set.of(NON_EXISTING_TOKEN_RAW_STRING), false),
                 Arguments.of(null, false),
@@ -104,14 +98,12 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should delete all tokens when deleteAll is called")
     void shouldDeleteAllTokens() {
-        tokenRepository.saveAll(TOKEN_ENTITIES_AS_SET);
-        flushAndResetContext();
+        flushAndResetContext(() -> tokenRepository.saveAll(TOKEN_ENTITIES_AS_SET));
 
         final Set<String> TOKEN_VALUES_AS_SET = BDD_TOKENS_WITH_REALISTIC_VALUES.values().stream().map(Token::token).collect(Collectors.toSet());
         assertThat(tokenRepository.existsByValueIn(TOKEN_VALUES_AS_SET)).isTrue();
 
-        tokenRepository.deleteAll();
-        flushAndResetContext();
+        flushAndResetContext(() -> tokenRepository.deleteAll());
 
         assertThat(tokenRepository.existsByValueIn(TOKEN_VALUES_AS_SET)).isFalse();
     }
@@ -119,8 +111,7 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should find all tokens when findAll is called")
     void shouldFindAllTokens() {
-        tokenRepository.saveAll(TOKEN_ENTITIES_AS_SET);
-        flushAndResetContext();
+        flushAndResetContext(() -> tokenRepository.saveAll(TOKEN_ENTITIES_AS_SET));
 
         assertThat(StreamUtils.toList(tokenRepository.findAll()).size()).isEqualTo(new HashSet<>(BDD_TOKENS_WITH_REALISTIC_VALUES.values()).size());
     }
@@ -128,14 +119,13 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should update token's expiration date when saving an existing token")
     void shouldUpdateToken() {
-        tokenRepository.save(ALICE_TOKEN_ENTITY);
-        flushAndResetContext();
+        flushAndResetContext(() -> tokenRepository.save(ALICE_TOKEN_ENTITY));
 
         final TokenEntity retrieved = tokenRepository.findById(ALICE_TOKEN_ENTITY.getValue()).orElseThrow();
         final int amountOfDaysToUpdate = 14;
         retrieved.setExpirationDate(retrieved.getExpirationDate().plusDays(amountOfDaysToUpdate));
-        tokenRepository.save(retrieved);
-        flushAndResetContext();
+
+        flushAndResetContext(() -> tokenRepository.save(retrieved));
 
         final TokenEntity updated = tokenRepository.findById(ALICE_TOKEN_ENTITY.getValue()).orElseThrow();
         assertThat(updated.getExpirationDate()).isEqualTo(ALICE_TOKEN_ENTITY.getExpirationDate().plusDays(amountOfDaysToUpdate));
@@ -153,14 +143,21 @@ class CrudTokenRepositoryTest {
     @Test
     @DisplayName("should allow saving a token with an expiration date in the past")
     void shouldAllowTokenWithPastExpirationDate() {
-        tokenRepository.save(BOB_TOKEN_ENTITY);
-        flushAndResetContext();
+        flushAndResetContext(() -> tokenRepository.save(BOB_TOKEN_ENTITY));
 
         final TokenEntity retrieved = tokenRepository.findById(BOB_TOKEN.token()).orElseThrow();
         assertThat(retrieved.getExpirationDate()).isEqualTo(TEST_TODAY.minusDays(1));
     }
 
-    private void flushAndResetContext() {
+    private <T> T flushAndResetContext(final Supplier<T> action) {
+        final T result = action.get(); // cannot throw checked exceptions
+        entityManager.flush();
+        entityManager.clear();
+        return result;
+    }
+
+    private void flushAndResetContext(final Runnable action) {
+        action.run(); // cannot throw checked exceptions
         entityManager.flush();
         entityManager.clear();
     }
