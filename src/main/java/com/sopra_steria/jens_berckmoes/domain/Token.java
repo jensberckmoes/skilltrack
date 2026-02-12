@@ -9,7 +9,11 @@ public record Token(String token, LocalDate expirationDate) {
         return new Token(token, expirationDate);
     }
 
-    public boolean isExpiredAt(final LocalDate referenceDate) {
+    public boolean hasExpired() {
+        return hasExpired(LocalDate.now());
+    }
+
+    public boolean hasExpired(final LocalDate referenceDate) {
         return expirationDate.isBefore(referenceDate);
     }
 }

@@ -46,7 +46,7 @@ public record ValidateAssessmentAccessService(UserRepository userRepository, Tok
     }
 
     private static void ensureTokenNotExpired(final Token token, final LocalDate now) {
-        if(token.isExpiredAt(now)) {
+        if(token.hasExpired(now)) {
             throw new TokenHasExpiredException();
         }
     }
