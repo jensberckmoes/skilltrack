@@ -5,8 +5,11 @@ import com.sopra_steria.jens_berckmoes.domain.exception.TokenRawValueNullOrBlank
 public record TokenValue(String value) {
 
     public TokenValue {
-        if (value == null || value.isBlank()) {
-            throw new TokenRawValueNullOrBlankException();
+        if (value == null) {
+            throw new TokenRawValueNullOrBlankException("Token can not be null");
+        }
+        if (value.isBlank()) {
+            throw new TokenRawValueNullOrBlankException("Token can not be blank");
         }
     }
 
