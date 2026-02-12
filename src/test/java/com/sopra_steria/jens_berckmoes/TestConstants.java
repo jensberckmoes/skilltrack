@@ -11,7 +11,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -85,7 +84,6 @@ public final class TestConstants {
     public static final class Users {
         public static final String NON_EXISTING_USERNAME_RAW_STRING = "xq7";
         public static final String ALICE_USERNAME_RAW_STRING = "alice@example.com";
-        public static final String CREATED_NEW_USER_RAW_STRING = "josken.vermeulen@gmail.com";
 
         public static final User ALICE = User.of("alice@example.com", ALICE_TOKEN);
         public static final User BOB = User.of("bob@example.com", BOB_TOKEN);
@@ -110,7 +108,6 @@ public final class TestConstants {
     public static final class Usernames {
         public static final Username NON_EXISTING_USERNAME = Username.of("xq7");
         public static final Username ALICE_USERNAME = Username.of(ALICE.username());
-        public static final Username BOB_USERNAME = Username.of(BOB.username());
     }
 
     public static final class UserEntities {

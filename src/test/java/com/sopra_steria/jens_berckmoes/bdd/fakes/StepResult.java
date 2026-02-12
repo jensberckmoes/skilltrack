@@ -1,6 +1,5 @@
 package com.sopra_steria.jens_berckmoes.bdd.fakes;
 
-import java.util.Set;
 import java.util.concurrent.Callable;
 
 public record StepResult<T>(T body, Exception exception) {

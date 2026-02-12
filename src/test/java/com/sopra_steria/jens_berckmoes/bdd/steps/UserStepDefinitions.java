@@ -10,8 +10,6 @@ import io.cucumber.java.en.When;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.concurrent.Callable;
-
 import static com.sopra_steria.jens_berckmoes.TestConstants.GetUserResponses.GET_USER_RESPONSES_AS_SET;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.ALICE_USERNAME_RAW_STRING;
 import static com.sopra_steria.jens_berckmoes.bdd.fakes.StepResult.callController;
