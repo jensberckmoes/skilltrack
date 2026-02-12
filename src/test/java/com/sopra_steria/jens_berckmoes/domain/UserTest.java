@@ -1,6 +1,5 @@
 package com.sopra_steria.jens_berckmoes.domain;
 
-import com.sopra_steria.jens_berckmoes.bdd.fakes.StepResult;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -8,7 +7,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.*;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.ALICE_TOKEN;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.BOB_TOKEN;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
