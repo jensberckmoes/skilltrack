@@ -11,6 +11,7 @@ import com.sopra_steria.jens_berckmoes.domain.exception.UsernameRawValueNullOrBl
 import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
 import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
 import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
+import com.sopra_steria.jens_berckmoes.integration.config.IntegrationConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,10 +19,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.time.Clock;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -32,7 +35,8 @@ import static com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper.mapToInfr
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("prod")
+@Import(IntegrationConfig.class)
+@ActiveProfiles("integration")
 @AutoConfigureWebTestClient
 @DisplayName("User controller using a real database")
 public class UserControllerIntegrationTest {

@@ -20,16 +20,15 @@ import java.time.LocalDate;
 public record ValidateAssessmentAccessService(UserRepository userRepository, TokenRepository tokenRepository, Clock clock) {
 
     public LoginResult login(final Username username, final TokenValue tokenValue) {
-        final LocalDate now = LocalDate.now(clock);
-        return loginAt(username, tokenValue, now);
+        return loginAt(username, tokenValue);
     }
 
-    private LoginResult loginAt(final Username username, final TokenValue tokenValue, final LocalDate now) {
+    private LoginResult loginAt(final Username username, final TokenValue tokenValue) {
         try {
             final User user = userRepository.findByUsername(username);
             final Token token = tokenRepository.findByTokenValue(tokenValue);
             ensureTokenBelongsToUser(token, user);
-            ensureTokenNotExpired(token, now);
+            ensureTokenNotExpired(token);
             return LoginResult.success();
         } catch(final UserNotFoundException |
                       TokenNotFoundException |
@@ -39,14 +38,14 @@ public record ValidateAssessmentAccessService(UserRepository userRepository, Tok
         }
     }
 
-    private static void ensureTokenBelongsToUser(final Token token, final User user) {
+    private void ensureTokenBelongsToUser(final Token token, final User user) {
         if(!user.ownsToken(token)) {
             throw new TokenDoesNotBelongToUserException();
         }
     }
 
-    private static void ensureTokenNotExpired(final Token token, final LocalDate now) {
-        if(token.hasExpired(now)) {
+    private void ensureTokenNotExpired(final Token token) {
+        if(token.hasExpired(clock)) {
             throw new TokenHasExpiredException();
         }
     }

@@ -15,9 +15,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.Clock;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.stream.Stream;
 
+import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.FIXED_CLOCK;
+import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_TODAY;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.*;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
 import static com.sopra_steria.jens_berckmoes.domain.LoginResult.blocked;
@@ -29,8 +31,7 @@ import static org.mockito.Mockito.*;
 class ValidateAssessmentAccessServiceTest {
     private final UserRepository userRepository = mock(UserRepository.class);
     private final TokenRepository tokenRepository = mock(TokenRepository.class);
-    private final Clock clock = Clock.fixed(TestConstants.TimeFixture.TEST_TODAY.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
-    private final ValidateAssessmentAccessService validateAssessmentAccessService = new ValidateAssessmentAccessService(userRepository, tokenRepository, clock);
+    private final ValidateAssessmentAccessService validateAssessmentAccessService = new ValidateAssessmentAccessService(userRepository, tokenRepository, FIXED_CLOCK);
 
     @ParameterizedTest
     @MethodSource("reasonsToBlockLoginParameters")

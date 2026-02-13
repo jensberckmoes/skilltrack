@@ -11,7 +11,9 @@ import jakarta.persistence.EntityManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,6 +38,7 @@ public final class TestConstants {
 
     public static final class TimeFixture {
         public static final LocalDate TEST_TODAY = LocalDate.of(2026, 1, 30);
+        public static final Clock FIXED_CLOCK = Clock.fixed(TEST_TODAY.atStartOfDay().atZone(ZoneOffset.UTC).toInstant(), ZoneOffset.UTC);
     }
 
     public static final class Tokens {

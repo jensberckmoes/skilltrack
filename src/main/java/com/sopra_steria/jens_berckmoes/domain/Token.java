@@ -1,5 +1,6 @@
 package com.sopra_steria.jens_berckmoes.domain;
 
+import java.time.Clock;
 import java.time.LocalDate;
 
 public record Token(String token, LocalDate expirationDate) {
@@ -9,11 +10,7 @@ public record Token(String token, LocalDate expirationDate) {
         return new Token(token, expirationDate);
     }
 
-    public boolean hasExpired() {
-        return hasExpired(LocalDate.now());
-    }
-
-    public boolean hasExpired(final LocalDate referenceDate) {
-        return expirationDate.isBefore(referenceDate);
+    public boolean hasExpired(final Clock clock) {
+        return expirationDate.isBefore(LocalDate.now(clock));
     }
 }

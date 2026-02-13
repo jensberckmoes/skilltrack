@@ -9,6 +9,7 @@ import com.sopra_steria.jens_berckmoes.domain.valueobject.TokenValue;
 import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
 import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
 import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
+import com.sopra_steria.jens_berckmoes.integration.config.IntegrationConfig;
 import com.sopra_steria.jens_berckmoes.service.ValidateAssessmentAccessService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,8 +19,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,11 +35,14 @@ import static com.sopra_steria.jens_berckmoes.domain.LoginResult.success;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("prod")
+@Import(IntegrationConfig.class)
+@ActiveProfiles("integration")
 @DisplayName("LoginService using a real database")
 class ValidateAssessmentAccessServiceIntegrationTest {
     @Autowired
     private ValidateAssessmentAccessService validateAssessmentAccessService;
+    @Autowired
+    private Clock clock;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -79,13 +85,14 @@ class ValidateAssessmentAccessServiceIntegrationTest {
     }
 
     private void setUpTestUsersAndTokens() {
-        final Token ALICE_TOKEN = Token.of("A1b2C3d4E5f6G7h8I9j", LocalDate.now());
-        final Token BOB_TOKEN = Token.of("Z9y8X7w6V5u4T3s2R1q", LocalDate.now().minusDays(1));
-        final Token CHARLIE_TOKEN = Token.of("M1n2B3v4C5x6Z7l8K9p", LocalDate.now().minusDays(8));
-        final Token DAVE_TOKEN = Token.of("Q1w2E3r4T5y6U7i8O9p", LocalDate.now());
-        final Token EVE_TOKEN = Token.of("L9k8J7h6G5f4D3s2A1z", LocalDate.now().minusDays(10));
-        final Token FRANK_TOKEN = Token.of("B2c3D4e5F6g7H8i9J0k", LocalDate.now().plusDays(3));
-        final Token GEERT_TOKEN = Token.of("X1y2Z3a4B5c6D7e8F9g", LocalDate.now().plusDays(7));
+        final LocalDate fixedNow = LocalDate.now(clock);
+        final Token ALICE_TOKEN = Token.of("A1b2C3d4E5f6G7h8I9j", fixedNow);
+        final Token BOB_TOKEN = Token.of("Z9y8X7w6V5u4T3s2R1q", fixedNow.minusDays(1));
+        final Token CHARLIE_TOKEN = Token.of("M1n2B3v4C5x6Z7l8K9p", fixedNow.minusDays(8));
+        final Token DAVE_TOKEN = Token.of("Q1w2E3r4T5y6U7i8O9p", fixedNow);
+        final Token EVE_TOKEN = Token.of("L9k8J7h6G5f4D3s2A1z", fixedNow.minusDays(10));
+        final Token FRANK_TOKEN = Token.of("B2c3D4e5F6g7H8i9J0k", fixedNow.plusDays(3));
+        final Token GEERT_TOKEN = Token.of("X1y2Z3a4B5c6D7e8F9g", fixedNow.plusDays(7));
 
         final User ALICE = User.of("alice@example.com", ALICE_TOKEN);
         final User BOB = User.of("bob@example.com", BOB_TOKEN);
