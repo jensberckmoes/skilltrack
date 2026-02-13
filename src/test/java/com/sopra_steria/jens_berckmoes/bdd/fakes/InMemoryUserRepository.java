@@ -3,6 +3,7 @@ package com.sopra_steria.jens_berckmoes.bdd.fakes;
 import com.sopra_steria.jens_berckmoes.domain.User;
 import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
 import com.sopra_steria.jens_berckmoes.domain.repository.UserRepository;
+import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
 import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
 import com.sopra_steria.jens_berckmoes.infra.mapping.UserMapper;
 
@@ -12,8 +13,8 @@ import java.util.stream.Collectors;
 public record InMemoryUserRepository(Map<String, User> users) implements UserRepository {
 
     @Override
-    public User findByUsername(final String username) throws UserNotFoundException {
-        return Optional.ofNullable(users.get(username)).orElseThrow(() -> new UserNotFoundException("User not found: " + username));
+    public User findByUsername(final Username username) throws UserNotFoundException {
+        return Optional.ofNullable(users.get(username.value())).orElseThrow(() -> new UserNotFoundException("User not found: " + username.value()));
     }
 
     @Override
@@ -23,8 +24,7 @@ public record InMemoryUserRepository(Map<String, User> users) implements UserRep
 
     @Override
     public User save(final User of) {
-        users.put(of.username(), of);
-        return of;
+        return users.put(of.username(), of);
     }
 
     @Override

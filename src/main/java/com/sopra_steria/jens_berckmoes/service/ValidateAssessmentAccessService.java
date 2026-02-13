@@ -14,22 +14,20 @@ import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
-import java.time.LocalDate;
 
 @Service
-public record LoginService(UserRepository userRepository, TokenRepository tokenRepository, Clock clock) {
+public record ValidateAssessmentAccessService(UserRepository userRepository, TokenRepository tokenRepository, Clock clock) {
 
     public LoginResult login(final Username username, final TokenValue tokenValue) {
-        final LocalDate now = LocalDate.now(clock);
-        return loginAt(username, tokenValue, now);
+        return loginAt(username, tokenValue);
     }
 
-    private LoginResult loginAt(final Username username, final TokenValue tokenValue, final LocalDate now) {
+    private LoginResult loginAt(final Username username, final TokenValue tokenValue) {
         try {
-            final User user = userRepository.findByUsername(username.value());
-            final Token token = tokenRepository.findByTokenValue(tokenValue.value());
+            final User user = userRepository.findByUsername(username);
+            final Token token = tokenRepository.findByTokenValue(tokenValue);
             ensureTokenBelongsToUser(token, user);
-            ensureTokenNotExpired(token, now);
+            ensureTokenNotExpired(token);
             return LoginResult.success();
         } catch(final UserNotFoundException |
                       TokenNotFoundException |
@@ -39,14 +37,14 @@ public record LoginService(UserRepository userRepository, TokenRepository tokenR
         }
     }
 
-    private static void ensureTokenBelongsToUser(final Token token, final User user) {
+    private void ensureTokenBelongsToUser(final Token token, final User user) {
         if(!user.ownsToken(token)) {
             throw new TokenDoesNotBelongToUserException();
         }
     }
 
-    private static void ensureTokenNotExpired(final Token token, final LocalDate now) {
-        if(token.isExpiredAt(now)) {
+    private void ensureTokenNotExpired(final Token token) {
+        if(token.hasExpired(clock)) {
             throw new TokenHasExpiredException();
         }
     }

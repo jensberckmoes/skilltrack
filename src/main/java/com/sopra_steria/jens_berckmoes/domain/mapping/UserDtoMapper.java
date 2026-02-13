@@ -1,26 +1,26 @@
 package com.sopra_steria.jens_berckmoes.domain.mapping;
 
 import com.sopra_steria.jens_berckmoes.domain.User;
-import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
+import com.sopra_steria.jens_berckmoes.domain.dto.GetUserResponse;
 
 import java.util.Collection;
 import java.util.Set;
 
 public class UserDtoMapper {
 
-    public static UserDto toDto(final User username) {
-        return UserDto.of(username.username());
+    public static GetUserResponse toGetUserResponse(final User username) {
+        return GetUserResponse.of(username.username());
     }
 
-    public static User toUser(final UserDto dto) {
+    public static User toUser(final GetUserResponse dto) {
         return User.nullToken(dto.username());
     }
 
-    public static Set<UserDto> toDtos(final Collection<User> users) {
-        return users.stream().map(UserDtoMapper::toDto).collect(java.util.stream.Collectors.toSet());
+    public static Set<GetUserResponse> toGetUsersResponse(final Collection<User> users) {
+        return users.stream().map(UserDtoMapper::toGetUserResponse).collect(java.util.stream.Collectors.toSet());
     }
 
-    public static Set<User> toUsers(final Collection<UserDto> dtos) {
-        return dtos.stream().map(UserDtoMapper::toUser).collect(java.util.stream.Collectors.toSet());
+    public static Set<User> toUsers(final Collection<GetUserResponse> getUserResponses) {
+        return getUserResponses.stream().map(UserDtoMapper::toUser).collect(java.util.stream.Collectors.toSet());
     }
 }

@@ -1,8 +1,9 @@
 package com.sopra_steria.jens_berckmoes.controller;
 
 import com.sopra_steria.jens_berckmoes.domain.User;
-import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
-import com.sopra_steria.jens_berckmoes.domain.dto.UserDtoResponse;
+import com.sopra_steria.jens_berckmoes.domain.dto.CreateUserRequest;
+import com.sopra_steria.jens_berckmoes.domain.dto.GetUserResponse;
+import com.sopra_steria.jens_berckmoes.domain.dto.GetAllUsersResponse;
 import com.sopra_steria.jens_berckmoes.domain.exception.NoUsersFoundException;
 import com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper;
 import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
@@ -22,21 +23,25 @@ import java.util.Set;
 public record UserController(UserRepository userRepository, TokenRepository tokenRepository) {
 
     @GetMapping
-    public ResponseEntity<UserDtoResponse> getAllUsers() {
+    public ResponseEntity<GetAllUsersResponse> getAllUsers() {
         final Set<User> all = userRepository.findAll();
         if(all.isEmpty()) {
-            throw new NoUsersFoundException();
+            throw new NoUsersFoundException("No users found in the database.");
         }
-        final UserDtoResponse response = new UserDtoResponse(UserDtoMapper.toDtos(all));
+        final GetAllUsersResponse response = new GetAllUsersResponse(UserDtoMapper.toGetUsersResponse(all));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(value = {"/", "/{username:.+}"})
-    public ResponseEntity<UserDto> getUserByUsername(@PathVariable(required = false) final String username) {
+    public ResponseEntity<GetUserResponse> getUserByUsername(@PathVariable(required = false) final String username) {
         final Username usernameValueObject = Username.of(username);
-        final User user = userRepository.findByUsername(usernameValueObject.value());
-        final UserDto userDto = UserDtoMapper.toDto(user);
-        return new ResponseEntity<>(userDto, HttpStatus.OK);
+        final User user = userRepository.findByUsername(usernameValueObject);
+        final GetUserResponse getUserResponse = UserDtoMapper.toGetUserResponse(user);
+        return new ResponseEntity<>(getUserResponse, HttpStatus.OK);
+    }
+
+    public ResponseEntity<GetUserResponse> createUser(final CreateUserRequest request) {
+        return new ResponseEntity<>(GetUserResponse.of(request.username()), HttpStatus.OK);
     }
 }
 

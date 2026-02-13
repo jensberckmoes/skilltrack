@@ -3,7 +3,7 @@ package com.sopra_steria.jens_berckmoes.bdd.steps;
 import com.sopra_steria.jens_berckmoes.domain.LoginResult;
 import com.sopra_steria.jens_berckmoes.domain.valueobject.TokenValue;
 import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
-import com.sopra_steria.jens_berckmoes.service.LoginService;
+import com.sopra_steria.jens_berckmoes.service.ValidateAssessmentAccessService;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("Login Feature Step Definitions")
 public class LoginStepDefinitions {
     @Autowired
-    private LoginService loginService;
+    private ValidateAssessmentAccessService validateAssessmentAccessService;
 
     private LoginResult loginResult;
 
@@ -29,7 +29,7 @@ public class LoginStepDefinitions {
         final Username username = Username.of(rawUsername);
         final TokenValue tokenValue = TokenValue.of(rawToken);
 
-        loginResult = loginService.login(username, tokenValue);
+        loginResult = validateAssessmentAccessService.login(username, tokenValue);
     }
 
     @Then("I am blocked")

@@ -1,4 +1,4 @@
-package com.sopra_steria.jens_berckmoes.domain.dto;
+package com.sopra_steria.jens_berckmoes.domain;
 
 public record ErrorResponse(
         String message,

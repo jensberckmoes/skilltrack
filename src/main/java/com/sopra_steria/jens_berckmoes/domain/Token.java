@@ -1,23 +1,16 @@
 package com.sopra_steria.jens_berckmoes.domain;
 
-import com.sopra_steria.jens_berckmoes.domain.exception.TokenRawValueNullOrBlankException;
-import com.sopra_steria.jens_berckmoes.domain.exception.TokenExpirationDateNullException;
-
+import java.time.Clock;
 import java.time.LocalDate;
 
 public record Token(String token, LocalDate expirationDate) {
-    public static final Token NULL = new Token("-", LocalDate.MIN);
+    public static final Token NULL = new Token("wrong_token", LocalDate.MIN);
+
     public static Token of(final String token, final LocalDate expirationDate) {
-        if (token == null || token.isBlank()) {
-            throw new TokenRawValueNullOrBlankException();
-        }
-        if (expirationDate == null) {
-            throw new TokenExpirationDateNullException();
-        }
         return new Token(token, expirationDate);
     }
 
-    public boolean isExpiredAt(final LocalDate referenceDate) {
-        return expirationDate.isBefore(referenceDate);
+    public boolean hasExpired(final Clock clock) {
+        return expirationDate.isBefore(LocalDate.now(clock));
     }
 }

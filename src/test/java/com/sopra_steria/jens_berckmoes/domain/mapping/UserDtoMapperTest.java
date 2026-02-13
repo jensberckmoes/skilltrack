@@ -1,52 +1,68 @@
 package com.sopra_steria.jens_berckmoes.domain.mapping;
 
 import com.sopra_steria.jens_berckmoes.domain.User;
-import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
+import com.sopra_steria.jens_berckmoes.domain.dto.GetUserResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static com.sopra_steria.jens_berckmoes.TestConstants.UserDtos.VALID_USER_DTO_FOR_ONE_MORE_DAY;
-import static com.sopra_steria.jens_berckmoes.TestConstants.UserDtos.VALID_USER_DTO_FOR_TEN_YEARS;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
-import static com.sopra_steria.jens_berckmoes.domain.User.nullToken;
+import static com.sopra_steria.jens_berckmoes.TestConstants.GetUserResponses.*;
 import static com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper.*;
+import static com.sopra_steria.jens_berckmoes.domain.mapping.UserDtoMapper.toGetUserResponse;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("UserDtoMapper")
 public class UserDtoMapperTest {
     @Test
     @DisplayName("should correctly map from User to UserDTO")
     void shouldMapUserToUserDtoCorrectly() {
-        final UserDto mappedResult = toDto(VALID_USER_FOR_TEN_YEAR);
+        final GetUserResponse mappedResult = toGetUserResponse(ALICE);
 
-        Assertions.assertThat(mappedResult).isEqualTo(VALID_USER_DTO_FOR_TEN_YEARS);
+        assertThat(mappedResult).isEqualTo(ALICE_DTO);
     }
 
     @Test
     @DisplayName("should correctly map from UserDto to User")
     void shouldMapUserDtoToUserCorrectly() {
-        final User mappedResult = toUser(VALID_USER_DTO_FOR_TEN_YEARS);
+        final User mappedResult = toUser(ALICE_DTO);
 
-        Assertions.assertThat(mappedResult)
-                .isEqualTo(nullToken(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING));
+        assertThat(mappedResult).isEqualTo(ALICE_USER_DTO);
     }
 
     @Test
     @DisplayName("should correctly map from UserSet to UserDTOSet")
     void shouldMapUserSetToUserDtoSetCorrectly() {
-        final Set<UserDto> mappedResult = toDtos(Set.of(VALID_USER_FOR_TEN_YEAR, VALID_USER_FOR_ONE_MORE_DAY));
+        final Set<GetUserResponse> mappedResult = toGetUsersResponse(Set.of(ALICE, BOB));
 
-        Assertions.assertThat(mappedResult).isEqualTo(Set.of(VALID_USER_DTO_FOR_TEN_YEARS, VALID_USER_DTO_FOR_ONE_MORE_DAY));
+        assertThat(mappedResult).isEqualTo(Set.of(ALICE_DTO, BOB_DTO));
     }
 
     @Test
     @DisplayName("should correctly map from UserDTOSet to UserSet")
     void shouldMapUserDtoSetToUserSetCorrectly() {
-        final Set<User> mappedResult = toUsers(Set.of(VALID_USER_DTO_FOR_TEN_YEARS, VALID_USER_DTO_FOR_ONE_MORE_DAY));
+        final Set<User> mappedResult = toUsers(Set.of(ALICE_DTO, BOB_DTO));
 
-        Assertions.assertThat(mappedResult).isEqualTo(Set.of(nullToken(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING), nullToken(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING)));
+        assertThat(mappedResult).isEqualTo(Set.of(ALICE_USER_DTO, BOB_USER_DTO));
+    }
+
+    @Test
+    @DisplayName("should correctly handle empty values for Set")
+    void shouldReturnEmptySetWhenInputSetIsEmpty() {
+        assertThat(toGetUsersResponse(Set.of())).isEmpty();
+        assertThat(toUsers(Set.of())).isEmpty();
+    }
+
+    @Test
+    @DisplayName("should map user with null token correctly")
+    void shouldMapUserWithNullToken() {
+        final User userWithNullToken = User.nullToken("some@example.com");
+
+        final GetUserResponse dto = toGetUserResponse(userWithNullToken);
+
+        assertThat(dto.username()).isEqualTo("some@example.com");
     }
 
 }

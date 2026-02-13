@@ -2,117 +2,163 @@ package com.sopra_steria.jens_berckmoes;
 
 import com.sopra_steria.jens_berckmoes.domain.Token;
 import com.sopra_steria.jens_berckmoes.domain.User;
-import com.sopra_steria.jens_berckmoes.domain.dto.UserDto;
+import com.sopra_steria.jens_berckmoes.domain.dto.GetUserResponse;
+import com.sopra_steria.jens_berckmoes.domain.valueobject.TokenValue;
+import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
 import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
 import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
+import jakarta.persistence.EntityManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.*;
-import static com.sopra_steria.jens_berckmoes.TestConstants.TokenEntities.VALID_TOKEN_ENTITY_FOR_ONE_MORE_DAY;
+import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_TODAY;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.*;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING;
-import static com.sopra_steria.jens_berckmoes.TestConstants.Users.VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING;
+import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestConstants {
 
     public static final String BLANK = " ";
 
+    public static final class TestMethods {
+        public static void flushAndResetContext(final Runnable action, final EntityManager entityManager) {
+            action.run();
+            entityManager.flush();
+            entityManager.clear();
+        }
+    }
+
+
     public static final class TimeFixture {
         public static final LocalDate TEST_TODAY = LocalDate.of(2026, 1, 30);
-
-        public static final LocalDate TEST_TEN_YEARS_FROM_NOW = TEST_TODAY.plusYears(10);
-        public static final LocalDate TEST_TOMORROW = TEST_TODAY.plusDays(1);
-        public static final LocalDate TEST_YESTERDAY = TEST_TODAY.minusDays(1);
+        public static final Clock FIXED_CLOCK = Clock.fixed(TEST_TODAY.atStartOfDay().atZone(ZoneOffset.UTC).toInstant(), ZoneOffset.UTC);
     }
 
     public static final class Tokens {
-        public static final String VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING = "valid_token_for_ten_years";
-        public static final String VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING = "valid_token_for_one_more_day";
-        public static final String EXPIRED_TOKEN_BY_ONE_DAY_RAW_STRING = "expired_token_by_one_day";
+        public static final String NON_EXISTING_TOKEN_RAW_STRING = "abc123";
+        public static final String ALICE_TOKEN_RAW_STRING = "A1b2C3d4E5f6G7h8I9j";
 
-        public static final Token VALID_TOKEN_FOR_TEN_YEARS = Token.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING,
-                TEST_TEN_YEARS_FROM_NOW);
-        public static final Token VALID_TOKEN_FOR_ONE_MORE_DAY = Token.of(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING,
-                TEST_TOMORROW);
-        public static final Token EXPIRED_TOKEN_BY_ONE_DAY = Token.of(EXPIRED_TOKEN_BY_ONE_DAY_RAW_STRING,
-                TEST_YESTERDAY);
+        public static final Token ALICE_TOKEN = Token.of(ALICE_TOKEN_RAW_STRING, TEST_TODAY);
+        public static final Token BOB_TOKEN = Token.of("Z9y8X7w6V5u4T3s2R1q", TEST_TODAY.minusDays(1));
+        public static final Token CHARLIE_TOKEN = Token.of("M1n2B3v4C5x6Z7l8K9p", TEST_TODAY.minusDays(8));
+        public static final Token DAVE_TOKEN = Token.of("Q1w2E3r4T5y6U7i8O9p", TEST_TODAY);
+        public static final Token GEERT_TOKEN = Token.of("X1y2Z3a4B5c6D7e8F9g", TEST_TODAY.plusDays(7));
 
-        public static final Map<String, Token> BDD_TOKENS = Map.ofEntries(
-                Map.entry("valid_token", Token.of("valid_token", TEST_TEN_YEARS_FROM_NOW)),
-                Map.entry("expired_token", Token.of("expired_token", TEST_YESTERDAY)),
-                Map.entry("other_valid_token", Token.of("other_valid_token", TEST_TOMORROW)),
-                Map.entry("wrong_token", Token.NULL));
+        public static final Map<String, Token> BDD_TOKENS_WITH_REALISTIC_VALUES = Map.ofEntries(
+                Map.entry(ALICE_TOKEN.token(), ALICE_TOKEN),
+                Map.entry(BOB_TOKEN.token(), BOB_TOKEN),
+                Map.entry(CHARLIE_TOKEN.token(), CHARLIE_TOKEN),
+                Map.entry(DAVE_TOKEN.token(), DAVE_TOKEN),
+                Map.entry(GEERT_TOKEN.token(), GEERT_TOKEN)
+        );
 
-        public static final Set<Token> TOKENS_AS_SET = Set.of(VALID_TOKEN_FOR_TEN_YEARS,
-                VALID_TOKEN_FOR_ONE_MORE_DAY,
-                EXPIRED_TOKEN_BY_ONE_DAY);
+    }
 
-        public static final Set<String> TOKEN_VALUES_AS_SET = Set.of(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING,
-                VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING,
-                EXPIRED_TOKEN_BY_ONE_DAY_RAW_STRING);
+    public static final class TokenValues {
+        public static final TokenValue ALICE_TOKEN_VALUE = TokenValue.of(ALICE_TOKEN.token());
+        public static final TokenValue BOB_TOKEN_VALUE = TokenValue.of(BOB_TOKEN.token());
     }
 
     public static final class TokenEntities {
-        public static final TokenEntity VALID_TOKEN_ENTITY_FOR_TEN_YEARS = TokenEntity.builder()
-                .value(VALID_TOKEN_FOR_TEN_YEARS_RAW_STRING)
-                .expirationDate(TEST_TEN_YEARS_FROM_NOW)
+        public static final TokenEntity ALICE_TOKEN_ENTITY = TokenEntity
+                .builder()
+                .value(ALICE_TOKEN.token())
+                .expirationDate(ALICE_TOKEN.expirationDate())
                 .build();
 
-        public static final TokenEntity VALID_TOKEN_ENTITY_FOR_ONE_MORE_DAY = TokenEntity.builder()
-                .value(VALID_TOKEN_FOR_ONE_MORE_DAY_RAW_STRING)
-                .expirationDate(TEST_TOMORROW)
+        public static final TokenEntity BOB_TOKEN_ENTITY = TokenEntity
+                .builder()
+                .value(BOB_TOKEN.token())
+                .expirationDate(BOB_TOKEN.expirationDate())
                 .build();
+
+        public static final TokenEntity CHARLIE_TOKEN_ENTITY = TokenEntity
+                .builder()
+                .value(CHARLIE_TOKEN.token())
+                .expirationDate(CHARLIE_TOKEN.expirationDate())
+                .build();
+
+        public static final Set<TokenEntity> TOKEN_ENTITIES_AS_SET = BDD_TOKENS_WITH_REALISTIC_VALUES.values().stream()
+                .map(token -> TokenEntity.builder()
+                        .value(token.token())
+                        .expirationDate(token.expirationDate())
+                        .build())
+                .collect(Collectors.toSet());
+
     }
 
     public static final class Users {
-        public static final String VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING = "valid_username_for_ten_years";
-        public static final String VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING = "valid_username_for_one_more_day";
-        public static final String EXPIRED_USERNAME_BY_ONE_DAY_RAW_STRING = "expired_username_by_one_day";
-        public static final String USER_WITH_DIFFERENT_TOKEN_USERNAME = "user_with_different_token";
+        public static final String NON_EXISTING_USERNAME_RAW_STRING = "xq7";
+        public static final String ALICE_USERNAME_RAW_STRING = "alice@example.com";
 
-        public static final User VALID_USER_FOR_TEN_YEAR = User.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING, VALID_TOKEN_FOR_TEN_YEARS);
-        public static final User VALID_USER_FOR_ONE_MORE_DAY = User.of(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING,
-                VALID_TOKEN_FOR_ONE_MORE_DAY);
-        public static final User EXPIRED_USER_BY_ONE_DAY = User.of(EXPIRED_USERNAME_BY_ONE_DAY_RAW_STRING,
-                EXPIRED_TOKEN_BY_ONE_DAY);
+        public static final User ALICE = User.of("alice@example.com", ALICE_TOKEN);
+        public static final User BOB = User.of("bob@example.com", BOB_TOKEN);
+        public static final User CHARLIE = User.of("charlie@example.com", CHARLIE_TOKEN);
+        public static final User DAVE = User.of("dave@example.com", DAVE_TOKEN);
+        public static final User GEERT = User.of("geert@example.com", GEERT_TOKEN);
 
-        public static final Map<String, User> BDD_USERS = Map.ofEntries(
-                Map.entry("jane.doe@example.com", User.of("jane.doe@example.com", Token.of("valid_token", TEST_TEN_YEARS_FROM_NOW))),
-                Map.entry("old.user@example.com", User.of("old.user@example.com", Token.of("expired_token", TEST_YESTERDAY))),
-                Map.entry("belongs_to_other_user@example.com",User.of("belongs_to_other_user@example.com", Token.of("valid_token", TEST_TEN_YEARS_FROM_NOW))),
-                Map.entry("nonexistent_user", User.of("nonexistent_user", Token.NULL)));
+        public static final User ALICE_USER_DTO = User.nullToken(ALICE.username());
+        public static final User BOB_USER_DTO = User.nullToken(BOB.username());
 
-        public static final Set<User> USERS_AS_SET = Set.of(VALID_USER_FOR_TEN_YEAR,
-                VALID_USER_FOR_ONE_MORE_DAY, EXPIRED_USER_BY_ONE_DAY);
+        public static final Map<String, User> BDD_USERS_WITH_REALISTIC_VALUES = Map.ofEntries(
+                Map.entry(ALICE.username(), ALICE),
+                Map.entry(BOB.username(), BOB),
+                Map.entry(CHARLIE.username(), CHARLIE),
+                Map.entry(DAVE.username(), DAVE),
+                Map.entry(GEERT.username(), GEERT)
+        );
 
-        public static final Set<String> USERNAMES_AS_SET = Set.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING,
-                VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING,
-                EXPIRED_USERNAME_BY_ONE_DAY_RAW_STRING);
+        public static final Set<User> USERS_AS_SET = Set.copyOf(BDD_USERS_WITH_REALISTIC_VALUES.values());
+    }
+
+    public static final class Usernames {
+        public static final Username NON_EXISTING_USERNAME = Username.of("xq7");
+        public static final Username ALICE_USERNAME = Username.of(ALICE.username());
     }
 
     public static final class UserEntities {
 
-        public static final UserEntity VALID_USER_ENTITY_FOR_TEN_YEARS = UserEntity.builder()
-                .username(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING)
-                .token(TokenEntities.VALID_TOKEN_ENTITY_FOR_TEN_YEARS)
+        public static final UserEntity ALICE_ENTITY = UserEntity
+                .builder()
+                .username(ALICE.username())
+                .token(TokenEntities.ALICE_TOKEN_ENTITY)
                 .build();
 
-        public static final UserEntity VALID_USER_ENTITY_FOR_ONE_MORE_DAY = UserEntity.builder()
-                .username(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING)
-                .token(VALID_TOKEN_ENTITY_FOR_ONE_MORE_DAY)
+        public static final UserEntity BOB_ENTITY = UserEntity
+                .builder()
+                .username(BOB.username())
+                .token(TokenEntities.BOB_TOKEN_ENTITY)
                 .build();
+
+        public static final UserEntity CHARLIE_ENTITY = UserEntity
+                .builder()
+                .username(CHARLIE.username())
+                .token(TokenEntities.CHARLIE_TOKEN_ENTITY)
+                .build();
+
+        public static final Set<UserEntity> USER_ENTITIES_AS_SET = USERS_AS_SET.stream()
+                .map(user -> UserEntity.builder()
+                        .username(user.username())
+                        .token(TokenEntity.builder().value(user.token().token()).expirationDate(user.token().expirationDate()).build())
+                        .build())
+                .collect(Collectors.toSet());
     }
 
-    public static final class UserDtos {
+    public static final class GetUserResponses {
 
-        public static final UserDto VALID_USER_DTO_FOR_TEN_YEARS = UserDto.of(VALID_USERNAME_FOR_TEN_YEARS_RAW_STRING);
+        public static final Set<GetUserResponse> GET_USER_RESPONSES_AS_SET = USERS_AS_SET.stream()
+                .map(user -> GetUserResponse.of(user.username()))
+                .collect(Collectors.toSet());
 
-        public static final UserDto VALID_USER_DTO_FOR_ONE_MORE_DAY = UserDto.of(VALID_USERNAME_FOR_ONE_MORE_DAY_RAW_STRING);
+        public static final GetUserResponse ALICE_DTO = GetUserResponse.of(ALICE.username());
+        public static final GetUserResponse BOB_DTO = GetUserResponse.of(BOB.username());
+
     }
 }
