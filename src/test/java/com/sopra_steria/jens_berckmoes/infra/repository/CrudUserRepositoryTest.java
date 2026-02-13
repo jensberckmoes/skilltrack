@@ -25,9 +25,11 @@ import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.ALICE_TOKEN;
 import static com.sopra_steria.jens_berckmoes.TestConstants.UserEntities.ALICE_ENTITY;
 import static com.sopra_steria.jens_berckmoes.TestConstants.UserEntities.USER_ENTITIES_AS_SET;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
+import static com.sopra_steria.jens_berckmoes.TestConstants.TestMethods.flushAndResetContext;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -44,10 +46,9 @@ class CrudUserRepositoryTest {
     private EntityManager entityManager;
 
     @Test
-    @DisplayName("CrudUserRepository should save and retrieve user with token correctly via cascade all")
+    @DisplayName("should save and retrieve user with token correctly via cascade all")
     void shouldPersistUserWithTokenViaCascadeAll() {
-        userRepository.save(ALICE_ENTITY);
-        flushAndResetContext();
+        flushAndResetContext(() -> userRepository.save(ALICE_ENTITY), entityManager);
 
         final UserEntity retrieved = userRepository.findById(ALICE.username()).orElseThrow();
 
@@ -59,33 +60,29 @@ class CrudUserRepositoryTest {
     @Test
     @DisplayName("Should cascade delete token when user is deleted")
     void shouldCascadeDeleteTokenWhenUserDeleted() {
-        userRepository.save(ALICE_ENTITY);
-        flushAndResetContext();
-
+        flushAndResetContext(() -> userRepository.save(ALICE_ENTITY), entityManager);
         assertThat(crudTokenRepository.findById(ALICE_TOKEN.token())).isPresent();
 
-        userRepository.deleteById(ALICE.username());
-        flushAndResetContext();
-
+        flushAndResetContext(() -> userRepository.deleteById(ALICE.username()), entityManager);
         assertThat(crudTokenRepository.findById(ALICE_TOKEN.token())).isEmpty();
     }
 
     @Test
     @DisplayName("Should throw when username is null")
     void shouldThrowWhenUsernameIsNull() {
-        assertThatThrownBy(() -> {
-            userRepository.save(UserEntity.builder().username(null).token(ALICE_TOKEN_ENTITY).build());
-            entityManager.flush();
-        }).isInstanceOf(JpaSystemException.class);
+        assertThatThrownBy(() ->
+                flushAndResetContext(() ->
+                        userRepository.save(UserEntity.builder().username(null).token(ALICE_TOKEN_ENTITY).build()), entityManager))
+                .isInstanceOf(JpaSystemException.class);
     }
 
     @Test
     @DisplayName("Should throw when token is null")
     void shouldThrowWhenTokenIsNull() {
-        assertThatThrownBy(() -> {
-            userRepository.save(UserEntity.builder().username(ALICE.username()).token(null).build());
-            entityManager.flush();
-        }).isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() ->
+                flushAndResetContext(() ->
+                        userRepository.save(UserEntity.builder().username(ALICE.username()).token(null).build()), entityManager))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @ParameterizedTest
@@ -93,8 +90,7 @@ class CrudUserRepositoryTest {
     @DisplayName("Should be able to check if users exist by username in a set of usernames")
     void existsByUsernameIn(final Set<String> usernames,
                             final boolean expectedResult) {
-        userRepository.saveAll(USER_ENTITIES_AS_SET);
-        flushAndResetContext();
+        flushAndResetContext(() -> userRepository.saveAll(USER_ENTITIES_AS_SET), entityManager);
 
         assertThat(userRepository.existsByUsernameIn(usernames)).isEqualTo(expectedResult);
     }
@@ -116,32 +112,23 @@ class CrudUserRepositoryTest {
     @Test
     @DisplayName("Should delete all users and cascade delete all tokens when deleteAll is called")
     void shouldDeleteAllUsers() {
-        userRepository.saveAll(USER_ENTITIES_AS_SET);
-        flushAndResetContext();
+        flushAndResetContext(() -> userRepository.saveAll(USER_ENTITIES_AS_SET), entityManager);
 
         final Set<String> USERNAMES_AS_SET = BDD_USERS_WITH_REALISTIC_VALUES.values().stream().map(User::username).collect(Collectors.toSet());
         assertThat(userRepository.existsByUsernameIn(USERNAMES_AS_SET)).isTrue();
 
-        userRepository.deleteAll();
-        flushAndResetContext();
+        flushAndResetContext(() -> userRepository.deleteAll(), entityManager);
 
-        assertThat(StreamUtils.toList(userRepository.findAll()).size()).isEqualTo(0);
+        assertThat(StreamUtils.toList(userRepository.findAll())).hasSize(0);
         assertThat(userRepository.existsByUsernameIn(USERNAMES_AS_SET)).isFalse();
     }
 
     @Test
     @DisplayName("Should find all users when findAll is called")
     void shouldFindAllUsers() {
-        userRepository.saveAll(USER_ENTITIES_AS_SET);
-        flushAndResetContext();
+        flushAndResetContext(() -> userRepository.saveAll(USER_ENTITIES_AS_SET), entityManager);
 
-        assertThat(StreamUtils.toList(userRepository.findAll()).size()).isEqualTo(USERS_AS_SET.size());
+        assertThat(StreamUtils.toList(userRepository.findAll())).hasSize(USERS_AS_SET.size());
     }
-
-    private void flushAndResetContext() {
-        entityManager.flush();
-        entityManager.clear();
-    }
-
 
 }

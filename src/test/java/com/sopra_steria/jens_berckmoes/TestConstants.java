@@ -7,6 +7,7 @@ import com.sopra_steria.jens_berckmoes.domain.valueobject.TokenValue;
 import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
 import com.sopra_steria.jens_berckmoes.infra.entity.TokenEntity;
 import com.sopra_steria.jens_berckmoes.infra.entity.UserEntity;
+import jakarta.persistence.EntityManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -23,6 +24,15 @@ import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
 public final class TestConstants {
 
     public static final String BLANK = " ";
+
+    public static final class TestMethods {
+        public static void flushAndResetContext(final Runnable action, final EntityManager entityManager) {
+            action.run();
+            entityManager.flush();
+            entityManager.clear();
+        }
+    }
+
 
     public static final class TimeFixture {
         public static final LocalDate TEST_TODAY = LocalDate.of(2026, 1, 30);

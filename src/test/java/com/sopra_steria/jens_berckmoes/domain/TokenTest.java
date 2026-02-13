@@ -23,7 +23,7 @@ class TokenTest {
     }
 
     public static Stream<Arguments> tokensWithExpirationDateProvider() {
-        final LocalDate fixedToday = LocalDate.of(2026, 2, 12);
+        final LocalDate fixedToday = LocalDate.now();
         return Stream.of(
                 Arguments.of(Token.of("x", fixedToday), false),
                 Arguments.of(Token.of("x", fixedToday.minusDays(1)), true),
