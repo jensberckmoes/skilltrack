@@ -1,11 +1,11 @@
 package com.sopra_steria.jens_berckmoes.integration;
 
 import com.sopra_steria.jens_berckmoes.TestConstants;
+import com.sopra_steria.jens_berckmoes.domain.ErrorResponse;
 import com.sopra_steria.jens_berckmoes.domain.Token;
 import com.sopra_steria.jens_berckmoes.domain.User;
-import com.sopra_steria.jens_berckmoes.domain.ErrorResponse;
-import com.sopra_steria.jens_berckmoes.domain.dto.GetUserResponse;
 import com.sopra_steria.jens_berckmoes.domain.dto.GetAllUsersResponse;
+import com.sopra_steria.jens_berckmoes.domain.dto.GetUserResponse;
 import com.sopra_steria.jens_berckmoes.domain.exception.UserNotFoundException;
 import com.sopra_steria.jens_berckmoes.domain.exception.UsernameRawValueNullOrBlankException;
 import com.sopra_steria.jens_berckmoes.domain.repository.TokenRepository;
@@ -24,7 +24,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import java.time.Clock;
 import java.util.Set;
 import java.util.function.Consumer;
 

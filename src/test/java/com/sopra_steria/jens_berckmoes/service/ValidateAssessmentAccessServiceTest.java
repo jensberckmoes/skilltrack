@@ -1,6 +1,5 @@
 package com.sopra_steria.jens_berckmoes.service;
 
-import com.sopra_steria.jens_berckmoes.TestConstants;
 import com.sopra_steria.jens_berckmoes.domain.LoginResult;
 import com.sopra_steria.jens_berckmoes.domain.exception.TokenHasExpiredException;
 import com.sopra_steria.jens_berckmoes.domain.exception.TokenNotFoundException;
@@ -14,12 +13,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.time.Clock;
-import java.time.ZoneOffset;
 import java.util.stream.Stream;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.FIXED_CLOCK;
-import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_TODAY;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.*;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.*;
 import static com.sopra_steria.jens_berckmoes.domain.LoginResult.blocked;

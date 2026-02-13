@@ -12,12 +12,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
 import java.time.Clock;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.HashMap;
 
 import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.FIXED_CLOCK;
-import static com.sopra_steria.jens_berckmoes.TestConstants.TimeFixture.TEST_TODAY;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Tokens.BDD_TOKENS_WITH_REALISTIC_VALUES;
 import static com.sopra_steria.jens_berckmoes.TestConstants.Users.BDD_USERS_WITH_REALISTIC_VALUES;
 

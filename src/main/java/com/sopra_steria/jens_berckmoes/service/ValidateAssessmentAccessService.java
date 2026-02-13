@@ -14,7 +14,6 @@ import com.sopra_steria.jens_berckmoes.domain.valueobject.Username;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
-import java.time.LocalDate;
 
 @Service
 public record ValidateAssessmentAccessService(UserRepository userRepository, TokenRepository tokenRepository, Clock clock) {
